@@ -334,6 +334,9 @@ const RL=(()=>{
     catch(e){if(e&&e.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
   $('cApp').onclick=$('cFile').onclick=saveFile;
+  /* the one-file copy cannot be installed (phones install only from an https link), so its main button opens the web app there */
+  if(V.site&&!HOSTED){$('cApp').textContent='📱 فتح الويب آب وتثبيته';$('cNote').textContent='يفتح التطبيق من رابطه على الإنترنت، ومن هناك يُثبَّت بأيقونة على الشاشة الرئيسية.';
+    $('cApp').onclick=()=>{window.open(V.site,'_blank','noopener')}}
   $('foot').textContent='© Hamza — Nizwa Developer'+(V.zw||'');
 
   if(HOSTED){
