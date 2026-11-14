@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<title>English is fun · حزمة الفصل</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#23314f">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="English is fun">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#23314f;--paper:#fffdf6;--a:#ff7a3d;--b:#e8479b;--c:#2f8fe6;--ok:#2fb36b;--sun:#ffc93c;--line:#e7dcc6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+html{-webkit-text-size-adjust:100%}
+body{background:linear-gradient(#fff8ef,#ffe9d6) fixed;font-family:"Baloo Bhaijaan 2","Baloo 2",system-ui,sans-serif;color:var(--ink);font-weight:700;line-height:1.5;overflow-x:hidden}
+button,a{touch-action:manipulation}
+.en{font-family:"Baloo 2",system-ui,sans-serif;direction:ltr;unicode-bidi:isolate}
+main{max-width:980px;margin:0 auto;padding:22px 16px 40px}
+header{display:flex;align-items:center;gap:16px}
+.logo{flex:none;border:0;padding:0;background:none;cursor:pointer;border-radius:20px;line-height:0;animation:nudge 3.2s ease-in-out infinite}
+.logo:active{transform:scale(.94)}
+@keyframes nudge{0%,86%,100%{transform:none}90%{transform:rotate(-5deg) scale(1.05)}95%{transform:rotate(4deg) scale(1.05)}}
+header img{width:84px;height:84px;border-radius:20px;display:block;box-shadow:0 6px 0 rgba(35,49,79,.18)}
+/* developer card, opened by the logo */
+#card{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(14,22,38,.72);overflow:auto}
+#card.on{display:flex}
+#card .in{width:min(440px,100%);margin:auto;background:#fff;border:5px solid var(--ink);border-radius:28px;padding:18px;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+#card .in img{width:min(230px,58vw);height:auto;border-radius:24px;display:block;margin:0 auto}
+#card h2{font-size:24px;font-weight:800;margin-top:10px;line-height:1.3}
+#card p{font-size:15px;color:#4b5873;margin-top:6px}
+#card .btn{width:100%;margin-top:10px;font-size:19px}
+#card .x{background:#eef1f7}
+@media (prefers-reduced-motion:reduce){.logo{animation:none}}
+h1{font-size:clamp(26px,6vw,46px);line-height:1.15;font-weight:800;min-width:0}
+h1 small{display:block;font-size:.46em;font-weight:700;color:#5b6884;line-height:1.5}
+.lic{margin-top:14px;padding:10px 16px;border-radius:16px;background:#fff;border:3px solid var(--line);font-size:17px}
+.lic b{color:var(--a)}
+.prog{margin-top:14px;background:#fff;border:3px solid var(--line);border-radius:16px;padding:10px 16px}
+.prog .bar{height:16px;border-radius:99px;background:#eee4d2;overflow:hidden;margin-top:6px;direction:ltr}
+.prog .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),var(--a));border-radius:99px;transition:width .6s}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:18px}
+.unit{position:relative;display:block;width:100%;text-align:start;font:inherit;color:inherit;cursor:pointer;background:#fff;border:5px solid var(--ink);border-radius:26px;padding:16px 18px 14px;box-shadow:0 8px 0 rgba(35,49,79,.16);transition:transform .15s}
+.unit:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(35,49,79,.16)}
+.unit .ic{font-size:54px;line-height:1.1}
+.unit .t{font-size:25px;line-height:1.25;font-weight:800}
+.unit .ar{font-size:18px;color:#5b6884}
+.unit .m{margin-top:8px;font-size:15px;color:#5b6884;display:flex;gap:10px;flex-wrap:wrap}
+.unit .tagx{position:absolute;inset-inline-end:14px;top:14px;font-size:15px;padding:2px 12px;border-radius:99px;color:#fff;background:var(--ok)}
+.unit.locked{border-color:#b9c1d3;background:#f6f3ec}.unit.locked .ic,.unit.locked .t{opacity:.55}.unit.locked .tagx{background:#8d99b5}
+.box{margin-top:22px;background:#fff;border:5px solid var(--ink);border-radius:26px;padding:18px;box-shadow:0 8px 0 rgba(35,49,79,.16)}
+.box h2{font-size:26px;line-height:1.3;font-weight:800}
+.box p{font-size:17px;color:#4b5873;margin-top:4px}
+.row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+input{flex:1;min-width:0;width:100%;font:800 26px "Baloo 2",system-ui,sans-serif;direction:ltr;text-align:center;letter-spacing:2px;padding:10px 12px;border:4px solid var(--ink);border-radius:18px;background:#fffdf6;color:var(--ink);text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-weight:800;font-size:21px;min-height:52px;padding:10px 22px;border:4px solid var(--ink);border-radius:18px;background:var(--sun);color:var(--ink);cursor:pointer;text-decoration:none;box-shadow:0 6px 0 rgba(35,49,79,.18)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(35,49,79,.18)}
+.btn.go{background:var(--a);color:#fff}.btn.wa{background:#25D366;color:#fff}.btn.call{background:#dff0ff}.btn.ig{background:linear-gradient(90deg,#fdd6e8,#e8dcff)}
+.msg{margin-top:10px;font-size:18px;min-height:27px}.msg.bad{color:#c62020}.msg.good{color:#1c8a4e}
+#two{display:none}#two.on{display:flex}
+footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-height:1.7}
+/* computer: pointer hover only where there is a real pointer, and a wider page */
+@media (hover:hover){.unit:hover{transform:translateY(-3px)}}
+@media (min-width:1200px){main{max-width:1120px;padding-top:30px}.grid{grid-template-columns:repeat(3,1fr);gap:20px}}
+/* iPad and other tablets: two columns of units */
+@media (min-width:600px) and (max-width:1199px){.grid{grid-template-columns:repeat(2,1fr)}}
+/* phone: one column, compact cards with the icon beside the text, full-width buttons */
+@media (max-width:599px){
+  main{padding:14px 12px 30px}
+  header{gap:12px}header img{width:60px;height:60px;border-radius:15px}.logo{border-radius:15px}
+  .lic,.prog{font-size:15px;padding:8px 12px}
+  .grid{grid-template-columns:1fr;gap:12px;margin-top:14px}
+  .unit{display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:center;border-width:4px;border-radius:22px;padding:30px 14px 12px}
+  .unit .ic{grid-row:1/4;font-size:46px}
+  .unit .t{font-size:20px}.unit .ar{font-size:16px}.unit .m{margin-top:2px;font-size:14px}
+  .unit .tagx{top:8px;inset-inline-end:10px;font-size:13px}
+  .box{margin-top:16px;border-width:4px;border-radius:22px;padding:14px}
+  .box h2{font-size:21px}.box p{font-size:16px}
+  input{flex-basis:100%;font-size:22px}
+  .btn{flex:1 1 100%;font-size:19px;padding:8px 14px}
+}
+/* player: sized and (on a phone held upright) turned by lay() below */
+#player{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;background:#0e1626;display:none;flex-direction:column;transform-origin:0 0}
+#player.on{display:flex}
+#strip{flex:none;height:44px;display:flex;align-items:center;gap:12px;padding:0 10px;background:var(--ink);color:#fff;font-size:15px}
+#strip button{font:inherit;font-weight:800;font-size:16px;border:0;border-radius:99px;padding:3px 16px;background:var(--sun);color:var(--ink);cursor:pointer;flex:none}
+#strip .who{margin-inline-start:auto;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#ptitle{white-space:nowrap}
+#frame{flex:1;min-width:0;min-height:0;width:100%;border:0;background:#0e1626}
+/* wide and short (a phone on its side): the strip moves to the side so the deck keeps the full height */
+#player.side{flex-direction:row}
+#player.side #strip{writing-mode:vertical-rl;width:42px;height:auto;padding:10px 0}
+#player.side #strip button{padding:16px 3px}
+#player.side #frame{height:100%}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <button class="logo" id="logoB" aria-label="Hamza — Nizwa Developer: التواصل وحفظ التطبيق"><img src="logo.webp" alt="Hamza — Nizwa Developer"></button>
+    <h1><span class="en">English is fun</span><small>حزمة الفصل · الوحدات من ١ إلى ٥ · الصف الأول · <span class="en">Cambridge Primary International English 1</span></small></h1>
+  </header>
+  <div class="lic" id="lic"></div>
+  <div class="prog"><span id="progT"></span><div class="bar"><i id="progB" style="width:0"></i></div></div>
+  <div class="grid" id="grid"></div>
+
+  <section class="box" id="inst" style="display:none">
+    <h2>📱 ثبّتوا التطبيق على الجهاز</h2>
+    <p id="instT">يظهر بأيقونة على الشاشة الرئيسية ويعمل بلا إنترنت.</p>
+    <div class="row"><button class="btn go" id="instB">⬇️ تثبيت التطبيق</button></div>
+  </section>
+
+  <section class="box" id="act">
+    <h2>🔑 تفعيل الوحدات من ٢ إلى ٥</h2>
+    <p>الوحدة الأولى مجانية. اكتبوا رمز التفعيل الذي وصلكم بعد الشراء لفتح بقية الوحدات. يُحفظ الرمز على هذا الجهاز فلا تحتاجون لكتابته مرة أخرى.</p>
+    <div class="row"><input id="code" placeholder="NIZ-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" aria-label="رمز التفعيل"><button class="btn go" id="go">تفعيل</button></div>
+    <div class="msg" id="msg" role="status"></div>
+  </section>
+
+  <section class="box">
+    <h2>📲 التواصل والطلب</h2>
+    <p><span class="en">Hamza · Nizwadeveloper</span></p>
+    <div class="row"><button class="btn" id="ph">📞 <span class="en">95153392</span></button><a class="btn ig" id="ig" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a></div>
+    <div class="row" id="two"><a class="btn call" id="call">📞 اتصال</a><a class="btn wa" id="wa" target="_blank" rel="noopener">💬 رسالة واتساب</a></div>
+  </section>
+
+  <section class="box">
+    <h2>👨‍👩‍👧 لوليّ الأمر</h2>
+    <p id="note">كل وحدة تغطي وحدة الكتاب كاملة من كتاب الطالب وكتاب النشاط، وعلى كل شريحة رقم صفحتها في الكتابين. يكفي ربع ساعة يوميًا: قصة، ثم لعبتان، ثم نشيد. النجوم تُحفظ هنا على هذا الجهاز. يعمل العرض بلا إنترنت؛ الخطوط فقط تحتاج اتصالًا في أول مرة.</p>
+  </section>
+
+  <footer><span id="foot"></span><br>منتج تعليمي مستقل، غير تابع لدار نشر الكتاب ولا معتمد منها. القصص والأناشيد والأنشطة من تأليف المطوّر.</footer>
+</main>
+
+<div id="card" role="dialog" aria-modal="true" aria-label="Hamza — Nizwa Developer"><div class="in">
+  <img src="logo.webp" alt="Hamza — Nizwa Developer">
+  <h2 class="en">Hamza · Nizwa Developer</h2>
+  <a class="btn call" id="cCall">📞 اتصال <span class="en">95153392</span></a>
+  <a class="btn wa" id="cWa" target="_blank" rel="noopener">💬 رسالة واتساب</a>
+  <a class="btn ig" id="cIg" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a>
+  <button class="btn go" id="cApp">⬇️ حفظ التطبيق كملف كامل</button>
+  <button class="btn" id="cFile" style="display:none">⬇️ حفظ التطبيق كملف كامل</button>
+  <p id="cNote">ملف واحد فيه التطبيق كله: يُحفظ على الجهاز ويُفتح بلا إنترنت.</p>
+  <button class="btn x" id="cX">إغلاق</button>
+</div></div>
+
+<div id="player"><div id="strip"><button id="back">➡ القائمة</button><span id="ptitle" class="en"></span><span class="who" id="pwho"></span></div><iframe id="frame" allowfullscreen title="الوحدة"></iframe></div>
+
+<script type="application/json" id="vault">{"v":2,"web":1,"alg":"AES-256-CTR + HMAC-SHA256, key: PBKDF2-HMAC-SHA256","salt":"LtjSlvpumNbQo5tibr3rlA==","iter":300000,"meta":[{"n":1,"title":"School","ar":"المدرسة","icon":"🏫","slides":42,"stars":168},{"n":2,"title":"Home","ar":"البيت","icon":"🏠","slides":49,"stars":189},{"n":3,"title":"All about me","ar":"كل شيء عنّي","icon":"🙋","slides":51,"stars":191},{"n":4,"title":"Move it!","ar":"هيّا نتحرّك","icon":"🤸","slides":50,"stars":199},{"n":5,"title":"Things I know","ar":"أشياء أعرفها","icon":"🔢","slides":54,"stars":207}],"free":"u1.html","units":[{"u":2,"src":"u2.bin","n":"4KO4QHvYpxgZgJtt","t":"PcseiA+TSq0s4C8fr1diLA=="},{"u":3,"src":"u3.bin","n":"8EaGz0zFenuvJwW2","t":"lB0sPnlH6ZVTauiMAQ8W7Q=="},{"u":4,"src":"u4.bin","n":"lfVbTrBJQa2cxhnh","t":"41NyurAtbrq6I8/94qNa+g=="},{"u":5,"src":"u5.bin","n":"x9NP/1wkI5cnsdlc","t":"uiBIYpxMTTmR3pif7x7kow=="}],"file":"English-is-fun.html"}</script>
+<script>
+/* RL — small, dependency-free crypto used by the bundle, identical in the browser and in Node.
+   Written in plain JS (not WebCrypto) because the file must also unlock when opened from WhatsApp or a
+   file manager, where the page is not always a "secure context" and crypto.subtle is missing.
+   Primitives are standard: SHA-256, HMAC-SHA256, PBKDF2-HMAC-SHA256 and AES. The cipher is AES-256 in counter
+   mode (AES-256-CTR), authenticated with a separate HMAC-SHA256 tag (encrypt-then-MAC).
+   tools/selftest.mjs checks SHA-256, HMAC, PBKDF2 and AES against Node's own crypto. */
+const RL=(()=>{
+  const K=new Int32Array(64),H0=new Int32Array(8),W=new Int32Array(64);
+  {let n=0;for(let p=2;n<64;p++){let prime=true;for(let d=2;d*d<=p;d++)if(p%d===0){prime=false;break}
+    if(prime){if(n<8)H0[n]=(Math.pow(p,1/2)%1)*4294967296|0;K[n++]=(Math.pow(p,1/3)%1)*4294967296|0}}}
+  function comp(h,b,o){
+    for(let i=0;i<16;i++,o+=4)W[i]=b[o]<<24|b[o+1]<<16|b[o+2]<<8|b[o+3];
+    for(let i=16;i<64;i++){const x=W[i-15],y=W[i-2];
+      W[i]=(W[i-16]+((x>>>7|x<<25)^(x>>>18|x<<14)^(x>>>3))+W[i-7]+((y>>>17|y<<15)^(y>>>19|y<<13)^(y>>>10)))|0}
+    let a=h[0],bb=h[1],c=h[2],d=h[3],e=h[4],f=h[5],g=h[6],hh=h[7];
+    for(let i=0;i<64;i++){
+      const t1=(hh+((e>>>6|e<<26)^(e>>>11|e<<21)^(e>>>25|e<<7))+((e&f)^(~e&g))+K[i]+W[i])|0;
+      const t2=(((a>>>2|a<<30)^(a>>>13|a<<19)^(a>>>22|a<<10))+((a&bb)^(a&c)^(bb&c)))|0;
+      hh=g;g=f;f=e;e=(d+t1)|0;d=c;c=bb;bb=a;a=(t1+t2)|0}
+    h[0]=(h[0]+a)|0;h[1]=(h[1]+bb)|0;h[2]=(h[2]+c)|0;h[3]=(h[3]+d)|0;h[4]=(h[4]+e)|0;h[5]=(h[5]+f)|0;h[6]=(h[6]+g)|0;h[7]=(h[7]+hh)|0}
+  const out=(h,o,at=0)=>{for(let i=0;i<8;i++){const v=h[i];o[at++]=v>>>24;o[at++]=v>>>16&255;o[at++]=v>>>8&255;o[at++]=v&255}return o};
+  /* finish a hash whose state h has already absorbed `pre` bytes */
+  function fin(h,data,pre){const n=data.length,p=new Uint8Array(((n+72)>>6)<<6);p.set(data);p[n]=128;
+    const bits=(pre+n)*8,L=p.length;p[L-8]=0;p[L-5]=Math.floor(bits/4294967296)&255;p[L-4]=bits>>>24;p[L-3]=bits>>>16&255;p[L-2]=bits>>>8&255;p[L-1]=bits&255;
+    for(let o=0;o<L;o+=64)comp(h,p,o);return out(h,new Uint8Array(32))}
+  const sha256=d=>fin(H0.slice(),d,0);
+  function hkey(key){if(key.length>64)key=sha256(key);const a=new Uint8Array(64),b=new Uint8Array(64);
+    for(let i=0;i<64;i++){const k=key[i]||0;a[i]=k^0x36;b[i]=k^0x5c}const I=H0.slice(),O=H0.slice();comp(I,a,0);comp(O,b,0);return{I,O}}
+  const hmac=(ks,msg)=>fin(ks.O.slice(),fin(ks.I.slice(),msg,64),64);
+  /* fast path: HMAC of a message shorter than 56 bytes, written into `o` without allocating */
+  const B1=new Uint8Array(64),B2=new Uint8Array(64),T=new Int32Array(8),D=new Uint8Array(32);
+  B2[32]=128;B2[62]=3;B2[63]=0;                                  /* outer block: 32-byte digest, total 96 bytes = 768 bits */
+  function small(ks,msg,len,o){B1.fill(0);for(let i=0;i<len;i++)B1[i]=msg[i];B1[len]=128;const bits=(64+len)*8;B1[62]=bits>>>8;B1[63]=bits&255;
+    T.set(ks.I);comp(T,B1,0);out(T,D);for(let i=0;i<32;i++)B2[i]=D[i];T.set(ks.O);comp(T,B2,0);return out(T,o)}
+  function pbkdf2(pass,salt,iter,blocks){const ks=hkey(pass),res=new Uint8Array(32*blocks),U=new Uint8Array(32);
+    for(let b=1;b<=blocks;b++){const first=new Uint8Array(salt.length+4);first.set(salt);first[salt.length+3]=b;
+      const u=hmac(ks,first),t=u.slice();U.set(u);
+      for(let j=1;j<iter;j++){small(ks,U,32,U);for(let i=0;i<32;i++)t[i]^=U[i]}
+      res.set(t,(b-1)*32)}
+    return res}
+  /* AES (FIPS-197): S-box and the four round tables are computed, not typed in */
+  const S=new Uint8Array(256),T0=new Int32Array(256),T1=new Int32Array(256),T2=new Int32Array(256),T3=new Int32Array(256);
+  {let p=1,q=1;do{p=(p^(p<<1)^(p&128?0x1b:0))&255;q^=q<<1;q^=q<<2;q^=q<<4;q&=255;if(q&128)q^=9;
+      S[p]=(q^((q<<1|q>>>7)&255)^((q<<2|q>>>6)&255)^((q<<3|q>>>5)&255)^((q<<4|q>>>4)&255)^0x63)&255}while(p!==1);S[0]=0x63;
+    for(let i=0;i<256;i++){const s=S[i],s2=(s<<1^(s&128?0x1b:0))&255,t=s2<<24|s<<16|s<<8|(s2^s);
+      T0[i]=t;T1[i]=t>>>8|t<<24;T2[i]=t>>>16|t<<16;T3[i]=t>>>24|t<<8}}
+  const sub=w=>S[w>>>24]<<24|S[w>>>16&255]<<16|S[w>>>8&255]<<8|S[w&255];
+  /* round keys for a 16-, 24- or 32-byte key (the bundle uses 32 bytes: AES-256, 14 rounds) */
+  function aesKey(key){const nk=key.length>>2,nr=nk+6,w=new Int32Array(4*(nr+1));
+    for(let i=0;i<nk;i++)w[i]=key[4*i]<<24|key[4*i+1]<<16|key[4*i+2]<<8|key[4*i+3];
+    for(let i=nk,rc=1;i<w.length;i++){let t=w[i-1];
+      if(i%nk===0){t=sub(t<<8|t>>>24)^rc<<24;rc=(rc<<1^(rc&128?0x1b:0))&255}else if(nk>6&&i%nk===4)t=sub(t);
+      w[i]=w[i-nk]^t}
+    return{w,nr}}
+  /* encrypt one 16-byte block: b[bo..] -> o[oo..] */
+  function aesBlock(rk,b,bo,o,oo){const w=rk.w,nr=rk.nr;
+    let a=(b[bo]<<24|b[bo+1]<<16|b[bo+2]<<8|b[bo+3])^w[0],c=(b[bo+4]<<24|b[bo+5]<<16|b[bo+6]<<8|b[bo+7])^w[1],
+        d=(b[bo+8]<<24|b[bo+9]<<16|b[bo+10]<<8|b[bo+11])^w[2],e=(b[bo+12]<<24|b[bo+13]<<16|b[bo+14]<<8|b[bo+15])^w[3],k=4;
+    for(let r=1;r<nr;r++,k+=4){
+      const a2=T0[a>>>24]^T1[c>>>16&255]^T2[d>>>8&255]^T3[e&255]^w[k],c2=T0[c>>>24]^T1[d>>>16&255]^T2[e>>>8&255]^T3[a&255]^w[k+1],
+            d2=T0[d>>>24]^T1[e>>>16&255]^T2[a>>>8&255]^T3[c&255]^w[k+2],e2=T0[e>>>24]^T1[a>>>16&255]^T2[c>>>8&255]^T3[d&255]^w[k+3];
+      a=a2;c=c2;d=d2;e=e2}
+    const f=[(S[a>>>24]<<24|S[c>>>16&255]<<16|S[d>>>8&255]<<8|S[e&255])^w[k],(S[c>>>24]<<24|S[d>>>16&255]<<16|S[e>>>8&255]<<8|S[a&255])^w[k+1],
+             (S[d>>>24]<<24|S[e>>>16&255]<<16|S[a>>>8&255]<<8|S[c&255])^w[k+2],(S[e>>>24]<<24|S[a>>>16&255]<<16|S[c>>>8&255]<<8|S[d&255])^w[k+3]];
+    for(let i=0;i<4;i++){const v=f[i];o[oo++]=v>>>24;o[oo++]=v>>>16&255;o[oo++]=v>>>8&255;o[oo++]=v&255}return o}
+  /* AES-256 in counter mode (NIST SP 800-38A): counter block = 12-byte nonce || 32-bit block number from 0.
+     XORs data with the keystream, so the same call encrypts and decrypts. Same output as Node's 'aes-256-ctr'. */
+  function stream(encKey,nonce,data){const rk=aesKey(encKey),m=new Uint8Array(16),blk=new Uint8Array(16),o=new Uint8Array(data.length);m.set(nonce);
+    for(let c=0,p=0;p<data.length;c++){m[12]=c>>>24;m[13]=c>>>16&255;m[14]=c>>>8&255;m[15]=c&255;aesBlock(rk,m,0,blk,0);
+      const n=Math.min(16,data.length-p);for(let i=0;i<n;i++,p++)o[p]=data[p]^blk[i]}
+    return o}
+  const cat=(...a)=>{const o=new Uint8Array(a.reduce((s,x)=>s+x.length,0));let p=0;for(const x of a){o.set(x,p);p+=x.length}return o};
+  const tag=(macKey,nonce,ct)=>hmac(hkey(macKey),cat(nonce,ct)).slice(0,16);
+  const seal=(keys,nonce,plain)=>{const ct=stream(keys.subarray(0,32),nonce,plain);return{ct,tag:tag(keys.subarray(32,64),nonce,ct)}};
+  /* returns the plaintext, or null when the code is wrong or the data was altered */
+  function open(keys,nonce,ct,tg){const t=tag(keys.subarray(32,64),nonce,ct);let d=0;for(let i=0;i<16;i++)d|=t[i]^tg[i];return d?null:stream(keys.subarray(0,32),nonce,ct)}
+  const utf8=s=>new TextEncoder().encode(s),text=b=>new TextDecoder().decode(b);
+  const b64=b=>{let s='';for(let i=0;i<b.length;i+=32768)s+=String.fromCharCode.apply(null,b.subarray(i,i+32768));return btoa(s)};
+  const unb64=s=>{const r=atob(s),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o};
+  /* the code as typed: letters and digits only, upper case, so dashes, spaces and case never matter */
+  const norm=c=>String(c).toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const keysFor=(code,salt,iter)=>pbkdf2(utf8(norm(code)),salt,iter,2);
+  return{sha256,hkey,hmac,pbkdf2,aesKey,aesBlock,stream,seal,open,utf8,text,b64,unb64,norm,keysFor,cat}})();
+
+</script>
+<script>
+(function(){
+  /* Two forms of the same page. A buyer's file carries everything inside it (V.free, V.units[].c, V.lic) and is
+     locked to one code. The web app (V.web) keeps the units as separate files encrypted with one content key, and
+     lic.json holds that key wrapped once per buyer code. */
+  const V=JSON.parse(document.getElementById('vault').textContent),$=id=>document.getElementById(id),WEB=!!V.web,HOSTED=WEB&&!V.inline;
+  /* this page exactly as it arrived, before anything is drawn into it: what the logo card saves as the complete app file */
+  const SRC=HOSTED?null:'<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  const KEY=WEB?'rl-web':'rl-bundle-'+V.sn;let st={best:{}};try{st=Object.assign(st,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+  let keys=null,lic=null,cur=null,poll=0;
+  const ARD=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+  const sn=()=>lic&&lic.sn||V.sn||'';
+
+  function draw(){
+    $('grid').innerHTML='';
+    V.meta.forEach(u=>{const open=u.n===1||!!keys,b=document.createElement('button');b.className='unit'+(open?'':' locked');
+      const got=Math.min(st.best[u.n]||0,u.stars);
+      b.innerHTML=`<span class="tagx">${u.n===1?'مجانية':open?'مفتوحة':'🔒 مقفلة'}</span><div class="ic">${u.icon}</div><div class="t en">Unit ${u.n} · ${u.title}</div><div class="ar">الوحدة ${ARD(u.n)} · ${u.ar}</div><div class="m"><span>${ARD(u.slides)} شريحة</span><span>⭐ ${ARD(got)} من ${ARD(u.stars)}</span></div>`;
+      b.onclick=()=>open?play(u):needCode();$('grid').append(b)});
+    const tot=V.meta.reduce((a,u)=>a+u.stars,0),got=V.meta.reduce((a,u)=>a+Math.min(st.best[u.n]||0,u.stars),0);
+    $('progT').textContent=`⭐ مجموع النجوم: ${ARD(got)} من ${ARD(tot)}`;$('progB').style.width=(100*got/tot)+'%';
+    const num=sn()?`رقم النسخة <span class="en">${sn()}</span>`:'';
+    $('lic').innerHTML=lic?`✅ نسخة مرخّصة لـ <b>${esc(lic.name)}</b> — ${num}. هذه النسخة خاصة بكم وغير مخصّصة لإعادة الإرسال.`:`${num?num+' — ':''}الوحدة الأولى مفتوحة للتجربة، وبقية الوحدات تُفتح برمز التفعيل.`;
+    $('act').style.display=keys?'none':'';
+    const tail=sn()?`\nرقم النسخة: ${sn()}`:'';
+    const txt=keys?`السلام عليكم ورحمة الله وبركاته،\nلديّ استفسار عن حزمة «English is fun» للصف الأول.${tail}`:`السلام عليكم ورحمة الله وبركاته،\nجرّبتُ الوحدة الأولى من «English is fun» وأرغب في رمز تفعيل حزمة الفصل (الوحدات من ١ إلى ٥).${tail}`;
+    $('wa').href=$('cWa').href='https://wa.me/96895153392?text='+encodeURIComponent(txt);
+  }
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const hex=b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');
+  function needCode(){$('act').scrollIntoView({behavior:'smooth',block:'center'});$('code').focus({preventScroll:true});say('هذه الوحدة مقفلة. اكتبوا رمز التفعيل أولًا.','bad')}
+  function say(t,c){const m=$('msg');m.textContent=t;m.className='msg '+(c||'')}
+
+  /* returns {k,lic} for a right code, null for a wrong one; throws when the licence list cannot be reached */
+  async function tryCode(code){const k=RL.keysFor(code,RL.unb64(V.salt),V.iter);
+    if(!WEB){const p=RL.open(k,RL.unb64(V.lic.n),RL.unb64(V.lic.c),RL.unb64(V.lic.t));return p?{k,lic:JSON.parse(RL.text(p))}:null}
+    const id=hex(RL.hmac(RL.hkey(k.subarray(32,64)),RL.utf8('id'))).slice(0,16);
+    let L=V.lic;if(HOSTED){const r=await fetch('lic.json',{cache:'no-store'});if(!r.ok)throw new Error('lic');L=await r.json()}
+    const e=L[id];if(!e)return null;
+    const p=RL.open(k,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));if(!p)return null;
+    const o=JSON.parse(RL.text(p));return{k:RL.unb64(o.m),lic:o}}
+  /* deriving the keys is slow on purpose (it is what makes guessing codes impractical), so let the page paint first */
+  function unlock(code,quiet){say('جارٍ فتح الحزمة…');$('go').disabled=true;
+    setTimeout(async()=>{let r=null,net=false;try{r=await tryCode(code)}catch(e){net=true}
+      $('go').disabled=false;
+      if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw()}
+      else if(net)say('تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.','bad');
+      else if(quiet){delete st.code;save();say('')}
+      else say('الرمز غير صحيح. تأكدوا من كتابته كما وصلكم، أو تواصلوا معنا.','bad')},30)}
+  $('go').onclick=()=>{const c=$('code').value;if(RL.norm(c).length<6)return say('اكتبوا رمز التفعيل كاملًا.','bad');unlock(c)};
+  $('code').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
+
+  async function html(u){
+    if(!HOSTED){if(u.n===1)return RL.text(RL.unb64(V.free));const e=V.units.find(x=>x.u===u.n),p=RL.open(keys,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));return p?RL.text(p):null}
+    if(u.n===1){const r=await fetch(V.free);if(!r.ok)throw new Error('net');return r.text()}
+    const e=V.units.find(x=>x.u===u.n),r=await fetch(e.src);if(!r.ok)throw new Error('net');
+    const p=RL.open(keys,RL.unb64(e.n),new Uint8Array(await r.arrayBuffer()),RL.unb64(e.t));return p?RL.text(p):null}
+  async function play(u){let h=null;
+    try{h=await html(u)}catch(e){return alert('تعذّر تحميل الوحدة. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.')}
+    if(!h)return alert('تعذّر فتح الوحدة. الملف ناقص أو معدَّل.');
+    cur=u;$('ptitle').textContent=`Unit ${u.n} · ${u.title}`;$('pwho').textContent=lic?`نسخة مرخّصة لـ ${lic.name}${sn()?' · '+sn():''}`:sn()?`نسخة ${sn()}`:'';
+    $('frame').srcdoc=h;$('player').classList.add('on');document.documentElement.style.overflow='hidden';lay();
+    clearInterval(poll);poll=setInterval(grab,2000)}
+  /* The decks are a 16:9 stage that scales to its frame. Give that frame the most room each device allows:
+     a phone or tablet held upright gets the whole player turned a quarter, and a short wide screen gets the strip
+     at the side instead of on top. */
+  function lay(){const p=$('player');if(!p.classList.contains('on'))return;
+    const w=innerWidth,h=innerHeight,rot=h>w&&matchMedia('(pointer:coarse)').matches,W=rot?h:w,H=rot?w:h;
+    p.classList.toggle('side',W/H>16/9&&H<560);
+    p.style.width=W+'px';p.style.height=H+'px';p.style.transform=rot?`translateX(${w}px) rotate(90deg)`:''}
+  addEventListener('resize',lay);addEventListener('orientationchange',()=>setTimeout(lay,250));
+  document.addEventListener('fullscreenchange',()=>{try{if(document.fullscreenElement&&screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}catch(e){}setTimeout(lay,250)});
+  /* the decks keep their star count in memory only; read it from the frame and remember the best per unit */
+  function grab(){if(!cur)return;try{const n=$('frame').contentWindow.eval('typeof stars==="number"?stars:0');if(n>(st.best[cur.n]||0)){st.best[cur.n]=n;save()}}catch(e){}}
+  $('back').onclick=()=>{grab();clearInterval(poll);try{$('frame').contentWindow.speechSynthesis.cancel()}catch(e){}
+    try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+    $('frame').srcdoc='';const p=$('player');p.classList.remove('on','side');p.style.cssText='';document.documentElement.style.overflow='';cur=null;draw()};
+
+  $('ph').onclick=()=>$('two').classList.toggle('on');
+  $('call').href=$('cCall').href='tel:+96895153392';$('ig').href=$('cIg').href='https://www.instagram.com/nizwadeveloper/';
+  /* the logo opens the developer card; its last button hands over the whole app as one file */
+  $('logoB').onclick=()=>$('card').classList.add('on');$('cX').onclick=()=>$('card').classList.remove('on');
+  $('card').onclick=e=>{if(e.target===$('card'))$('card').classList.remove('on')};
+  addEventListener('keydown',e=>{if(e.key==='Escape')$('card').classList.remove('on')});
+  const saveFile=async ev=>{const name='English is fun.html',b=ev.currentTarget,t=b.textContent;let blob;
+    try{if(SRC)blob=new Blob([SRC],{type:'text/html'});else{b.textContent='جارٍ التحضير…';const r=await fetch(V.file,{cache:'no-store'});if(!r.ok)throw new Error('net');blob=await r.blob()}}
+    catch(e){b.textContent=t;return alert('تعذّر تحضير الملف. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.')}
+    b.textContent=t;
+    try{const f=new File([blob],name,{type:'text/html'});
+      if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'English is fun'});return}}
+    catch(e){if(e&&e.name==='AbortError')return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)};
+  $('cApp').onclick=$('cFile').onclick=saveFile;
+  $('foot').textContent='© Hamza — Nizwa Developer'+(V.zw||'');
+
+  if(HOSTED){
+    $('note').textContent='كل وحدة تغطي وحدة الكتاب كاملة من كتاب الطالب وكتاب النشاط، وعلى كل شريحة رقم صفحتها في الكتابين. يكفي ربع ساعة يوميًا: قصة، ثم لعبتان، ثم نشيد. النجوم تُحفظ هنا على هذا الجهاز. بعد أول فتح يعمل التطبيق بلا إنترنت.';
+    if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+    const alone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+    const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    let dp=null;
+    addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;if(!alone)$('inst').style.display=''});
+    addEventListener('appinstalled',()=>{$('inst').style.display='none'});
+    $('instB').onclick=async()=>{if(!dp)return;dp.prompt();try{await dp.userChoice}catch(e){}dp=null;$('inst').style.display='none'};
+    /* on the link, the card's main button installs the app (home-screen icon, own window); saving the file is the second button */
+    const how=ios?'على آيفون وآيباد: افتحوا هذه الصفحة في Safari، ثم زر المشاركة، ثم «إضافة إلى الشاشة الرئيسية».':'افتحوا قائمة المتصفح (⋮) واختاروا «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».';
+    $('cApp').textContent='📱 تثبيت التطبيق على الجهاز';$('cFile').style.display='';
+    $('cNote').textContent=alone?'التطبيق مثبّت على هذا الجهاز ويعمل بلا إنترنت.':'يُثبَّت بأيقونة على الشاشة الرئيسية ويعمل بلا إنترنت.';
+    $('cApp').onclick=async()=>{if(alone)return;
+      if(dp){dp.prompt();let c=null;try{c=await dp.userChoice}catch(e){}dp=null;if(c&&c.outcome==='accepted'){$('cNote').textContent='تم التثبيت. تجدون التطبيق على الشاشة الرئيسية.';$('inst').style.display='none'}return}
+      $('cNote').textContent=how};
+    if(ios&&!alone){$('inst').style.display='';$('instB').style.display='none';
+      $('instT').textContent='على آيفون وآيباد: افتحوا هذه الصفحة في Safari، ثم اضغطوا زر المشاركة، ثم «إضافة إلى الشاشة الرئيسية». يظهر التطبيق بأيقونة ويعمل بلا إنترنت.'}
+  }
+  draw();if(st.code)unlock(st.code,true);
+})();
+</script>
+</body>
+</html>
