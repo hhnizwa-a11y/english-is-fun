@@ -122,13 +122,15 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
     <p>الوحدة الأولى مجانية. اكتبوا رمز التفعيل الذي وصلكم بعد الشراء لفتح بقية الوحدات. يُحفظ الرمز على هذا الجهاز فلا تحتاجون لكتابته مرة أخرى.</p>
     <div class="row"><input id="code" placeholder="NIZ-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" aria-label="رمز التفعيل"><button class="btn go" id="go">تفعيل</button></div>
     <div class="msg" id="msg" role="status"></div>
+    <p style="font-size:13px;opacity:.75;margin:8px 0 0">عند التفعيل يصل إلى المطوّر رقم الرمز ونوع الجهاز وبلده (من المنطقة الزمنية) فقط، ليعرف أنّ الرمز فُعِّل. لا يُرسَل اسم ولا رقم هاتف ولا موقع دقيق.</p>
   </section>
 
   <section class="box">
     <h2>📲 التواصل والطلب</h2>
     <p><span class="en">Hamza · Nizwadeveloper</span></p>
-    <div class="row"><button class="btn" id="ph">📞 <span class="en">95153392</span></button><a class="btn ig" id="ig" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a></div>
+    <div class="row"><button class="btn" id="ph">📞 <span class="en">97247727</span></button><a class="btn ig" id="ig" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a></div>
     <div class="row" id="two"><a class="btn call" id="call">📞 اتصال</a><a class="btn wa" id="wa" target="_blank" rel="noopener">💬 رسالة واتساب</a></div>
+    <p style="margin:10px 0 0">💳 التحويل: <b class="en">95153392</b> <button class="btn xferCopy" type="button" style="padding:4px 12px;font-size:14px">📋 نسخ الرقم</button></p>
   </section>
 
   <section class="box">
@@ -142,9 +144,10 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
 <div id="card" role="dialog" aria-modal="true" aria-label="Hamza — Nizwa Developer"><div class="in">
   <img src="logo.webp" alt="Hamza — Nizwa Developer">
   <h2 class="en">Hamza · Nizwa Developer</h2>
-  <a class="btn call" id="cCall">📞 اتصال <span class="en">95153392</span></a>
+  <a class="btn call" id="cCall">📞 اتصال <span class="en">97247727</span></a>
   <a class="btn wa" id="cWa" target="_blank" rel="noopener">💬 رسالة واتساب</a>
   <a class="btn ig" id="cIg" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a>
+  <button class="btn xferCopy" type="button" style="white-space:nowrap" aria-label="نسخ رقم التحويل 95153392">💳 التحويل: <span class="en">95153392</span></button>
   <button class="btn go" id="cApp">⬇️ حفظ التطبيق كملف كامل</button>
   <button class="btn" id="cFile" style="display:none">⬇️ حفظ التطبيق كملف كامل</button>
   <p id="cNote">ملف واحد فيه التطبيق كله: يُحفظ على الجهاز ويُفتح بلا إنترنت.</p>
@@ -267,7 +270,7 @@ const RL=(()=>{
     $('act').style.display=keys?'none':'';
     const tail=sn()?`\nرقم النسخة: ${sn()}`:'';
     const txt=keys?`السلام عليكم ورحمة الله وبركاته،\nلديّ استفسار عن حزمة «English is fun» للصف الأول.${tail}`:`السلام عليكم ورحمة الله وبركاته،\nجرّبتُ الوحدة الأولى من «English is fun» وأرغب في رمز تفعيل حزمة الفصل (الوحدات من ١ إلى ٥).${tail}`;
-    $('wa').href=$('cWa').href='https://wa.me/96895153392?text='+encodeURIComponent(txt);
+    $('wa').href=$('cWa').href='https://wa.me/96897247727?text='+encodeURIComponent(txt);
   }
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const hex=b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');
@@ -281,12 +284,37 @@ const RL=(()=>{
     let L=V.lic;if(HOSTED){const r=await fetch('lic.json',{cache:'no-store'});if(!r.ok)throw new Error('lic');L=await r.json()}
     const e=L[id];if(!e)return null;
     const p=RL.open(k,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));if(!p)return null;
-    const o=JSON.parse(RL.text(p));return{k:RL.unb64(o.m),lic:o}}
+    const o=JSON.parse(RL.text(p));return{k:RL.unb64(o.m),lic:o,id}}
+  /* activation notice (web app only): once per device, the developer's sheet gets the code's serial and licence number,
+     a random number for this device, and what kind of device it is. No name, no phone number. A failure is retried on the
+     next start and never touches the app. */
+  const ACT='https://script.google.com/macros/s/AKfycbyYBV4msuNI0hiGUAUO5WgvkpbbpZBSAlRyPfcCrZfbMjEomJ6UuoQ_zoWMvI5Azr9Rog/exec';
+  function device(cb){
+    const ua=navigator.userAgent||'',ipad=/iPad/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+    const r={k:ipad||(/Android/.test(ua)&&!/Mobile/.test(ua))?'tablet':/iPhone|iPod|Android|Mobi/.test(ua)?'phone':'computer',
+      o:/Windows/.test(ua)?'Windows':ipad?'iPadOS':/iPhone|iPod/.test(ua)?'iOS':/Android/.test(ua)?'Android':/CrOS/.test(ua)?'ChromeOS':/Mac OS X|Macintosh/.test(ua)?'macOS':/Linux/.test(ua)?'Linux':'',
+      b:/Edg[A-Z]?\//.test(ua)?'Edge':/SamsungBrowser/.test(ua)?'Samsung Internet':/OPR\//.test(ua)?'Opera':/CriOS|Chrome\//.test(ua)?'Chrome':/FxiOS|Firefox\//.test(ua)?'Firefox':/Safari\//.test(ua)?'Safari':'',m:''};
+    const mm=/Android[^;)]*;\s*([^;)]+?)(?:\s+Build\/[^;)]*)?\)/.exec(ua);if(mm&&mm[1]!=='K')r.m=mm[1];
+    try{const h=navigator.userAgentData;if(h&&h.getHighEntropyValues)
+      return h.getHighEntropyValues(['model']).then(v=>{if(v&&v.model)r.m=v.model;cb(r)},()=>cb(r))}catch(e){}
+    cb(r)}
+  /* the device's time zone (e.g. Asia/Muscat): tells the country, never the exact place; no permission, no other site */
+  function tz(){try{return String(Intl.DateTimeFormat().resolvedOptions().timeZone||'').slice(0,40)}catch(e){return ''}}
+  function report(r){
+    if(!WEB||!/^https?:\/\//.test(ACT)||!r||!r.id||!r.lic||!r.lic.sn||!window.fetch)return;
+    setTimeout(()=>{try{
+      const fk='rl-web-act';if(localStorage.getItem(fk)===r.id)return;
+      let dev=localStorage.getItem('epa-device');
+      if(!/^[0-9a-f]{16}$/.test(dev||'')){dev=hex(crypto.getRandomValues(new Uint8Array(8)));localStorage.setItem('epa-device',dev)}
+      device(d=>fetch(ACT,{method:'POST',mode:'no-cors',cache:'no-store',credentials:'omit',
+        body:JSON.stringify({p:'eif',s:r.lic.sn,i:r.id,d:dev,k:d.k,o:d.o,m:String(d.m).slice(0,40),b:d.b,z:tz(),f:location.protocol==='file:'?1:0})})
+        .then(()=>{try{localStorage.setItem(fk,r.id)}catch(e){}},()=>{}))
+    }catch(e){}},4000)}
   /* deriving the keys is slow on purpose (it is what makes guessing codes impractical), so let the page paint first */
   function unlock(code,quiet){say('جارٍ فتح الحزمة…');$('go').disabled=true;
     setTimeout(async()=>{let r=null,net=false;try{r=await tryCode(code)}catch(e){net=true}
       $('go').disabled=false;
-      if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw()}
+      if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw();report(r)}
       else if(net)say('تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.','bad');
       else if(quiet){delete st.code;save();say('')}
       else say('الرمز غير صحيح. تأكدوا من كتابته كما وصلكم، أو تواصلوا معنا.','bad')},30)}
@@ -320,7 +348,11 @@ const RL=(()=>{
     $('frame').srcdoc='';const p=$('player');p.classList.remove('on','side');p.style.cssText='';document.documentElement.style.overflow='';cur=null;draw()};
 
   $('ph').onclick=()=>$('two').classList.toggle('on');
-  $('call').href=$('cCall').href='tel:+96895153392';$('ig').href=$('cIg').href='https://www.instagram.com/nizwadeveloper/';
+  /* the number for paying by transfer: copied, since it is not the one to call */
+  document.querySelectorAll('.xferCopy').forEach(b=>b.onclick=()=>{const t=b.innerHTML;
+    const done=ok=>{b.textContent=ok?'✅ نُسخ رقم التحويل':'95153392';setTimeout(()=>{b.innerHTML=t},2000)};
+    try{navigator.clipboard.writeText('95153392').then(()=>done(true),()=>done(false))}catch(e){done(false)}});
+  $('call').href=$('cCall').href='tel:+96897247727';$('ig').href=$('cIg').href='https://www.instagram.com/nizwadeveloper/';
   /* the logo opens the developer card; its last button hands over the whole app as one file */
   $('logoB').onclick=()=>$('card').classList.add('on');$('cX').onclick=()=>$('card').classList.remove('on');
   $('card').onclick=e=>{if(e.target===$('card'))$('card').classList.remove('on')};

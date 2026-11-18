@@ -1,6 +1,6 @@
 /* Service worker of the web app: keeps every file on the device so the app opens with no connection.
    The cache name changes whenever any file changes (tools/web.mjs writes the version), which replaces the old copy. */
-const C = 'rl-da940c1d80', FONTS = 'rlfonts';
+const C = 'rl-88f73785d0', FONTS = 'rlfonts';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'logo.webp', 'u1.html', 'u2.bin', 'u3.bin', 'u4.bin', 'u5.bin', 'English-is-fun.html',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(C).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
