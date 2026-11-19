@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light only">
-<title>English is fun · حزمة الفصل</title>
+<title>English is fun · الباقة الكاملة</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#23314f">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -33,6 +33,7 @@ header img{width:84px;height:84px;border-radius:20px;display:block;box-shadow:0 
 #card{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(14,22,38,.72);overflow:auto}
 #card.on{display:flex}
 #card .in{width:min(440px,100%);margin:auto;background:#fff;border:5px solid var(--ink);border-radius:28px;padding:18px;text-align:center;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.price{margin:12px 0 6px;padding:10px 12px;border:3px dashed #e8590c;border-radius:16px;background:#fff4e6;font-weight:800;font-size:17px;line-height:1.7;color:#23314f}.price span{display:block;font-size:14px;color:#c92a2a}.price s{opacity:.6;font-weight:600}.price b{font-size:22px;color:#c92a2a;white-space:nowrap}
 #card .in img{width:min(230px,58vw);height:auto;border-radius:24px;display:block;margin:0 auto}
 #card h2{font-size:24px;font-weight:800;margin-top:10px;line-height:1.3}
 #card p{font-size:15px;color:#4b5873;margin-top:6px}
@@ -105,7 +106,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
 <main>
   <header>
     <button class="logo" id="logoB" aria-label="Hamza — Nizwa Developer: التواصل وحفظ التطبيق"><img src="logo.webp" alt="Hamza — Nizwa Developer"></button>
-    <h1><span class="en">English is fun</span><small>حزمة الفصل · الوحدات من ١ إلى ٥ · الصف الأول · <span class="en">Cambridge Primary International English 1</span></small></h1>
+    <h1><span class="en">English is fun</span><small>الباقة الكاملة · الوحدات من ١ إلى ٩ · الصف الأول · <span class="en">Cambridge Primary International English 1</span></small></h1>
   </header>
   <div class="lic" id="lic"></div>
   <div class="prog"><span id="progT"></span><div class="bar"><i id="progB" style="width:0"></i></div></div>
@@ -118,7 +119,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
   </section>
 
   <section class="box" id="act">
-    <h2>🔑 تفعيل الوحدات من ٢ إلى ٥</h2>
+    <h2>🔑 تفعيل الوحدات من ٢ إلى ٩</h2>
     <p>الوحدة الأولى مجانية. اكتبوا رمز التفعيل الذي وصلكم بعد الشراء لفتح بقية الوحدات. يُحفظ الرمز على هذا الجهاز فلا تحتاجون لكتابته مرة أخرى.</p>
     <div class="row"><input id="code" placeholder="NIZ-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" aria-label="رمز التفعيل"><button class="btn go" id="go">تفعيل</button></div>
     <div class="msg" id="msg" role="status"></div>
@@ -130,6 +131,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
     <p><span class="en">Hamza · Nizwadeveloper</span></p>
     <div class="row"><button class="btn" id="ph">📞 <span class="en">97247727</span></button><a class="btn ig" id="ig" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a></div>
     <div class="row" id="two"><a class="btn call" id="call">📞 اتصال</a><a class="btn wa" id="wa" target="_blank" rel="noopener">💬 رسالة واتساب</a></div>
+    <p class="price"><span>🎉 عرض اليوم الوطني العُماني</span>سعر الباقة (الوحدات ١–٩): <s>١٤ ريالًا</s> <b>٥ ريالات</b></p>
     <p style="margin:10px 0 0">💳 التحويل: <b class="en" style="font-size:22px;font-weight:800">95153392</b> <button class="btn xferCopy" type="button" style="padding:4px 12px;font-size:14px">📋 نسخ الرقم</button></p>
   </section>
 
@@ -147,6 +149,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
   <a class="btn call" id="cCall">📞 اتصال <span class="en">97247727</span></a>
   <a class="btn wa" id="cWa" target="_blank" rel="noopener">💬 رسالة واتساب</a>
   <a class="btn ig" id="cIg" target="_blank" rel="noopener">📷 <span class="en">@nizwadeveloper</span></a>
+  <p class="price"><span>🎉 عرض اليوم الوطني العُماني</span>سعر الباقة (الوحدات ١–٩): <s>١٤ ريالًا</s> <b>٥ ريالات</b></p>
   <button class="btn xferCopy" type="button" style="white-space:nowrap" aria-label="نسخ رقم التحويل 95153392">💳 التحويل: <span class="en">95153392</span></button>
   <button class="btn go" id="cApp">⬇️ حفظ التطبيق كملف كامل</button>
   <button class="btn" id="cFile" style="display:none">⬇️ حفظ التطبيق كملف كامل</button>
@@ -156,7 +159,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
 
 <div id="player"><div id="strip"><button id="back">➡ القائمة</button><span id="ptitle" class="en"></span><span class="who" id="pwho"></span></div><iframe id="frame" allowfullscreen title="الوحدة"></iframe></div>
 
-<script type="application/json" id="vault">{"v":2,"web":1,"alg":"AES-256-CTR + HMAC-SHA256, key: PBKDF2-HMAC-SHA256","salt":"LtjSlvpumNbQo5tibr3rlA==","iter":300000,"meta":[{"n":1,"title":"School","ar":"المدرسة","icon":"🏫","slides":42,"stars":168},{"n":2,"title":"Home","ar":"البيت","icon":"🏠","slides":49,"stars":189},{"n":3,"title":"All about me","ar":"كل شيء عنّي","icon":"🙋","slides":51,"stars":191},{"n":4,"title":"Move it!","ar":"هيّا نتحرّك","icon":"🤸","slides":50,"stars":199},{"n":5,"title":"Things I know","ar":"أشياء أعرفها","icon":"🔢","slides":54,"stars":207}],"free":"u1.html","units":[{"u":2,"src":"u2.bin","n":"4KO4QHvYpxgZgJtt","t":"PcseiA+TSq0s4C8fr1diLA=="},{"u":3,"src":"u3.bin","n":"8EaGz0zFenuvJwW2","t":"lB0sPnlH6ZVTauiMAQ8W7Q=="},{"u":4,"src":"u4.bin","n":"lfVbTrBJQa2cxhnh","t":"41NyurAtbrq6I8/94qNa+g=="},{"u":5,"src":"u5.bin","n":"x9NP/1wkI5cnsdlc","t":"uiBIYpxMTTmR3pif7x7kow=="}],"file":"English-is-fun.html"}</script>
+<script type="application/json" id="vault">{"v":2,"web":1,"alg":"AES-256-CTR + HMAC-SHA256, key: PBKDF2-HMAC-SHA256","salt":"LtjSlvpumNbQo5tibr3rlA==","iter":300000,"meta":[{"n":1,"title":"School","ar":"المدرسة","icon":"🏫","slides":42,"stars":168},{"n":2,"title":"Home","ar":"البيت","icon":"🏠","slides":49,"stars":189},{"n":3,"title":"All about me","ar":"كل شيء عنّي","icon":"🙋","slides":51,"stars":191},{"n":4,"title":"Move it!","ar":"هيّا نتحرّك","icon":"🤸","slides":50,"stars":199},{"n":5,"title":"Things I know","ar":"أشياء أعرفها","icon":"🔢","slides":54,"stars":207},{"n":6,"title":"Time","ar":"الوقت","icon":"⏰","slides":63,"stars":238},{"n":7,"title":"Seasons","ar":"الفصول","icon":"🍂","slides":64,"stars":238},{"n":8,"title":"Animals","ar":"الحيوانات","icon":"🐄","slides":59,"stars":239},{"n":9,"title":"Let's celebrate","ar":"هيّا نحتفل","icon":"🎉","slides":60,"stars":247}],"free":"u1.html","units":[{"u":2,"src":"u2.bin","n":"4KO4QHvYpxgZgJtt","t":"PcseiA+TSq0s4C8fr1diLA=="},{"u":3,"src":"u3.bin","n":"8EaGz0zFenuvJwW2","t":"lB0sPnlH6ZVTauiMAQ8W7Q=="},{"u":4,"src":"u4.bin","n":"lfVbTrBJQa2cxhnh","t":"41NyurAtbrq6I8/94qNa+g=="},{"u":5,"src":"u5.bin","n":"x9NP/1wkI5cnsdlc","t":"uiBIYpxMTTmR3pif7x7kow=="},{"u":6,"src":"u6.bin","n":"i/ACTOV8nbcHIUxO","t":"ceMFT9+QYxDjhDlVXfScDg=="},{"u":7,"src":"u7.bin","n":"ZLc4a3/hgKPtsHyx","t":"NzCIAE14JDUPkSvKOuxhxg=="},{"u":8,"src":"u8.bin","n":"1aMAFND/P0neUJko","t":"Tmzzy0J5tDktdLmat7FuFg=="},{"u":9,"src":"u9.bin","n":"V3+sKe+/Hb9g0fMd","t":"zzM/vJjCSWpPFfaueFJu1w=="}],"file":"English-is-fun.html"}</script>
 <script>
 /* RL — small, dependency-free crypto used by the bundle, identical in the browser and in Node.
    Written in plain JS (not WebCrypto) because the file must also unlock when opened from WhatsApp or a
@@ -269,7 +272,7 @@ const RL=(()=>{
     $('lic').innerHTML=lic?`✅ نسخة مرخّصة لـ <b>${esc(lic.name)}</b> — ${num}. هذه النسخة خاصة بكم وغير مخصّصة لإعادة الإرسال.`:`${num?num+' — ':''}الوحدة الأولى مفتوحة للتجربة، وبقية الوحدات تُفتح برمز التفعيل.`;
     $('act').style.display=keys?'none':'';
     const tail=sn()?`\nرقم النسخة: ${sn()}`:'';
-    const txt=keys?`السلام عليكم ورحمة الله وبركاته،\nلديّ استفسار عن حزمة «English is fun» للصف الأول.${tail}`:`السلام عليكم ورحمة الله وبركاته،\nجرّبتُ الوحدة الأولى من «English is fun» وأرغب في رمز تفعيل حزمة الفصل (الوحدات من ١ إلى ٥).${tail}`;
+    const txt=keys?`السلام عليكم ورحمة الله وبركاته،\nلديّ استفسار عن حزمة «English is fun» للصف الأول.${tail}`:`السلام عليكم ورحمة الله وبركاته،\nجرّبتُ الوحدة الأولى من «English is fun» وأرغب في رمز تفعيل الباقة الكاملة (الوحدات من ١ إلى ٩).${tail}`;
     $('wa').href=$('cWa').href='https://wa.me/96897247727?text='+encodeURIComponent(txt);
   }
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
