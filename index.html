@@ -829,11 +829,28 @@ const FAM=(()=>{
         body:JSON.stringify({p:'eif',s:r.lic.sn,i:r.id,d:dev,k:d.k,o:d.o,m:String(d.m).slice(0,40),b:d.b,z:tz(),f:location.protocol==='file:'?1:0})})
         .then(()=>{try{localStorage.setItem(fk,r.id)}catch(e){}},()=>{}))
     }catch(e){}},4000)}
+  /* One device per code (web app with the Firebase project only). The first device that activates a code takes its
+     seat on the server (families/<family id>/dev/c holds that device's random number); the rules let nobody replace
+     it. 'ok' this device holds the seat, 'taken' another one does, 'net' the server could not be asked. */
+  const SEATS=WEB&&V.fam&&typeof FSL==='function'&&window.fetch?FSL(V.fam):null;
+  const devId=()=>{let d=localStorage.getItem('epa-device');if(!/^[0-9a-f]{16}$/.test(d||'')){d=hex(crypto.getRandomValues(new Uint8Array(8)));localStorage.setItem('epa-device',d)}return d};
+  async function seat(fam){if(!SEATS)return'ok';
+    try{const me=devId(),p='families/'+fam+'/dev/c';let d=await SEATS.get(p);
+      if(!d){try{await SEATS.set(p,{d:me,t:Date.now()})}catch(e){if(e.status!==403)throw e}d=await SEATS.get(p)}
+      return d&&d.d===me?'ok':d?'taken':'net'}catch(e){return'net'}}
+  const TAKEN='هذا الرمز مفعَّل على جهاز آخر. الرمز الواحد يعمل على جهاز واحد فقط. لنقله إلى هذا الجهاز تواصلوا معنا على واتساب 97247727.';
+  function lockOut(){keys=null;lic=null;delete st.code;save();FAM.unlink();if(!cur)draw();say(TAKEN,'bad')}
   /* deriving the keys is slow on purpose (it is what makes guessing codes impractical), so let the page paint first */
   function unlock(code,quiet){say('جارٍ فتح الحزمة…');$('go').disabled=true;
-    setTimeout(async()=>{let r=null,net=false;try{r=await tryCode(code)}catch(e){net=true}
+    setTimeout(async()=>{let r=null,net=false,s='ok';try{r=await tryCode(code)}catch(e){net=true}
+      /* a code typed now must take its seat first. A code this device already keeps opens at once (also with no
+         connection) and the seat is checked behind it: if another device holds it, this one is locked again. */
+      if(r&&!quiet)s=await seat(r.fam);
       $('go').disabled=false;settled=true;
-      if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw();report(r);FAM.link(r.fam)}
+      if(r&&s==='taken'){lockOut()}
+      else if(r&&s==='net')say('يلزم الاتصال بالإنترنت لإتمام التفعيل أول مرة. تأكدوا من الاتصال ثم أعيدوا المحاولة.','bad');
+      else if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw();report(r);FAM.link(r.fam);
+        if(quiet)seat(r.fam).then(x=>{if(x==='taken')lockOut()})}
       else if(net)say('تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.','bad');
       else if(quiet){delete st.code;save();say('');FAM.unlink()}
       else say('الرمز غير صحيح. تأكدوا من كتابته كما وصلكم، أو تواصلوا معنا.','bad');

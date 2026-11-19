@@ -342,9 +342,22 @@ const FSL=cfg=>{
   pins.forEach((el,i)=>{el.oninput=()=>{el.value=el.value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'').slice(0,1);if(el.value&&pins[i+1])pins[i+1].focus()};
     el.onkeydown=e=>{if(e.key==='Backspace'&&!el.value&&pins[i-1])pins[i-1].focus();if(e.key==='Enter')$('pinGo').click()}});
   const pinMsg=(t,bad)=>{$('pinMsg').className='msg'+(bad?' bad':'');$('pinMsg').textContent=t};
+  /* Two devices per code for this page: each takes one of two seats on the server (families/<id>/dev/p1 and p2 hold
+     the device's random number; the rules let nobody replace a taken seat). True when this device holds one. */
+  async function pseat(){let d=localStorage.getItem('rl-parent-dev');
+    if(!/^[0-9a-f]{16}$/.test(d||'')){d=hex(crypto.getRandomValues(new Uint8Array(8)));localStorage.setItem('rl-parent-dev',d)}
+    const P=k=>'families/'+me.fid+'/dev/'+k,now=[await api.get(P('p1')),await api.get(P('p2'))];
+    if(now.some(x=>x&&x.d===d))return true;
+    for(const k of ['p1','p2']){if(now[k==='p1'?0:1])continue;
+      try{await api.set(P(k),{d,t:Date.now()})}catch(e){if(e.status!==403)throw e}
+      const x=await api.get(P(k));if(x&&x.d===d)return true}
+    return false}
   /* reset = the code was just typed again after «نسيتُ الرقم السري», so a new number may replace the old one */
   async function openFamily(reset){show('s_pin');pins.forEach(p=>p.value='');pinMsg('جارٍ الاتصال…');$('pinGo').disabled=true;$('pinForgot').hidden=true;
-    try{fam=await api.get('families/'+me.fid)}catch(e){pinMsg('تعذّر الاتصال بالخادم. تأكدوا من الإنترنت ثم أعيدوا تحميل الصفحة.',true);return}
+    let seated=false;
+    try{seated=await pseat();if(seated)fam=await api.get('families/'+me.fid)}catch(e){pinMsg('تعذّر الاتصال بالخادم. تأكدوا من الإنترنت ثم أعيدوا تحميل الصفحة.',true);return}
+    if(!seated){me=null;keep();newPin=false;show('s_code');$('codeMsg').className='msg bad';
+      $('codeMsg').textContent='صفحة وليّ الأمر لهذا الرمز مفتوحة على جهازين بالفعل، وهو العدد المسموح. لاستعمالها على هذا الجهاز تواصلوا معنا على واتساب 97247727.';return}
     $('pinGo').disabled=false;pinMsg('');newPin=!fam||!fam.pin||!!reset;
     $('pinH').textContent=newPin?'🔒 اختاروا رقمًا سريًّا':'🔒 الرقم السري';
     $('pinT').textContent=newPin?'أربعة أرقام تعرفونها أنتم فقط. تُطلب عند فتح هذه الصفحة حتى لا يغيّر الطفل الهدف بنفسه.':'اكتبوا الأرقام الأربعة التي اخترتموها.';
