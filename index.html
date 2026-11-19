@@ -666,12 +666,17 @@ const FAM=(()=>{
   const has=n=>s().act&&s().act[n];
   /* stars won per slide of unit n, from the star keys the medals already keep ("s12" or "s12-3" belong to slide 12) */
   const cmap=n=>{const o={};for(const k of (s().won&&s().won[n])||[]){const m=/^s(\d+)/.exec(k);if(m)o[m[1]]=(o[m[1]]||0)+1}return o};
-  const acts=()=>{const o={};for(const u of C.meta){const a=has(u.n);if(a)o[u.n]={seen:a.seen.slice(0,80),wr:a.wr,c:cmap(u.n),t:a.t|0}}return o};
+  /* a unit the child worked on before the parent linked has no record of slides, tries or time, but the star keys
+     the medals keep still say which activities were answered: send those, so the parent sees strong and weak skills */
+  const acts=()=>{const o={};for(const u of C.meta){const a=has(u.n),c=cmap(u.n);
+    if(a)o[u.n]={seen:a.seen.slice(0,80),wr:a.wr,c,t:a.t|0};else if(Object.keys(c).length)o[u.n]={seen:[],wr:{},c,t:0}}return o};
   const dayRow=n=>{const d=today(),L=s().log||(s().log=[]);let r=L[L.length-1];if(!r||r.d!==d){r={d,u:{}};L.push(r);if(L.length>30)L.splice(0,L.length-30)}return r.u[n]||(r.u[n]={t:0,sl:0,k:0,w:0})};
   const sig=()=>JSON.stringify([stars(),medals(),String(s().name||''),C.meta.map(u=>{const a=has(u.n);return a?[a.seen.length,Object.values(a.wr).reduce((x,y)=>x+y,0),Math.floor(a.t/60)]:0})]);
 
   function init(c){C=c;if(!c.cfg||typeof FSL!=='function'||!window.fetch)return;api=FSL(c.cfg);
     if(!/^[0-9a-f]{16}$/.test(s().cid||'')){s().cid=Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>x.toString(16).padStart(2,'0')).join('');C.save()}
+    /* what is sent grew (units done before the link): send once more from devices that are already linked */
+    if(s().fv!==2){s().fv=2;s().fq=1;C.save()}
     if(s().code&&ID.test(s().fid||''))fid=s().fid;
     addEventListener('online',()=>tick());document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
     setInterval(()=>tick(),60000);setTimeout(()=>tick(),1500)}

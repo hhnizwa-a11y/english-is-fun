@@ -414,15 +414,20 @@ const FSL=cfg=>{
   function unitBody(c,u,done){const a=act(c,u.n),R=rows(c,u.n),b=stars(c,u),nd=need(u),sc=R.filter(r=>r.m>0),seen=seenN(c,u.n),w=sumW(a);
     const tried=sc.filter(r=>r.seen||r.c>0),full=sc.filter(r=>r.c>=r.m),clean=full.filter(r=>!r.w).length,after=full.length-clean,part=tried.length-full.length;
     const f=(ic,t)=>`<div class="fact"><span>${ic}</span><div>${t}</div></div>`;
+    /* pre: worked on before the link and not opened since: which activities were answered is known, slides, tries and time are not */
+    const pre=!!a&&!(a.seen||[]).length&&!(a.t|0),known=sc.reduce((s,r)=>s+r.c,0);
     let h='<div class="ubody">';
-    h+=f('🖼️',`<b>الشرائح:</b> شاهد ${AR(seen)} من ${AR(u.slides)} · بقي ${AR(u.slides-seen)}`);
+    h+=f('🖼️',pre?`<b>الشرائح:</b> عدّ الشرائح يبدأ من أول مرة يفتح فيها الوحدة بعد ربط صفحتكم`:`<b>الشرائح:</b> شاهد ${AR(seen)} من ${AR(u.slides)} · بقي ${AR(u.slides-seen)}`);
     h+=f('❓',`<b>الأسئلة والأنشطة:</b> أنجز ${AR(b)} من ${AR(u.stars)} · بقي ${AR(u.stars-b)}<small>كل سؤال أو مهمة بنجمة، والنجمة تُمنح للإجابة الصحيحة من أول محاولة.</small>`);
     h+=f('🏅',done?'<b>الميدالية:</b> نالها ✅':`<b>الميدالية:</b> بقي ${AR(Math.max(0,nd-b))} نجمة (تُمنح عند ${AR(nd)} من ${AR(u.stars)})`);
-    if(!a)h+=f('ℹ️','تفاصيل الشرائح والمحاولات والوقت تُسجَّل من أول مرة يفتح فيها الطفل هذه الوحدة بعد ربط صفحتكم. ما أنجزه قبل ذلك يظهر نجومًا فقط.');
+    if(!a)h+=f('ℹ️',b?'هذه النجوم جُمعت قبل أن يبدأ التطبيق بتسجيل التفاصيل، فلا يُعرف من أي الأنشطة جاءت. لتظهر نقاط القوة والضعف: ليفتح الطفل هذه الوحدة ويُعِد أنشطتها، فتُسجَّل نشاطًا نشاطًا.':'لم يبدأ الطفل هذه الوحدة بعد. تظهر التفاصيل هنا حين يفتحها.');
     else{
-      h+=f('🎯',`<b>من كم محاولة؟</b> أتقن ${AR(clean)} نشاطًا من أول محاولة، و${AR(after)} بعد إعادة المحاولة، و${AR(part)} لم يكتمل بعد، و${AR(sc.length-tried.length)} لم يبدأه. <small>من ${AR(sc.length)} نشاطًا فيه أسئلة.</small>`);
-      h+=f('✖️',`<b>المحاولات الخاطئة:</b> ${AR(w)}${full.length?` · بمعدل ${AR((w/Math.max(1,tried.length)).toFixed(1))} لكل نشاط جرّبه`:''}`);
-      h+=f('⏱️',`<b>الوقت في الوحدة:</b> ${mins(a.t|0)}`);
+      if(pre)h+=f('🎯',`<b>الأنشطة:</b> أتمّ ${AR(full.length)} نشاطًا، و${AR(part)} لم يكتمل بعد، و${AR(sc.length-tried.length)} بلا نجوم بعد. <small>من ${AR(sc.length)} نشاطًا فيه أسئلة.</small>`)
+        +(known<b?f('ℹ️',`${AR(b-known)} نجمة من نجومه جُمعت قبل أن يبدأ التطبيق بتسجيل التفاصيل، فلا تدخل في التحليل أدناه.`):'');
+      else h+=f('🎯',`<b>من كم محاولة؟</b> أتقن ${AR(clean)} نشاطًا من أول محاولة، و${AR(after)} بعد إعادة المحاولة، و${AR(part)} لم يكتمل بعد، و${AR(sc.length-tried.length)} لم يبدأه. <small>من ${AR(sc.length)} نشاطًا فيه أسئلة.</small>`);
+      if(!pre)h+=f('✖️',`<b>المحاولات الخاطئة:</b> ${AR(w)}${full.length?` · بمعدل ${AR((w/Math.max(1,tried.length)).toFixed(1))} لكل نشاط جرّبه`:''}`);
+      if(!pre)h+=f('⏱️',`<b>الوقت في الوحدة:</b> ${mins(a.t|0)}`);
+      else h+=f('ℹ️','هذا مما أنجزه قبل ربط صفحتكم. المحاولات الخاطئة والوقت وعدّ الشرائح تُسجَّل من أول مرة يفتح فيها هذه الوحدة بعد الربط.');
       /* the three lessons of the unit */
       const P=INFO[u.n].parts||{};
       h+='<div class="parts">'+Object.keys(P).map(k=>{const x=sc.filter(r=>r.p===k),g=x.reduce((s,r)=>s+r.c,0),m=x.reduce((s,r)=>s+r.m,0);
@@ -437,7 +442,7 @@ const FSL=cfg=>{
       const again=tried.filter(r=>r.c<r.m||r.w>=2).sort((x,y)=>y.w-x.w||x.c/x.m-y.c/y.m).slice(0,4);
       if(again.length)h+=f('🔁','<b>أنشطة تستحق الإعادة معه:</b><ul>'+again.map(r=>`<li>الشريحة ${AR(r.i+1)} <span class="en">${esc(r.t)}</span> — ⭐ ${AR(r.c)}/${AR(r.m)}${r.w?' · ✖ '+AR(r.w):''}</li>`).join('')+'</ul>');
       h+=`<details class="all" id="da${u.n}"><summary>كل شرائح الوحدة (${AR(R.length)})</summary><div class="tw"><table><thead><tr><th>#</th><th>الشريحة</th><th>⭐</th><th>✖</th><th>الحالة</th></tr></thead><tbody>`
-        +R.map(r=>`<tr class="${r.seen?'':'un'}"><td>${AR(r.i+1)}</td><td class="en">${esc(r.t)}</td><td>${r.m?AR(r.c)+'/'+AR(r.m):'—'}</td><td>${r.w?AR(r.w):'—'}</td><td>${!r.seen&&!r.c?'لم يفتحها':!r.m?'شاهدها':r.c>=r.m?(r.w?'أتقنها بعد محاولات':'أتقنها من أول محاولة'):r.c?'جزئي':'لم يُجب بعد'}</td></tr>`).join('')+'</tbody></table></div></details>'}
+        +R.map(r=>`<tr class="${r.seen?'':'un'}"><td>${AR(r.i+1)}</td><td class="en">${esc(r.t)}</td><td>${r.m?AR(r.c)+'/'+AR(r.m):'—'}</td><td>${r.w?AR(r.w):'—'}</td><td>${!r.seen&&!r.c?(pre?'—':'لم يفتحها'):!r.m?'شاهدها':r.c>=r.m?(r.w?'أتقنها بعد محاولات':r.seen?'أتقنها من أول محاولة':'أتمّها'):r.c?'جزئي':'لم يُجب بعد'}</td></tr>`).join('')+'</tbody></table></div></details>'}
     return h+'</div>'}
 
   /* the last study days, newest first */
