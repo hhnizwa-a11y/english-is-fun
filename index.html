@@ -100,6 +100,143 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
 #player.side #strip{writing-mode:vertical-rl;width:42px;height:auto;padding:10px 0}
 #player.side #strip button{padding:16px 3px}
 #player.side #frame{height:100%}
+/* ===== Medals: a coin with real thickness (CSS 3D, no WebGL), the celebration, the viewer and the museum =====
+   The face of each coin is the owner's medal picture; the rim and the engraved back are built here. */
+.musb{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:10px 16px;border:4px solid #c9a227;border-radius:20px;cursor:pointer;font:inherit;color:#fff;text-align:start;
+  background:linear-gradient(135deg,#14224a,#0d1733);box-shadow:0 7px 0 rgba(35,49,79,.2)}
+.musb:active{transform:translateY(3px)}
+.musb .mi{flex:none;font-size:38px;line-height:1}
+.musb b{display:block;font-size:20px;font-weight:800;line-height:1.4;color:#ffd76a}
+.musb small{display:block;font-size:15px;font-weight:700;line-height:1.5;color:#dfe6fb}
+.musb .mbar{flex:none;width:86px;height:14px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;direction:ltr}
+.musb .mbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd76a,#ff9d3d);border-radius:99px}
+.unit .md{position:absolute;inset-inline-end:8px;bottom:6px;width:64px;height:64px}
+.unit .md img{width:100%;height:100%;display:block;object-fit:contain;filter:grayscale(1) contrast(1.05);opacity:.75}
+.unit .md.on img{filter:drop-shadow(0 0 6px rgba(255,190,40,.95));opacity:1}
+.unit .md .lk{position:absolute;inset-inline-end:-2px;bottom:-2px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #8d99b5;display:flex;align-items:center;justify-content:center;font-size:12px}
+.unit .md.on .lk{display:none}
+.unit .m{padding-inline-end:66px}
+@media (max-width:599px){.unit .md{width:54px;height:54px}}
+
+/* ---- the medal as a solid object ---- */
+.cstage{perspective:1100px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none}
+.coin{--s:280px;--t:14px;--rx:0deg;--ry:0deg;--z:1;--sh:50;position:relative;width:var(--s);height:var(--s);transform-style:preserve-3d;transform:scale(var(--z)) rotateX(var(--rx)) rotateY(var(--ry));will-change:transform}
+.coin>*{position:absolute;inset:0;width:100%;height:100%}
+.coin img{object-fit:contain;display:block;-webkit-user-drag:none;pointer-events:none}
+/* the body between the two faces: the picture again and again, as dark gold */
+.coin .edge{filter:brightness(.6) sepia(1) saturate(2.4) hue-rotate(-14deg)}
+.coin.dia .edge{filter:brightness(.82) sepia(.5) saturate(.9) hue-rotate(170deg)}
+.coin .f,.coin .b,.coin .shn{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.coin .f{transform:translateZ(calc(var(--t)/2 + .6px))}
+.coin .b{transform:rotateY(180deg) translateZ(calc(var(--t)/2 + .6px))}
+/* the back: the same outline as a gold relief, with an engraved plaque set into it */
+.coin .b .bk{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1);filter:grayscale(1) sepia(1) saturate(2.6) hue-rotate(-10deg) brightness(.86) contrast(.85)}
+.coin.dia .b .bk{filter:grayscale(1) sepia(.6) saturate(1.2) hue-rotate(175deg) brightness(.95) contrast(.85)}
+.coin .b .plq{position:absolute;left:21%;top:23%;width:58%;height:58%}
+/* a band of light that crosses the face as the medal turns, kept inside the medal's outline */
+.coin .shn{transform:translateZ(calc(var(--t)/2 + 1.2px));pointer-events:none;mix-blend-mode:screen;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
+  background:linear-gradient(105deg,transparent 36%,rgba(255,255,255,.6) 50%,transparent 64%);background-size:300% 100%;background-position:calc(var(--sh)*1%) 0}
+.coin .fb,.flat .fb{display:none;align-items:center;justify-content:center;font-size:calc(var(--s)*.45);border-radius:50%;background:radial-gradient(#ffe9a8,#c9a227)}
+.coin.noimg img,.coin.noimg .b,.coin.noimg .shn{display:none}.coin.noimg .fb{display:flex}
+/* not earned yet: one flat picture in black and white */
+.flat{--s:280px;position:relative;width:var(--s);height:var(--s)}
+.flat img{width:100%;height:100%;display:block;object-fit:contain;filter:grayscale(1) contrast(1.08);opacity:.85;-webkit-user-drag:none}
+.flat .fb{position:absolute;inset:0;filter:grayscale(1)}.flat.noimg img{display:none}.flat.noimg .fb{display:flex}
+.flat .lkb{position:absolute;inset-inline-end:12%;bottom:8%;width:calc(var(--s)*.2);height:calc(var(--s)*.2);border-radius:50%;background:#fff;border:3px solid #8d99b5;display:flex;align-items:center;justify-content:center;font-size:calc(var(--s)*.1);box-shadow:0 4px 0 rgba(0,0,0,.25)}
+
+/* ---- shared overlay parts ---- */
+.mov{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;font-family:"Baloo 2","Baloo Bhaijaan 2",system-ui,sans-serif;color:#fff;overflow:auto;-webkit-overflow-scrolling:touch}
+.mov.on{display:flex}
+.mbtn{min-height:48px;border:3px solid #c9a227;border-radius:16px;background:#14224a;color:#fff;font:inherit;font-weight:800;font-size:17px;padding:6px 18px;cursor:pointer;line-height:1.5}
+.mbtn:active{transform:translateY(2px)}
+.mbtn.gold{background:linear-gradient(#ffd76a,#f2a62b);color:#23314f;border-color:#fff3c4}
+.mbtn.x{min-width:48px;padding:6px 12px}
+.mbtn[aria-pressed=true]{background:#c9a227;color:#14224a}
+
+/* ---- museum ---- */
+#mus{z-index:70;background:#0c1634;
+  background-image:radial-gradient(ellipse at 50% -10%,rgba(255,215,106,.22),transparent 55%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72'%3E%3Cg fill='none' stroke='%23c9a227' stroke-opacity='.16' stroke-width='1.2'%3E%3Cpath d='M36 6l9 21 21 9-21 9-9 21-9-21-21-9 21-9z'/%3E%3Crect x='21' y='21' width='30' height='30' transform='rotate(45 36 36)'/%3E%3C/g%3E%3C/svg%3E")}
+#mus .top{position:sticky;top:0;z-index:2;width:100%;display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(12,22,52,.92);border-bottom:3px solid #c9a227}
+#mus .top h2{flex:1;font-size:22px;font-weight:800;line-height:1.3;color:#ffd76a;text-align:center}
+#mus .top h2 small{display:block;font-family:"Baloo Bhaijaan 2",sans-serif;font-size:16px;color:#dfe6fb;font-weight:700}
+#mus .arch{width:100%;max-width:980px;height:54px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='54'%3E%3Cpath d='M6 54V30Q6 6 60 2q54 4 54 28v24' fill='none' stroke='%23c9a227' stroke-width='3'/%3E%3Ccircle cx='60' cy='2' r='3' fill='%23ffd76a'/%3E%3C/svg%3E") repeat-x center/120px 54px;opacity:.8}
+#mus .count{width:min(560px,92%);margin:6px auto 0;text-align:center;font-size:20px;font-weight:800;direction:ltr}
+#mus .count .mbar{height:18px;border-radius:99px;background:rgba(255,255,255,.14);border:2px solid #c9a227;overflow:hidden;margin-top:6px}
+#mus .count .mbar i{display:block;height:100%;background:linear-gradient(90deg,#ffd76a,#ff9d3d,#9ad0ff);border-radius:99px;transition:width .6s}
+#mus .count small{display:block;font-size:15px;color:#dfe6fb;font-weight:700;margin-top:4px}
+#mus .hall{direction:ltr;width:100%;max-width:980px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px 10px;padding:18px 12px 8px}
+.ped{position:relative;border:0;background:none;color:inherit;font:inherit;cursor:pointer;padding:0 0 6px;display:flex;flex-direction:column;align-items:center;text-align:center;direction:ltr}
+.ped .ph{position:relative;width:min(100%,170px);aspect-ratio:1;z-index:1}
+.ped .ph img{width:100%;height:100%;display:block;object-fit:contain;filter:grayscale(1) contrast(1.08);opacity:.6}
+.ped .lk{position:absolute;inset-inline-end:8%;bottom:6%;width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid #8d99b5;display:flex;align-items:center;justify-content:center;font-size:17px;z-index:2}
+.ped.on .ph{animation:mbob 3.6s ease-in-out infinite}
+.ped.on .ph img{filter:drop-shadow(0 0 12px rgba(255,201,60,.95)) drop-shadow(0 6px 4px rgba(0,0,0,.45));opacity:1}
+.ped.on .lk{display:none}
+@keyframes mbob{50%{transform:translateY(-7px)}}
+.ped .base{width:84%;max-width:150px;height:16px;margin-top:2px;background:linear-gradient(#f6d87a,#8a6510);clip-path:polygon(12% 0,88% 0,100% 100%,0 100%);border-radius:2px}
+.ped .un{margin-top:6px;font-size:14px;font-weight:800;color:#ffd76a;line-height:1.4}
+.ped .nm{font-size:16px;font-weight:800;line-height:1.3}
+.ped .pl{font-family:"Baloo Bhaijaan 2",sans-serif;font-size:14px;color:#dfe6fb;line-height:1.5;direction:rtl}
+.ped.big{grid-column:1/-1;margin-top:8px}
+.ped.big .ph{width:min(64%,250px)}
+.ped.big.on .ph img{filter:drop-shadow(0 0 16px rgba(160,210,255,.95)) drop-shadow(0 6px 4px rgba(0,0,0,.45))}
+.ped.big .base{max-width:250px;width:70%;height:22px}
+.ped.big .nm{font-size:21px;color:#bfe0ff}
+#mus .foot{padding:6px 14px 26px;text-align:center;font-family:"Baloo Bhaijaan 2",sans-serif;font-size:15px;color:#dfe6fb;line-height:1.7;max-width:700px}
+@media (min-width:700px){#mus .hall{gap:26px 18px;padding-top:26px}.ped .nm{font-size:19px}#mus .top h2{font-size:28px}}
+
+/* ---- viewer (360°) ---- */
+#mview{z-index:80;background:radial-gradient(ellipse at 50% 35%,#1d2f66,#080f24 72%);justify-content:space-between}
+#mview .top{width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;gap:8px}
+#mview .ttl{flex:1;text-align:center;direction:ltr}
+#mview .ttl b{display:block;font-size:22px;font-weight:800;color:#ffd76a;line-height:1.3}
+#mview .ttl small{display:block;font-size:15px;color:#dfe6fb;line-height:1.5}
+#mview .cstage{flex:1;width:100%;min-height:300px;cursor:grab}
+#mview .cstage:active{cursor:grabbing}
+#mview .msg{min-height:30px;text-align:center;font-size:18px;font-weight:800;padding:0 14px;direction:ltr;line-height:1.5}
+#mview .msg small{display:block;font-family:"Baloo Bhaijaan 2",sans-serif;font-size:15px;color:#dfe6fb;font-weight:700;direction:rtl}
+#mview .ctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:10px 10px 18px}
+
+/* ---- celebration ---- */
+/* the finished state is the base state; the animations only say where things come from, so a browser that does not
+   run them still shows the medal */
+#mcel{z-index:90;justify-content:center;background:rgba(6,12,30,.93);animation:celbg .7s ease-out backwards;text-align:center;direction:ltr;overflow:hidden}
+@keyframes celbg{from{background:rgba(6,12,30,0)}}
+#mcel .beam{position:absolute;left:50%;top:-10%;width:min(120vw,900px);height:120%;transform:translateX(-50%);pointer-events:none;animation:beam 1.2s .3s ease-out backwards;
+  background:conic-gradient(from 180deg at 50% 0,transparent 158deg,rgba(255,215,106,.34) 172deg,rgba(255,240,190,.5) 180deg,rgba(255,215,106,.34) 188deg,transparent 202deg)}
+@keyframes beam{from{opacity:0}}
+#mcel .skip{position:absolute;top:10px;inset-inline-end:10px;z-index:3}
+#mcel .cstage{position:relative;width:100%;flex:none;cursor:pointer}
+#mcel .cf{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#mcel .rays{position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;max-width:820px;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;opacity:.5;animation:rays 26s linear infinite,beam 1.4s 2.2s ease-out backwards;
+  background:repeating-conic-gradient(rgba(255,215,106,.34) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 66%);mask:radial-gradient(circle,#000 18%,transparent 66%)}
+@keyframes rays{to{transform:translate(-50%,-50%) rotate(360deg)}}
+#mcel.dia .rays{background:repeating-conic-gradient(rgba(190,225,255,.4) 0 9deg,transparent 9deg 22deg)}
+#mcel .tap{position:relative;font-size:19px;font-weight:800;color:#ffe9a8;margin-top:2px;animation:fadeup .6s 3.2s both,tapb 1.4s 3.8s ease-in-out infinite}
+#mcel .tap.done{visibility:hidden}
+@keyframes tapb{50%{transform:translateY(-6px)}}
+#mcel .rise{transform-style:preserve-3d;animation:rise 2.4s .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{0%{transform:translateZ(-900px) scale(.08) rotateY(0);opacity:0}18%{opacity:1}100%{transform:translateZ(0) scale(1) rotateY(360deg);opacity:1}}
+#mcel .sp{position:absolute;left:50%;top:50%;font-size:22px;color:#ffe9a8;opacity:0;pointer-events:none;animation:twk 2.6s ease-in-out infinite;text-shadow:0 0 10px #ffc93c}
+@keyframes twk{0%,100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.4)}50%{opacity:1;transform:translate(var(--x),var(--y)) scale(1)}}
+#mcel .txt{position:relative;padding:0 16px;animation:fadeup .8s 2.8s both}
+#mcel h3{font-size:clamp(28px,7vw,44px);font-weight:800;color:#ffd76a;line-height:1.25}
+#mcel .who{font-size:clamp(18px,4.6vw,24px);font-weight:800;line-height:1.5}
+#mcel .won{font-size:clamp(20px,5.2vw,30px);font-weight:800;line-height:1.4}
+#mcel .won b{color:#ffd76a}
+#mcel .cheer{font-size:clamp(17px,4.4vw,22px);color:#dfe6fb;line-height:1.6}
+#mcel .sum{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+#mcel .sum span{border:2px solid #c9a227;border-radius:14px;padding:2px 14px;font-size:17px;font-weight:800;background:rgba(20,34,74,.8)}
+#mcel .acts{position:relative;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:14px 12px 0;animation:fadeup .8s 3.4s both}
+@keyframes fadeup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+#mcel.dia h3{color:#bfe0ff;text-shadow:0 0 18px rgba(154,208,255,.7)}
+#mcel.dia .beam{background:conic-gradient(from 180deg at 50% 0,transparent 150deg,rgba(154,208,255,.4) 170deg,rgba(255,255,255,.6) 180deg,rgba(154,208,255,.4) 190deg,transparent 210deg)}
+@media (prefers-reduced-motion:reduce){
+  #mcel,#mcel .beam,#mcel .txt,#mcel .acts{animation-duration:.01s;animation-delay:0s}
+  #mcel .rise{animation:none}#mcel .rays{display:none}#mcel .tap{animation:none}#mcel .sp{animation:none;opacity:.8;transform:translate(var(--x),var(--y))}
+  .ped.on .ph{animation:none}
+}
+
 </style>
 </head>
 <body>
@@ -110,6 +247,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
   </header>
   <div class="lic" id="lic"></div>
   <div class="prog"><span id="progT"></span><div class="bar"><i id="progB" style="width:0"></i></div></div>
+  <button class="musb" id="musB" type="button" aria-label="متحف إنجازاتي: My Medal Collection"></button>
   <div class="grid" id="grid"></div>
 
   <section class="box" id="inst" style="display:none">
@@ -247,6 +385,210 @@ const RL=(()=>{
 
 </script>
 <script>
+/* Medals of English is fun: one for each unit, and the diamond one for all nine.
+   - A unit's medal is earned when the child has collected 70% of the unit's stars. The decks count stars only for one
+     sitting, so this module remembers WHICH stars were won (their keys) across sittings: a first grader can finish a unit
+     over several days. Nothing in the units themselves is changed, and the stars shown stay as they were.
+   - Everything is kept in the launcher's own storage object (st), next to the licence code, in new fields only:
+     st.won {unit:[star keys]}, st.medals {unit:time}, st.seen {unit:1}, st.mute, st.name. Nothing leaves the device.
+   - An earned medal is a solid object built with CSS 3D from the owner's picture: the picture itself is stacked in layers
+     to give the medal real thickness in its own outline (ribbons, jewel and book included), with a gold relief of the same
+     outline and an engraved plaque on the back. No WebGL, no library, works offline. The art is one flat picture, so the
+     back is made here; it is not a hidden side of the artwork.
+   - A medal that is not earned yet is shown flat (2D) in black and white. */
+const MED=(()=>{'use strict';
+  /* What each medal is. The names follow the art the owner supplied (the landmark is painted on the medal itself). */
+  const M=[null,
+    {en:'Nizwa Fort',ar:'قلعة نزوى',pl:'Wilayat Nizwa',apl:'ولاية نزوى'},
+    {en:'Mutrah Corniche',ar:'كورنيش مطرح',pl:'Wilayat Mutrah',apl:'ولاية مطرح'},
+    {en:'Al Hoota Cave',ar:'كهف الهوتة',pl:'Wilayat Al Hamra',apl:'ولاية الحمراء'},
+    {en:'Sur Coast',ar:'ساحل صور',pl:'Wilayat Sur',apl:'ولاية صور'},
+    {en:'Wahiba Sands',ar:'رمال الشرقية',pl:'Wilayat Bidiyah',apl:'ولاية بدية'},
+    {en:'Bahla Fort',ar:'حصن بهلاء',pl:'Wilayat Bahla',apl:'ولاية بهلاء'},
+    {en:'Land of Frankincense',ar:'أرض اللبان',pl:'Wilayat Salalah',apl:'ولاية صلالة'},
+    {en:'Khor Rori',ar:'خور روري',pl:'Wilayat Salalah',apl:'ولاية صلالة'},
+    {en:'Al Hazm Castle',ar:'حصن الحزم',pl:'Wilayat Rustaq',apl:'ولاية الرستاق'},
+    {en:'Diamond Champion',ar:'البطل الماسي',pl:'English is Fun',apl:'الوحدات التسع كلها'}];
+  const SHARE=.7,CHEER=['Excellent!','Amazing!','Great job!','You are a star!','Fantastic!','Keep going!','You did it!'];
+  let C=null,queue=[],busy=false,uid=0,now=0;
+  const $=id=>document.getElementById(id),el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+  const calm=()=>{try{return matchMedia('(prefers-reduced-motion:reduce)').matches}catch(e){return false}};
+  const unit=n=>C.meta.find(u=>u.n===n),need=n=>Math.ceil(unit(n).stars*SHARE);
+  /* stars that count towards the medal: every different star ever won in the unit, never less than the best single sitting */
+  const have=n=>{const w=C.st.won&&C.st.won[n];return Math.min(unit(n).stars,Math.max(w?w.length:0,C.st.best[n]||0))};
+  const earned=n=>!!(C.st.medals&&C.st.medals[n]);
+  const count=()=>C.meta.filter(u=>earned(u.n)).length;
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  function init(cfg){C=cfg;const s=C.st;s.won=s.won||{};s.medals=s.medals||{};s.seen=s.seen||{}}
+
+  /* called while a unit is open: remember the keys of the stars won so far, and the name the child typed */
+  function track(win,n){try{const k=win.eval('typeof won==="object"&&won&&won.forEach?Array.from(won):[]'),nm=win.eval('typeof NAME==="string"?NAME:""');
+      let ch=false;const s=C.st,old=s.won[n]||[],set=new Set(old);
+      for(const x of k)if(typeof x==='string'&&x.length<40&&!set.has(x)&&set.size<unit(n).stars){set.add(x);ch=true}
+      if(ch)s.won[n]=[...set];
+      if(nm&&/^[A-Za-z][A-Za-z ]{0,19}$/.test(nm)&&nm!==s.name){s.name=nm;ch=true}
+      if(ch)C.save()}catch(e){}}
+
+  /* called whenever the menu is drawn: hand out what has been earned (only for units this copy has open), then celebrate */
+  function check(){if(!C||!C.ready())return;const s=C.st,fresh=[];
+    for(const u of C.meta)if(!earned(u.n)&&C.open(u.n)&&have(u.n)>=need(u.n)){s.medals[u.n]=Date.now();fresh.push(u.n)}
+    if(!earned(10)&&C.meta.every(u=>earned(u.n))){s.medals[10]=Date.now();fresh.push(10)}
+    if(fresh.length)C.save();
+    /* several at once (the first start after this update, for a child who already had stars): one celebration, for the
+       highest unit; the others are simply in the museum. The diamond always gets its own. */
+    const pend=[...C.meta.map(u=>u.n),10].filter(n=>earned(n)&&!s.seen[n]);
+    if(!pend.length)return;const dia=pend.includes(10),units=pend.filter(n=>n!==10),show=units.length?[units[units.length-1]]:[];
+    if(dia)show.push(10);
+    for(const n of pend)if(!show.includes(n))s.seen[n]=1;
+    for(const n of show)if(n!==now&&!queue.includes(n))queue.push(n);
+    C.save();next()}
+  function next(){while(queue.length&&C.st.seen[queue[0]])queue.shift();if(busy||!queue.length||C.playing())return;busy=true;now=queue.shift();celebrate(now)}
+
+  /* ---------- the coin ---------- */
+  function backSvg(n){const id='mb'+(++uid),dia=n===10,g1=dia?'#eaf4ff':'#ffe9a8',g2=dia?'#7aa5ff':'#b8860b',ink=dia?'#14224a':'#5a3d00';
+    return `<svg class="plq" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Back of the medal"><defs>
+      <radialGradient id="${id}g" cx="38%" cy="32%" r="80%"><stop offset="0" stop-color="${g1}"/><stop offset=".55" stop-color="${dia?'#cfe3ff':'#e2b93b'}"/><stop offset="1" stop-color="${g2}"/></radialGradient>
+      <path id="${id}p" d="M100 100m-74 0a74 74 0 1 1 148 0a74 74 0 1 1-148 0"/></defs>
+      <circle cx="100" cy="100" r="98" fill="url(#${id}g)" stroke="${ink}" stroke-opacity=".5" stroke-width="3"/><circle cx="100" cy="100" r="88" fill="none" stroke="${ink}" stroke-opacity=".4" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="58" fill="none" stroke="${ink}" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="2 5"/>
+      <text font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="15" fill="${ink}" letter-spacing="2.2"><textPath href="#${id}p" startOffset="0">ENGLISH IS FUN ★ GRADE 1 ★ ENGLISH IS FUN ★ GRADE 1 ★</textPath></text>
+      <text x="100" y="${dia?84:92}" text-anchor="middle" font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="${dia?22:26}" fill="${ink}">${dia?'CHAMPION':'UNIT'}</text>
+      <text x="100" y="${dia?124:136}" text-anchor="middle" font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="${dia?40:50}" fill="${ink}">${dia?'9 / 9':n}</text>
+      ${dia?'':`<text x="100" y="154" text-anchor="middle" font-family="Baloo 2,system-ui,sans-serif" font-weight="800" font-size="${M[n].en.length>14?9:11}" fill="${ink}">${esc(M[n].en.toUpperCase())}</text>`}
+      <text x="100" y="${dia?150:62}" text-anchor="middle" font-size="${dia?22:18}" fill="${ink}">★</text></svg>`}
+  function coin(n,size,locked){const big=C.src(n,false),pic=(cls,src,alt)=>{const i=new Image();i.className=cls;i.alt=alt||'';i.draggable=false;i.src=src;return i};
+    if(locked){const f=el('div','flat');f.style.setProperty('--s',size+'px');const i=pic('f',big,M[n].en+' medal, not earned yet');i.onerror=()=>f.classList.add('noimg');
+      f.append(i,el('div','fb','🏅'),el('span','lkb','🔒'));return f}
+    const c=el('div','coin'+(n===10?' dia':'')),t=Math.max(8,Math.round(size*.05)),L=7;
+    c.style.setProperty('--s',size+'px');c.style.setProperty('--t',t+'px');
+    /* the body: the same picture, dark gold, in layers from back to front */
+    for(let i=0;i<L;i++){const e=pic('edge',C.src(n,true));e.style.transform=`translateZ(${(-t/2+i*t/(L-1)).toFixed(2)}px)`;c.append(e)}
+    const f=pic('f',big,M[n].en+' medal');f.onerror=()=>c.classList.add('noimg');
+    const b=el('div','b');b.append(pic('bk',big));b.insertAdjacentHTML('beforeend',backSvg(n));
+    const sh=el('div','shn');sh.style.webkitMaskImage=sh.style.maskImage=`url("${big}")`;
+    c.append(f,b,sh,el('div','fb','🏅'));return c}
+  const pose=(c,rx,ry,z)=>{c.style.setProperty('--rx',rx.toFixed(2)+'deg');c.style.setProperty('--ry',ry.toFixed(2)+'deg');c.style.setProperty('--z',z.toFixed(3));
+    c.style.setProperty('--sh',(((ry%360)+360)%360/360*100).toFixed(1))};
+
+  /* ---------- sound ---------- */
+  function speak(t){try{if(C.st.mute||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.85;u.volume=.9;
+      const v=speechSynthesis.getVoices().find(x=>/^en[-_]US/i.test(x.lang))||speechSynthesis.getVoices().find(x=>/^en/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
+  function chime(){try{if(C.st.mute)return;const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=new A(),g=a.createGain();g.gain.value=.07;g.connect(a.destination);
+      [[523,0],[659,.16],[784,.32],[1047,.5]].forEach(([f,t])=>{const o=a.createOscillator(),e=a.createGain();o.type='sine';o.frequency.value=f;e.gain.setValueAtTime(0,a.currentTime+t);
+        e.gain.linearRampToValueAtTime(1,a.currentTime+t+.03);e.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.7);o.connect(e);e.connect(g);o.start(a.currentTime+t);o.stop(a.currentTime+t+.75)});
+      setTimeout(()=>a.close().catch(()=>{}),1800)}catch(e){}}
+  const quiet=()=>{try{speechSynthesis.cancel()}catch(e){}};
+  function muteBtn(){const b=el('button','mbtn x');b.type='button';const set=()=>{b.textContent=C.st.mute?'🔇':'🔊';b.setAttribute('aria-pressed',!!C.st.mute);b.setAttribute('aria-label',C.st.mute?'Sound is off':'Sound is on');b.title=C.st.mute?'الصوت مكتوم':'الصوت يعمل'};
+    b.onclick=()=>{C.st.mute=!C.st.mute;C.save();if(C.st.mute)quiet();set();document.querySelectorAll('.mmute').forEach(x=>x!==b&&x._set&&x._set())};b._set=set;b.classList.add('mmute');set();return b}
+
+  /* ---------- celebration ---------- */
+  /* Paper pieces and stars thrown from a point, drawn on a canvas by plain JavaScript. Calm colours, no flashing. */
+  function confetti(host){const cv=el('canvas','cf'),x=cv.getContext('2d'),P=[],dpr=Math.min(2,window.devicePixelRatio||1);let W=0,H=0;
+    const fit=()=>{W=host.clientWidth;H=host.clientHeight;cv.width=W*dpr;cv.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0)};fit();
+    const COL=['#ffd76a','#ffe9a8','#f2a62b','#db161b','#ffffff','#0b8f3c','#9ad0ff'];
+    const burst=(px,py,n,pow)=>{for(let i=0;i<n&&P.length<420;i++){const a=Math.random()*Math.PI*2,s=(.35+Math.random()*.65)*(pow||9);
+      P.push({x:px,y:py,vx:Math.cos(a)*s,vy:Math.sin(a)*s-(pow||9)*.45,r:Math.random()*6.3,vr:(Math.random()-.5)*.35,z:6+Math.random()*9,c:COL[i%COL.length],k:i%4===0?1:0,l:1})}};
+    const star=(r)=>{x.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,d=i%2?r*.45:r;x.lineTo(Math.cos(a)*d,Math.sin(a)*d)}x.closePath();x.fill()};
+    const tm=setInterval(()=>{if(cv.width!==Math.round(host.clientWidth*dpr))fit();x.clearRect(0,0,W,H);
+      for(let i=P.length-1;i>=0;i--){const p=P[i];p.vy+=.22;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;if(p.y>H*.8)p.l-=.03;if(p.l<=0||p.y>H+30){P.splice(i,1);continue}
+        x.save();x.globalAlpha=Math.max(0,p.l);x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;if(p.k)star(p.z*.8);else x.fillRect(-p.z/2,-p.z/4,p.z,p.z/2*(1+Math.sin(p.r*3)*.5));x.restore()}},16);
+    return{cv,burst,stop:()=>clearInterval(tm),count:()=>P.length}}
+  function note(f){try{if(C.st.mute)return;const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=new A(),o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,a.currentTime);g.gain.linearRampToValueAtTime(.08,a.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.5);o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.55);
+      setTimeout(()=>a.close().catch(()=>{}),800)}catch(e){}}
+  function celebrate(n){const dia=n===10,o=el('div','mov on'+(dia?' dia':''));o.id='mcel';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','You earned a medal');
+    const still=calm(),size=Math.round(Math.min(innerWidth*.68,innerHeight*.4,dia?360:320)),name=C.st.name||'',cheer=CHEER[Math.floor(Math.random()*CHEER.length)];
+    const stage=el('div','cstage'),rise=el('div','rise'),c=coin(n,size,false);pose(c,0,0,1);rise.append(c);stage.append(el('div','rays'),rise);stage.style.height=Math.round(size*1.32)+'px';
+    if(!still)for(let i=0;i<(dia?30:20);i++){const s=el('i','sp','✦'),a=i/(dia?30:20)*Math.PI*2,r=size*(.62+((i*37)%30)/100);
+      s.style.setProperty('--x',`calc(-50% + ${(Math.cos(a)*r).toFixed(0)}px)`);s.style.setProperty('--y',`calc(-50% + ${(Math.sin(a)*r*.8).toFixed(0)}px)`);s.style.animationDelay=(2.4+(i%7)*.33).toFixed(2)+'s';s.style.fontSize=(14+(i%4)*6)+'px';stage.append(s)}
+    const stars=C.meta.reduce((a,u)=>a+Math.min(C.st.best[u.n]||0,u.stars),0);
+    const txt=el('div','txt',dia?
+      `<h3>YOU DID IT!</h3>${name?`<div class="who">${esc(name)}</div>`:''}<div class="won">YOU ARE AN <b>ENGLISH CHAMPION!</b></div><div class="won">9 UNITS COMPLETED!</div>
+       <div class="sum"><span>🏅 9 medals</span><span>💎 Diamond Champion</span><span>⭐ ${stars} stars</span></div>`:
+      `<h3>Congratulations${name?', '+esc(name):''}!</h3><div class="won">You earned the <b>${esc(M[n].en)} Medal!</b></div><div class="cheer">${cheer} Keep learning!</div>`);
+    const tap=el('div','tap','👆 Tap your medal!'),acts=el('div','acts'),b1=el('button','mbtn gold','Collect My Medal'),b2=el('button','mbtn','View My Collection'),skip=el('button','mbtn skip','Skip ✕');
+    b1.type=b2.type=skip.type='button';acts.append(b1,b2);
+    const cf=still?null:confetti(o);
+    o.append(el('div','beam'));if(cf)o.append(cf.cv);o.append(skip,stage,tap,txt,acts);document.body.append(o);
+    /* the medal answers the child's finger: every tap spins it once more, throws stars from it, plays the next note of a
+       rising tune and gives a short buzz where the device has one */
+    let base=0,spinFrom=0,spinAt=-1,taps=0;const t0=performance.now(),TUNE=[523,587,659,784,880,1047],ease=k=>1-Math.pow(1-k,3);
+    const centre=()=>{const r=c.getBoundingClientRect(),h=o.getBoundingClientRect();return[r.left+r.width/2-h.left,r.top+r.height/2-h.top]};
+    const timer=setInterval(()=>{const t=performance.now();let ry=base;
+      if(spinAt>=0){const k=Math.min(1,(t-spinAt)/900);ry=spinFrom+360*ease(k);if(k>=1){base=spinFrom+360;spinAt=-1}}
+      const idle=still?0:Math.sin((t-t0)/900)*14;pose(c,still?0:Math.sin((t-t0)/1300)*5,ry+idle,spinAt>=0?1+.08*Math.sin(Math.min(1,(t-spinAt)/900)*Math.PI):1)},16);
+    stage.addEventListener('pointerdown',e=>{e.preventDefault();if(spinAt<0){spinFrom=base;spinAt=performance.now()}taps++;tap.classList.add('done');
+      note(TUNE[(taps-1)%TUNE.length]);try{navigator.vibrate&&navigator.vibrate(25)}catch(x){}
+      if(cf){const p=centre();cf.burst(p[0],p[1],dia?46:34,11)}});
+    const shows=[];
+    if(cf){const w=()=>o.clientWidth,h=()=>o.clientHeight;
+      shows.push(setTimeout(()=>{const p=centre();cf.burst(p[0],p[1],dia?90:60,13)},3000),setTimeout(()=>{cf.burst(w()*.12,h()*.3,40,10);cf.burst(w()*.88,h()*.3,40,10)},3500));
+      if(dia)for(let i=0;i<5;i++)shows.push(setTimeout(()=>cf.burst(w()*(.15+Math.random()*.7),h()*(.15+Math.random()*.3),50,11),4400+i*1300))}
+    const close=then=>{clearInterval(timer);shows.forEach(clearTimeout);if(cf)cf.stop();quiet();o.remove();C.st.seen[n]=1;C.save();busy=false;now=0;C.redraw();if(then)then();else next()};
+    b1.onclick=skip.onclick=()=>close();b2.onclick=()=>close(()=>{museum();next()});
+    o.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+    o._state=()=>({taps,spinning:spinAt>=0,base,confetti:cf?cf.count():0});
+    setTimeout(()=>{try{b1.focus({preventScroll:true})}catch(e){}},50);
+    setTimeout(()=>{if(!o.isConnected)return;chime();try{navigator.vibrate&&navigator.vibrate([30,60,30])}catch(x){}
+      setTimeout(()=>{if(o.isConnected)speak(dia?'You did it! You are an English champion!':`Congratulations! You earned the ${M[n].en} medal! ${cheer}`)},900)},still?100:2300)}
+
+  /* ---------- viewer: turn the medal all the way round ---------- */
+  function view(n){const got=earned(n),u=n===10?null:unit(n),o=el('div','mov on');o.id='mview';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label',M[n].en+' medal');
+    const top=el('div','top'),x=el('button','mbtn x','✕'),ttl=el('div','ttl',`<b>${esc(M[n].en)}${n===10?'':' Medal'}</b><small>${n===10?'English is Fun – Diamond Champion':'Unit '+n+' · '+esc(M[n].pl)}</small>`);
+    x.type='button';x.setAttribute('aria-label','Close');top.append(x,ttl,muteBtn());
+    const stage=el('div','cstage'),size=Math.round(Math.min(innerWidth*.7,innerHeight*.42,340)),c=coin(n,size,!got);stage.append(c);
+    const msg=el('div','msg'),ctl=el('div','ctl'),bA=el('button','mbtn','⟳ Auto-rotate'),bR=el('button','mbtn','↺ Reset view'),bP=el('button','mbtn','＋'),bM=el('button','mbtn','－');
+    [bA,bR,bP,bM].forEach(b=>b.type='button');bP.setAttribute('aria-label','Zoom in');bM.setAttribute('aria-label','Zoom out');ctl.append(bA,bR,bM,bP);
+    if(got)msg.innerHTML=`${n===10?'9 units completed!':'You earned this medal!'}<small>${esc(M[n].ar)} · ${esc(M[n].apl)} — اسحب لتدوير الميدالية</small>`;
+    else if(n===10)msg.innerHTML=`Collect all 9 medals to unlock the Diamond Champion!<small>🔒 اجمع الميداليات التسع لتفوز بالميدالية الماسية (${count()} من 9)</small>`;
+    else msg.innerHTML=`🔒 Complete this unit to unlock your medal!<small>${esc(M[n].ar)} · ${C.open(n)?`جمعتَ ${have(n)} نجمة من ${need(n)} مطلوبة`:'هذه الوحدة مقفلة: تُفتح برمز التفعيل'}</small>`;
+    o.append(top,stage,msg,ctl);document.body.append(o);
+    if(!got){ctl.style.display='none';stage.style.cursor='default';const close=()=>{quiet();o.remove()};x.onclick=close;o.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+      setTimeout(()=>{try{x.focus({preventScroll:true})}catch(e){}},50);return}
+    let rx=-8,ry=25,z=1,auto=!calm(),drag=null,pinch=0,last=performance.now();const pts=new Map();
+    const setA=()=>bA.setAttribute('aria-pressed',auto);setA();pose(c,rx,ry,z);
+    const timer=setInterval(()=>{const t=performance.now(),dt=Math.min(60,t-last);last=t;if(auto&&!drag&&pts.size<2){ry+=dt*.045;pose(c,rx,ry,z)}},16);
+    stage.addEventListener('pointerdown',e=>{try{stage.setPointerCapture(e.pointerId)}catch(x){}pts.set(e.pointerId,[e.clientX,e.clientY]);
+      if(pts.size===1)drag=[e.clientX,e.clientY];else{drag=null;const p=[...pts.values()];pinch=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1])}});
+    stage.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,[e.clientX,e.clientY]);
+      if(pts.size>=2){const p=[...pts.values()],d=Math.hypot(p[0][0]-p[1][0],p[0][1]-p[1][1]);if(pinch){z=Math.max(.6,Math.min(2.2,z*d/pinch))}pinch=d;pose(c,rx,ry,z)}
+      else if(drag){ry+=(e.clientX-drag[0])*.6;rx=Math.max(-70,Math.min(70,rx-(e.clientY-drag[1])*.45));drag=[e.clientX,e.clientY];pose(c,rx,ry,z)}});
+    const up=e=>{pts.delete(e.pointerId);drag=null;pinch=0;if(pts.size===1){const p=[...pts.values()][0];drag=[p[0],p[1]]}};
+    stage.addEventListener('pointerup',up);stage.addEventListener('pointercancel',up);
+    stage.addEventListener('wheel',e=>{e.preventDefault();z=Math.max(.6,Math.min(2.2,z*(e.deltaY<0?1.1:.91)));pose(c,rx,ry,z)},{passive:false});
+    bA.onclick=()=>{auto=!auto;setA()};bR.onclick=()=>{rx=-8;ry=25;z=1;pose(c,rx,ry,z)};
+    bP.onclick=()=>{z=Math.min(2.2,z*1.2);pose(c,rx,ry,z)};bM.onclick=()=>{z=Math.max(.6,z/1.2);pose(c,rx,ry,z)};
+    const close=()=>{clearInterval(timer);quiet();o.remove()};x.onclick=close;
+    o.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='ArrowLeft'){ry-=15;pose(c,rx,ry,z)}if(e.key==='ArrowRight'){ry+=15;pose(c,rx,ry,z)}});
+    o._state=()=>({rx,ry,z,auto});
+    setTimeout(()=>{try{x.focus({preventScroll:true})}catch(e){}},50);
+    speak(M[n].en+'. '+CHEER[Math.floor(Math.random()*CHEER.length)])}
+
+  /* ---------- museum ---------- */
+  function museum(){let o=$('mus');if(o)o.remove();o=el('div','mov on');o.id='mus';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','My Medal Collection');
+    const top=el('div','top'),x=el('button','mbtn x','✕');x.type='button';x.setAttribute('aria-label','Close');
+    top.append(x,el('h2','','My Medal Collection<small>متحف إنجازاتي</small>'),muteBtn());
+    const got=count(),cnt=el('div','count',`Medals Collected: ${got} / 9<div class="mbar" role="progressbar" aria-valuemin="0" aria-valuemax="9" aria-valuenow="${got}"><i style="width:${got/9*100}%"></i></div><small>${got===9?'💎 Diamond Champion unlocked!':'💎 '+(9-got)+' more to the Diamond Champion'}</small>`);
+    const hall=el('div','hall');
+    const ped=(n,big)=>{const on=earned(n),b=el('button','ped'+(on?' on':'')+(big?' big':''));b.type='button';
+      b.setAttribute('aria-label',`${M[n].en}${n===10?'':' medal, unit '+n}: ${on?'earned':'locked'}`);
+      b.innerHTML=`<span class="ph"><img alt="" loading="lazy" src="${C.src(n,true)}"><span class="lk">🔒</span></span><span class="base"></span>
+        <span class="un">${n===10?'💎 ALL 9 UNITS':'UNIT '+n}</span><span class="nm">${esc(M[n].en)}</span><span class="pl">${esc(M[n].ar)} · ${esc(M[n].apl)}</span>`;
+      b.querySelector('img').onerror=function(){this.style.display='none'};b.onclick=()=>view(n);return b};
+    for(const u of C.meta)hall.append(ped(u.n,false));hall.append(ped(10,true));
+    o.append(top,el('div','arch'),cnt,hall,el('div','foot','اضغط أي ميدالية لتراها وتديرها من كل الجهات. تُفتح ميدالية كل وحدة عند جمع ٧٠٪ من نجومها.'));
+    document.body.append(o);x.onclick=()=>{quiet();o.remove()};o.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('mview'))x.click()});
+    setTimeout(()=>{try{x.focus({preventScroll:true})}catch(e){}},50)}
+
+  /* what the menu needs to draw: the chip on a unit's card and the museum button */
+  const chip=n=>`<span class="md${earned(n)?' on':''}" aria-hidden="true"><img alt="" loading="lazy" src="${C.src(n,true)}" onerror="this.style.display='none'"><span class="lk">🔒</span></span>`;
+  function button(b,AR){const got=count();b.innerHTML=`<span class="mi">${earned(10)?'💎':'🏅'}</span><span style="flex:1"><b>متحف إنجازاتي</b><small style="font-family:'Baloo 2',sans-serif;direction:ltr;text-align:end">My Medal Collection</small><small>${AR(got)} من ${AR(9)} ميداليات</small></span><span class="mbar"><i style="width:${got/9*100}%"></i></span>`;
+    b.onclick=museum}
+  return{init,track,check,next,museum,view,chip,button,earned,have,need,count,M}})();
+
+</script>
+<script>
 (function(){
   /* Two forms of the same page. A buyer's file carries everything inside it (V.free, V.units[].c, V.lic) and is
      locked to one code. The web app (V.web) keeps the units as separate files encrypted with one content key, and
@@ -257,6 +599,10 @@ const RL=(()=>{
   const KEY=WEB?'rl-web':'rl-bundle-'+V.sn;let st={best:{}};try{st=Object.assign(st,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
   let keys=null,lic=null,cur=null,poll=0;
+  /* the medals (src/medals.js) share this page's storage object; a unit's medal needs the unit to be open in this copy.
+     Inside one file the pictures travel in the vault (V.mimg); on the link they are files of their own. */
+  let settled=!st.code;   /* a saved code is tried first (unlock), and only then are medals handed out */
+  MED.init({st,save,meta:V.meta,ready:()=>settled,open:n=>n===1||!!keys,playing:()=>!!cur,redraw:()=>draw(),src:(n,thumb)=>V.mimg?V.mimg[n]:'medals/'+(thumb?'t':'m')+n+'.webp'});
   const ARD=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
   const sn=()=>lic&&lic.sn||V.sn||'';
 
@@ -264,10 +610,11 @@ const RL=(()=>{
     $('grid').innerHTML='';
     V.meta.forEach(u=>{const open=u.n===1||!!keys,b=document.createElement('button');b.className='unit'+(open?'':' locked');
       const got=Math.min(st.best[u.n]||0,u.stars);
-      b.innerHTML=`<span class="tagx">${u.n===1?'مجانية':open?'مفتوحة':'🔒 مقفلة'}</span><div class="ic">${u.icon}</div><div class="t en">Unit ${u.n} · ${u.title}</div><div class="ar">الوحدة ${ARD(u.n)} · ${u.ar}</div><div class="m"><span>${ARD(u.slides)} شريحة</span><span>⭐ ${ARD(got)} من ${ARD(u.stars)}</span></div>`;
+      b.innerHTML=`<span class="tagx">${u.n===1?'مجانية':open?'مفتوحة':'🔒 مقفلة'}</span><div class="ic">${u.icon}</div><div class="t en">Unit ${u.n} · ${u.title}</div><div class="ar">الوحدة ${ARD(u.n)} · ${u.ar}</div><div class="m"><span>${ARD(u.slides)} شريحة</span><span>⭐ ${ARD(got)} من ${ARD(u.stars)}</span></div>`+MED.chip(u.n);
       b.onclick=()=>open?play(u):needCode();$('grid').append(b)});
     const tot=V.meta.reduce((a,u)=>a+u.stars,0),got=V.meta.reduce((a,u)=>a+Math.min(st.best[u.n]||0,u.stars),0);
     $('progT').textContent=`⭐ مجموع النجوم: ${ARD(got)} من ${ARD(tot)}`;$('progB').style.width=(100*got/tot)+'%';
+    MED.button($('musB'),ARD);MED.check();
     const num=sn()?`رقم النسخة <span class="en">${sn()}</span>`:'';
     $('lic').innerHTML=lic?`✅ نسخة مرخّصة لـ <b>${esc(lic.name)}</b> — ${num}. هذه النسخة خاصة بكم وغير مخصّصة لإعادة الإرسال.`:`${num?num+' — ':''}الوحدة الأولى مفتوحة للتجربة، وبقية الوحدات تُفتح برمز التفعيل.`;
     $('act').style.display=keys?'none':'';
@@ -316,11 +663,12 @@ const RL=(()=>{
   /* deriving the keys is slow on purpose (it is what makes guessing codes impractical), so let the page paint first */
   function unlock(code,quiet){say('جارٍ فتح الحزمة…');$('go').disabled=true;
     setTimeout(async()=>{let r=null,net=false;try{r=await tryCode(code)}catch(e){net=true}
-      $('go').disabled=false;
+      $('go').disabled=false;settled=true;
       if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw();report(r)}
       else if(net)say('تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.','bad');
       else if(quiet){delete st.code;save();say('')}
-      else say('الرمز غير صحيح. تأكدوا من كتابته كما وصلكم، أو تواصلوا معنا.','bad')},30)}
+      else say('الرمز غير صحيح. تأكدوا من كتابته كما وصلكم، أو تواصلوا معنا.','bad');
+      MED.check()},30)}
   $('go').onclick=()=>{const c=$('code').value;if(RL.norm(c).length<6)return say('اكتبوا رمز التفعيل كاملًا.','bad');unlock(c)};
   $('code').addEventListener('keydown',e=>{if(e.key==='Enter')$('go').click()});
 
@@ -345,7 +693,8 @@ const RL=(()=>{
   addEventListener('resize',lay);addEventListener('orientationchange',()=>setTimeout(lay,250));
   document.addEventListener('fullscreenchange',()=>{try{if(document.fullscreenElement&&screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}catch(e){}setTimeout(lay,250)});
   /* the decks keep their star count in memory only; read it from the frame and remember the best per unit */
-  function grab(){if(!cur)return;try{const n=$('frame').contentWindow.eval('typeof stars==="number"?stars:0');if(n>(st.best[cur.n]||0)){st.best[cur.n]=n;save()}}catch(e){}}
+  function grab(){if(!cur)return;try{const n=$('frame').contentWindow.eval('typeof stars==="number"?stars:0');if(n>(st.best[cur.n]||0)){st.best[cur.n]=n;save()}}catch(e){}
+    MED.track($('frame').contentWindow,cur.n)}
   $('back').onclick=()=>{grab();clearInterval(poll);try{$('frame').contentWindow.speechSynthesis.cancel()}catch(e){}
     try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
     $('frame').srcdoc='';const p=$('player');p.classList.remove('on','side');p.style.cssText='';document.documentElement.style.overflow='';cur=null;draw()};
