@@ -1,8 +1,9 @@
 /* Service worker of the web app: keeps every file on the device so the app opens with no connection.
    The cache name changes whenever any file changes (tools/web.mjs writes the version), which replaces the old copy. */
-const C = 'rl-82d47bc746', FONTS = 'rlfonts';
+const C = 'rl-bfb379aef3', FONTS = 'rlfonts';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'logo.webp', 'u1.html', 'u2.bin', 'u3.bin', 'u4.bin', 'u5.bin', 'u6.bin', 'u7.bin', 'u8.bin', 'u9.bin', 'English-is-fun.html', 'parent.html',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
+  'parent.webmanifest', 'icons/parent-192.png', 'icons/parent-512.png', 'icons/parent-maskable-512.png', 'icons/parent-apple.png',
   ...Array.from({ length: 10 }, (_, i) => ['medals/m' + (i + 1) + '.webp', 'medals/t' + (i + 1) + '.webp']).flat()];
 self.addEventListener('install', e => e.waitUntil(caches.open(C).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys()
