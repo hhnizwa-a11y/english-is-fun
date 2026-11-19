@@ -684,7 +684,11 @@ const FAM=(()=>{
   function link(id){if(!api||!ID.test(id||''))return;
     if(s().fid!==id){s().fid=id;delete s().fon;delete s().goal;delete s().gseen;C.save()}
     fid=id;tick()}
-  function unlink(){fid=null;if(!C)return;delete s().fid;delete s().fon;delete s().goal;C.save()}
+  /* gone=true: this device lost the code's seat to another device, so its own record is taken off the parent's page
+     too (otherwise the parent would see one child per device that ever held the code) */
+  function unlink(gone){const f=fid||(C&&s().fid);fid=null;if(!C)return;
+    if(gone&&api&&ID.test(f||'')&&s().cid)api.del('families/'+f+'/children/'+s().cid).catch(()=>{});
+    delete s().fid;delete s().fon;delete s().goal;C.save()}
   /* called every two seconds while unit n is open in window w */
   function watch(w,n){if(!api||!w)return;try{
       const a=A(n);
@@ -839,7 +843,7 @@ const FAM=(()=>{
       if(!d){try{await SEATS.set(p,{d:me,t:Date.now()})}catch(e){if(e.status!==403)throw e}d=await SEATS.get(p)}
       return d&&d.d===me?'ok':d?'taken':'net'}catch(e){return'net'}}
   const TAKEN='هذا الرمز مفعَّل على جهاز آخر. الرمز الواحد يعمل على جهاز واحد فقط. لنقله إلى هذا الجهاز تواصلوا معنا على واتساب 97247727.';
-  function lockOut(){keys=null;lic=null;delete st.code;save();FAM.unlink();if(!cur)draw();say(TAKEN,'bad')}
+  function lockOut(){keys=null;lic=null;delete st.code;save();FAM.unlink(true);if(!cur)draw();say(TAKEN,'bad')}
   /* deriving the keys is slow on purpose (it is what makes guessing codes impractical), so let the page paint first */
   function unlock(code,quiet){say('جارٍ فتح الحزمة…');$('go').disabled=true;
     setTimeout(async()=>{let r=null,net=false,s='ok';try{r=await tryCode(code)}catch(e){net=true}

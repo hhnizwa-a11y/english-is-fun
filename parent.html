@@ -180,6 +180,14 @@ details.all>summary{cursor:pointer;font-size:18px;font-weight:700;line-height:2.
       <div class="row" style="justify-content:center"><button class="btn lite bad" id="kidDel"></button></div>
     </div>
     <p class="msg" id="dashMsg" role="status" style="text-align:center"></p>
+    <details class="card" id="addCard">
+      <summary style="cursor:pointer;font-size:18px;font-weight:800;line-height:2">➕ إضافة طفل آخر</summary>
+      <p class="hint">لكل طفل رمز تفعيل خاص به. اكتبوا رمز الطفل الآخر ليظهر هنا مع إخوته، وتتنقّلون بينهم بضغطة.</p>
+      <label class="l" for="addCode">رمز تفعيل الطفل الآخر</label>
+      <input class="f en" id="addCode" placeholder="NIZ-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20">
+      <div class="row" style="margin-top:12px"><button class="btn go" id="addGo">إضافة</button></div>
+      <p class="msg" id="addMsg" role="status"></p>
+    </details>
     <div class="row" style="justify-content:center;margin-top:10px"><a class="btn lite" href="./" style="text-decoration:none">فتح تطبيق الطفل</a><button class="btn lite" id="lock">🔒 قفل الصفحة</button></div>
   </div>
 
@@ -315,10 +323,21 @@ const FSL=cfg=>{
   const api=FSL(V.fam),KEY='rl-parent';
   /* what this device remembers: the family's id and the key the 4 digits are hashed with. Never the code itself. */
   let me=null;try{me=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
-  if(!me||!/^[0-9a-f]{32}$/.test(me.fid||'')||!/^[0-9a-f]{64}$/.test(me.pk||''))me=null;
+  const okFam=x=>!!x&&/^[0-9a-f]{32}$/.test(x.fid||'')&&/^[0-9a-f]{64}$/.test(x.pk||'');
+  if(!okFam(me))me=null;
+  /* me.more: the families of other children, each added with that child's own code (one code per child). The 4 digits
+     are those of the first family. */
+  if(me)me.more=(Array.isArray(me.more)?me.more:[]).filter(okFam).filter(x=>x.fid!==me.fid).slice(0,8);
+  const fams=()=>[me].concat(me.more||[]);
   const keep=()=>{try{me?localStorage.setItem(KEY,JSON.stringify(me)):localStorage.removeItem(KEY)}catch(e){}};
-  const pinHash=p=>hex(RL.hmac(RL.hkey(Uint8Array.from(me.pk.match(/../g),x=>parseInt(x,16))),RL.utf8('pin:'+p)));
-  let fam=null,newPin=false,kids=[],sel=null,timer=0,goalNeed=1;
+  const pinHashOf=(pk,p)=>hex(RL.hmac(RL.hkey(Uint8Array.from(pk.match(/../g),x=>parseInt(x,16))),RL.utf8('pin:'+p)));
+  const pinHash=p=>pinHashOf(me.pk,p);
+  let fam=null,newPin=false,kids=[],sel=null,timer=0,goalNeed=1,pinNow='',stash=[];
+  /* the family a code belongs to, or null for a wrong code; throws when the licence list cannot be reached */
+  async function famOf(code){const k=RL.keysFor(code,RL.unb64(V.salt),V.iter),hk=RL.hkey(k.subarray(32,64)),id=hex(RL.hmac(hk,RL.utf8('id'))).slice(0,16);
+    const r=await fetch('lic.json',{cache:'no-store'});if(!r.ok)throw new Error('lic');
+    const e=(await r.json())[id],p=e&&RL.open(k,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));
+    return p?{fid:hex(RL.hmac(hk,RL.utf8('family'))).slice(0,32),pk:hex(RL.hmac(hk,RL.utf8('parent-pin')))}:null}
 
   /* ---- 1 · the code ---- */
   $('codeGo').onclick=()=>{const code=$('code').value,m=$('codeMsg');
@@ -326,10 +345,8 @@ const FSL=cfg=>{
     m.className='msg';m.textContent='جارٍ التحقق من الرمز…';$('codeGo').disabled=true;
     /* deriving the keys is slow on purpose; let the message paint first */
     setTimeout(async()=>{let ok=false,net=false,forgot=newPin;
-      try{const k=RL.keysFor(code,RL.unb64(V.salt),V.iter),hk=RL.hkey(k.subarray(32,64)),id=hex(RL.hmac(hk,RL.utf8('id'))).slice(0,16);
-        const r=await fetch('lic.json',{cache:'no-store'});if(!r.ok)throw new Error('lic');
-        const e=(await r.json())[id],p=e&&RL.open(k,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));
-        if(p){ok=true;me={fid:hex(RL.hmac(hk,RL.utf8('family'))).slice(0,32),pk:hex(RL.hmac(hk,RL.utf8('parent-pin')))};keep()}
+      try{const f=await famOf(code);
+        if(f){ok=true;me=f;me.more=stash.filter(x=>x.fid!==f.fid);stash=[];keep()}
       }catch(e){net=true}
       $('codeGo').disabled=false;
       if(net){m.className='msg bad';m.textContent='تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.';return}
@@ -344,9 +361,9 @@ const FSL=cfg=>{
   const pinMsg=(t,bad)=>{$('pinMsg').className='msg'+(bad?' bad':'');$('pinMsg').textContent=t};
   /* Two devices per code for this page: each takes one of two seats on the server (families/<id>/dev/p1 and p2 hold
      the device's random number; the rules let nobody replace a taken seat). True when this device holds one. */
-  async function pseat(){let d=localStorage.getItem('rl-parent-dev');
+  async function pseat(fid){let d=localStorage.getItem('rl-parent-dev');
     if(!/^[0-9a-f]{16}$/.test(d||'')){d=hex(crypto.getRandomValues(new Uint8Array(8)));localStorage.setItem('rl-parent-dev',d)}
-    const P=k=>'families/'+me.fid+'/dev/'+k,now=[await api.get(P('p1')),await api.get(P('p2'))];
+    const P=k=>'families/'+fid+'/dev/'+k,now=[await api.get(P('p1')),await api.get(P('p2'))];
     if(now.some(x=>x&&x.d===d))return true;
     for(const k of ['p1','p2']){if(now[k==='p1'?0:1])continue;
       try{await api.set(P(k),{d,t:Date.now()})}catch(e){if(e.status!==403)throw e}
@@ -355,7 +372,7 @@ const FSL=cfg=>{
   /* reset = the code was just typed again after «نسيتُ الرقم السري», so a new number may replace the old one */
   async function openFamily(reset){show('s_pin');pins.forEach(p=>p.value='');pinMsg('جارٍ الاتصال…');$('pinGo').disabled=true;$('pinForgot').hidden=true;
     let seated=false;
-    try{seated=await pseat();if(seated)fam=await api.get('families/'+me.fid)}catch(e){pinMsg('تعذّر الاتصال بالخادم. تأكدوا من الإنترنت ثم أعيدوا تحميل الصفحة.',true);return}
+    try{seated=await pseat(me.fid);if(seated)fam=await api.get('families/'+me.fid)}catch(e){pinMsg('تعذّر الاتصال بالخادم. تأكدوا من الإنترنت ثم أعيدوا تحميل الصفحة.',true);return}
     if(!seated){me=null;keep();newPin=false;show('s_code');$('codeMsg').className='msg bad';
       $('codeMsg').textContent='صفحة وليّ الأمر لهذا الرمز مفتوحة على جهازين بالفعل، وهو العدد المسموح. لاستعمالها على هذا الجهاز تواصلوا معنا على واتساب 97247727.';return}
     $('pinGo').disabled=false;pinMsg('');newPin=!fam||!fam.pin||!!reset;
@@ -363,14 +380,14 @@ const FSL=cfg=>{
     $('pinT').textContent=newPin?'أربعة أرقام تعرفونها أنتم فقط. تُطلب عند فتح هذه الصفحة حتى لا يغيّر الطفل الهدف بنفسه.':'اكتبوا الأرقام الأربعة التي اخترتموها.';
     $('pinGo').textContent=newPin?'حفظ والدخول':'دخول';$('pinForgot').hidden=newPin;pins[0].focus()}
   $('pinGo').onclick=async()=>{if(pins.some(p=>!p.value))return pinMsg('اكتبوا الأرقام الأربعة.',true);
-    const h=pinHash(pins.map(p=>p.value).join(''));
+    const typed=pins.map(p=>p.value).join(''),h=pinHash(typed);
     if(newPin){$('pinGo').disabled=true;pinMsg('جارٍ الحفظ…');
       try{await api.set('families/'+me.fid,{v:1,pin:{h},t:Date.now()},['v','pin','t'])}
       catch(e){$('pinGo').disabled=false;return pinMsg('تعذّر الحفظ. تأكدوا من الإنترنت ثم أعيدوا المحاولة.',true)}
       $('pinGo').disabled=false;newPin=false}
     else if(h!==fam.pin.h){pins.forEach(p=>p.value='');pins[0].focus();return pinMsg('الرقم السري غير صحيح.',true)}
-    pinMsg('');dash()};
-  $('pinForgot').onclick=()=>{me=null;keep();newPin=true;show('s_code');$('codeMsg').className='msg';
+    pinNow=typed;pinMsg('');dash()};
+  $('pinForgot').onclick=()=>{stash=me&&me.more||[];me=null;keep();newPin=true;show('s_code');$('codeMsg').className='msg';
     $('codeMsg').textContent='اكتبوا رمز التفعيل من جديد، ثم اختاروا رقمًا سريًّا جديدًا.';$('code').focus()};
 
   /* ---- 3 · the dashboard ---- */
@@ -378,7 +395,7 @@ const FSL=cfg=>{
   /* the activity types of the units, grouped into skills a parent can read */
   const SKILL={story:'القصة والقراءة',ink:'الكتابة والحروف',caps:'الكتابة والحروف',abc:'الكتابة والحروف',cards:'المفردات',room:'المفردات',toy:'المفردات',count:'المفردات',poster:'المفردات',paint:'المفردات',wheel:'المفردات',
     balloons:'الاستماع',quiz:'أسئلة الفهم والقواعد',merge:'أسئلة الفهم والقواعد',plural:'أسئلة الفهم والقواعد',train:'ترتيب الجمل والتهجئة',wsearch:'ترتيب الجمل والتهجئة',chant:'الأناشيد'};
-  const kid=()=>kids.find(k=>k.id===sel)||kids[0]||null;
+  const kid=()=>kids.find(k=>k.key===sel)||kids[0]||null;
   const stars=(c,u)=>Math.min((c.best||{})[u.n]||0,u.stars);
   const medalsOf=c=>(c.medals||[]).filter(n=>n>=1&&n<=9).length;
   const kname=(c,i)=>c.name?c.name:'طفل '+AR(i+1);
@@ -395,12 +412,13 @@ const FSL=cfg=>{
   const ago=ms=>{const m=Math.round((Date.now()-ms)/6e4);return m<1?'الآن':m<60?'قبل '+AR(m)+' دقيقة':m<1440?'قبل '+AR(Math.round(m/60))+' ساعة':'قبل '+AR(Math.round(m/1440))+' يومًا'};
   function dash(){show('s_dash');load();clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&!$('s_dash').hidden)load()},15000)}
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('s_dash').hidden)load()});
-  async function load(){try{const l=await api.list('families/'+me.fid+'/children');
-      kids=l.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar')||a.id.localeCompare(b.id));$('dashMsg').textContent=''}
+  async function load(){try{let l=[];
+      for(const f of fams())l=l.concat((await api.list('families/'+f.fid+'/children')).map(x=>Object.assign(x,{fid:f.fid,key:f.fid+'/'+x.id})));
+      kids=l.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar')||a.key.localeCompare(b.key));$('dashMsg').textContent=''}
     catch(e){$('dashMsg').className='msg bad';$('dashMsg').textContent='تعذّر تحديث البيانات. تأكدوا من الاتصال بالإنترنت.'}
     draw()}
-  function draw(){const c=kid();$('noKids').hidden=!!c;$('hasKids').hidden=!c;if(!c)return;sel=c.id;
-    $('kids').innerHTML=kids.length>1?kids.map((x,i)=>`<button class="kid" aria-pressed="${x.id===sel}" data-id="${x.id}">🧒 ${esc(kname(x,i))}</button>`).join(''):`<span class="kid" aria-pressed="true">🧒 ${esc(kname(c,0))}</span>`;
+  function draw(){const c=kid();$('noKids').hidden=!!c;$('hasKids').hidden=!c;if(!c)return;sel=c.key;
+    $('kids').innerHTML=kids.length>1?kids.map((x,i)=>`<button class="kid" aria-pressed="${x.key===sel}" data-id="${x.key}">🧒 ${esc(kname(x,i))}</button>`).join(''):`<span class="kid" aria-pressed="true">🧒 ${esc(kname(c,0))}</span>`;
     $('kids').querySelectorAll('button').forEach(b=>b.onclick=()=>{sel=b.dataset.id;$('goalForm').hidden=true;delArmed=false;draw()});
     const med=medalsOf(c),has=n=>(c.medals||[]).includes(n);
     $('stMed').textContent=AR(med);$('stTot').textContent=AR(totStars(c));$('stMax').textContent=AR(MAX);$('stSl').textContent=AR(totSeen(c));$('stSlMax').textContent=AR(SLIDES);
@@ -515,7 +533,7 @@ const FSL=cfg=>{
     :gKind==='stars'?'النجمة تُمنح للإجابة الصحيحة من أول محاولة، فهذا الهدف يشجّع على التركيز لا على السرعة.'
     :'النشاط الكامل هو شريحة أجاب عن كل أسئلتها من أول محاولة. هدف يشجّع على الإتقان.'}
   $('gCancel').onclick=()=>{$('goalForm').hidden=true};
-  async function saveGoal(g){const c=kid(),p='families/'+me.fid+'/children/'+c.id,m=g?$('gMsg'):$('dashMsg');
+  async function saveGoal(g){const c=kid(),p='families/'+c.fid+'/children/'+c.id,m=g?$('gMsg'):$('dashMsg');
     try{await api.set(p,g?{goal:g}:{},['goal']);if(g)c.goal=g;else delete c.goal;m.textContent='';draw();return true}
     catch(e){m.className='msg bad';m.textContent='تعذّر الحفظ. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.';return false}}
   $('gSave').onclick=async()=>{const prize=$('gPrize').value.trim().slice(0,60);if(!prize){$('gPrize').focus();return}if(!goalNeed)return;
@@ -528,9 +546,30 @@ const FSL=cfg=>{
   /* removing a child (a second entry made by a reinstalled app, for instance) takes two presses */
   let delArmed=false;
   $('kidDel').onclick=async()=>{const c=kid();if(!c)return;if(!delArmed){delArmed=true;draw();return}
-    delArmed=false;try{await api.del('families/'+me.fid+'/children/'+c.id);kids=kids.filter(k=>k!==c);sel=null}catch(e){$('dashMsg').className='msg bad';$('dashMsg').textContent='تعذّرت الإزالة. أعيدوا المحاولة.'}
+    delArmed=false;try{await api.del('families/'+c.fid+'/children/'+c.id);kids=kids.filter(k=>k!==c);sel=null;
+      /* the last child of an added code: this device forgets that code too, so the child does not come back here */
+      if(c.fid!==me.fid&&!kids.some(k=>k.fid===c.fid)){me.more=me.more.filter(x=>x.fid!==c.fid);keep()}}catch(e){$('dashMsg').className='msg bad';$('dashMsg').textContent='تعذّرت الإزالة. أعيدوا المحاولة.'}
     draw()};
-  $('lock').onclick=()=>{clearInterval(timer);kids=[];openFamily()};
+  $('lock').onclick=()=>{clearInterval(timer);kids=[];pinNow='';openFamily()};
+  /* another child: that child's own code. The page takes one of the code's two parent seats, and if nobody opened
+     that family yet it is made with the same 4 digits, so the child's app starts sending. */
+  const addMsg=(t,bad)=>{$('addMsg').className='msg'+(bad?' bad':'');$('addMsg').textContent=t};
+  $('addGo').onclick=()=>{const code=$('addCode').value;
+    if(RL.norm(code).length<6)return addMsg('اكتبوا رمز التفعيل كاملًا.',true);
+    if(me.more.length>=8)return addMsg('بلغتم أقصى عدد من الرموز في هذه الصفحة.',true);
+    addMsg('جارٍ التحقق من الرمز…');$('addGo').disabled=true;
+    setTimeout(async()=>{let f=null,why='';
+      try{f=await famOf(code);
+        if(!f)why='الرمز غير صحيح. اكتبوه كما وصلكم، أو تواصلوا معنا.';
+        else if(fams().some(x=>x.fid===f.fid))why='هذا الرمز مضاف إلى الصفحة من قبل.';
+        else if(!await pseat(f.fid))why='صفحة وليّ الأمر لهذا الرمز مفتوحة على جهازين بالفعل، وهو العدد المسموح. تواصلوا معنا على واتساب 97247727.';
+        else{const d=await api.get('families/'+f.fid);
+          if(!d||!d.pin)await api.set('families/'+f.fid,{v:1,pin:{h:pinHashOf(f.pk,pinNow)},t:Date.now()},['v','pin','t'])}
+      }catch(e){why='تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.'}
+      $('addGo').disabled=false;if(why)return addMsg(why,true);
+      me.more.push(f);keep();$('addCode').value='';
+      addMsg('✅ أُضيف الرمز. يظهر الطفل هنا حين يفتح تطبيقه وهو متصل بالإنترنت، خلال دقيقة أو دقيقتين.');load()},30)};
+  $('addCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('addGo').click()});
 
   if(me)openFamily();else{show('s_code');$('code').focus()}
 })();
