@@ -81,7 +81,7 @@ details.ud[open]>summary{background:var(--paper);border-radius:14px}
 .parts .pn{font-size:14px;font-weight:700;line-height:1.7}
 .parts .bar{height:12px}
 details.all{margin-top:8px}
-details.all>summary{cursor:pointer;font-size:15px;line-height:1.9;color:var(--c)}
+details.all>summary{cursor:pointer;font-size:18px;font-weight:700;line-height:2.1;color:var(--c)}
 .tw{overflow-x:auto;margin-top:6px}
 .tw table{border-collapse:collapse;width:100%;font-size:14px;font-weight:500;line-height:1.7}
 .tw th,.tw td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:start;vertical-align:top}
@@ -432,8 +432,11 @@ const FSL=cfg=>{
       const P=INFO[u.n].parts||{};
       h+='<div class="parts">'+Object.keys(P).map(k=>{const x=sc.filter(r=>r.p===k),g=x.reduce((s,r)=>s+r.c,0),m=x.reduce((s,r)=>s+r.m,0);
         return `<div><div class="pn"><span class="en">${esc(P[k][1])}</span> · ${esc(P[k][2])} — ${AR(g)}/${AR(m)}</div><div class="bar"><i style="width:${m?g/m*100:0}%"></i></div></div>`}).join('')+'</div>';
-      /* skills: only what the child has tried counts */
-      const G={};tried.forEach(r=>{const k=SKILL[r.y];if(!k)return;const g=G[k]||(G[k]={c:0,m:0,w:0});g.c+=r.c;g.m+=r.m;g.w+=r.w});
+      /* skills: every activity up to the furthest slide the child reached counts, whether the unit is finished or not;
+         one that was passed without an answer counts as not answered */
+      const reach=R.reduce((x,r)=>r.seen||r.c>0?r.i:x,-1),upto=sc.filter(r=>r.i<=reach),skip=upto.filter(r=>!r.c&&!r.w).length;
+      h+=f('📍',reach<0?'<b>نقاط القوة والضعف:</b> تظهر حين يجيب عن أول نشاط.':`<b>نقاط القوة والضعف حتى الشريحة ${AR(reach+1)}</b> (آخر شريحة وصل إليها من ${AR(u.slides)})<small>تُحسب من ${AR(upto.length)} نشاطًا فيه أسئلة مرّ بها حتى الآن${skip?'، منها '+AR(skip)+' لم يُجب عنها بعد':''}. تتحدّث كلما تقدّم، ولا يلزم أن يُنهي الوحدة.</small>`);
+      const G={};upto.forEach(r=>{const k=SKILL[r.y];if(!k)return;const g=G[k]||(G[k]={c:0,m:0,w:0});g.c+=r.c;g.m+=r.m;g.w+=r.w});
       const L=Object.keys(G).map(k=>({k,r:G[k].c/G[k].m,w:G[k].w,m:G[k].m})),pc=x=>AR(Math.round(x.r*100))+'٪';
       /* strong: at least 85% right at the first try with few wrong tries; needs practice: under 70%, or (with at least three wrong tries) a wrong try for every second question */
       const weak=L.filter(x=>x.r<.7||(x.w>=3&&x.w*2>=x.m)).sort((x,y)=>x.r-y.r),strong=L.filter(x=>x.r>=.85&&!weak.includes(x)).sort((x,y)=>y.r-x.r);
