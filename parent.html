@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light only">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#23314f">
+<title>English is fun · صفحة وليّ الأمر</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* The parent's page of English is fun. Same palette and fonts as the app (src/shell.html).
+   It reads the children's progress and writes the goal; the child's side is src/family.js. */
+:root{--ink:#23314f;--paper:#fffdf6;--a:#ff7a3d;--b:#e8479b;--c:#2f8fe6;--ok:#2fb36b;--sun:#ffc93c;--line:#e7dcc6;--soft:#5d6a88}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{min-height:100vh;background:linear-gradient(#fff8ef,#ffe9d6) fixed;font-family:"Baloo Bhaijaan 2","Baloo 2",system-ui,sans-serif;color:var(--ink);font-weight:700;line-height:1.7;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.en{font-family:"Baloo 2",system-ui,sans-serif;direction:ltr;unicode-bidi:isolate}
+main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
+header.top{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+header.top img{width:58px;height:58px;border-radius:16px;border:3px solid var(--ink);object-fit:cover;background:#fff;flex:none}
+header.top h1{font-size:24px;font-weight:800;line-height:1.5;flex:1;min-width:0}
+header.top h1 small{display:block;font-size:15px;color:var(--soft);font-weight:700;line-height:1.6}
+.card{background:#fff;border:4px solid var(--ink);border-radius:24px;padding:16px;box-shadow:0 7px 0 rgba(35,49,79,.14);margin-bottom:14px}
+.card h3{font-size:21px;font-weight:800;line-height:1.6;margin-bottom:6px}
+.btn{min-height:50px;border:4px solid var(--ink);border-radius:16px;background:#fff;font-weight:800;font-size:18px;padding:6px 18px;line-height:1.6}
+.btn:active{transform:translateY(2px)}
+.btn:disabled{opacity:.5}
+.btn.go{background:var(--a);color:#fff}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.lite{border-width:3px;font-size:16px;min-height:44px;padding:4px 14px}
+.btn.bad{border-color:#c0392b;color:#c0392b}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input.f{width:100%;min-height:54px;border:4px solid var(--ink);border-radius:16px;padding:6px 14px;font-size:20px;font-weight:800;background:var(--paper);line-height:1.7}
+input.f:focus,.pin input:focus{outline:4px solid var(--sun)}
+label.l{display:block;font-size:16px;margin:10px 2px 4px;line-height:1.7}
+.hint{font-size:15px;color:var(--soft);font-weight:500;line-height:1.8}
+.msg{font-size:16px;line-height:1.8;margin-top:8px;min-height:1em}
+.msg.bad{color:#c0392b}
+.pin{display:flex;gap:10px;direction:ltr;justify-content:center;margin:10px 0}
+.pin input{width:58px;height:66px;text-align:center;font-size:30px;border:4px solid var(--ink);border-radius:16px;background:var(--paper);font-family:"Baloo 2",sans-serif;font-weight:800}
+.kids{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.kid{border:4px solid var(--ink);border-radius:99px;background:#fff;padding:4px 18px;font-size:18px;font-weight:800;min-height:46px;line-height:1.6}
+.kid[aria-pressed=true]{background:var(--c);color:#fff}
+.stats{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:560px){.stats{grid-template-columns:minmax(0,1fr)}}
+.stats .wide{grid-column:1/-1}
+.stat{min-width:0;background:#fff;border:4px solid var(--ink);border-radius:20px;padding:10px 12px;text-align:center}
+.stat .n{font-size:34px;font-weight:800;line-height:1.4}
+.stat .t{font-size:15px;color:var(--soft);line-height:1.7}
+.week{display:flex;gap:6px;justify-content:center;margin-top:4px}
+.week i{width:32px;height:32px;border-radius:50%;border:3px solid var(--ink);font-style:normal;font-size:14px;display:flex;align-items:center;justify-content:center;background:#fff;line-height:1}
+.week i.on{background:var(--ok);color:#fff}
+.meds{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.meds img{width:46px;height:46px;object-fit:contain;filter:grayscale(1);opacity:.35}
+.meds img.on{filter:none;opacity:1}
+.bar{height:20px;border:3px solid var(--ink);border-radius:99px;background:#f1ebdd;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),var(--a));border-radius:99px;transition:width .5s}
+.goal{background:linear-gradient(#fff7db,#ffeeb5)}
+.goal .prize{font-size:26px;font-weight:800;line-height:1.6;overflow-wrap:anywhere}
+.slots{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}
+.slots i{font-style:normal;font-size:28px;line-height:1.3;filter:grayscale(1);opacity:.35}
+.slots i.on{filter:none;opacity:1}
+.unit{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 0;border-top:2px dashed var(--line)}
+details.ud{border-top:2px dashed var(--line)}
+details.ud:first-child{border-top:0}
+details.ud>summary{list-style:none;cursor:pointer;border-top:0}
+details.ud>summary::-webkit-details-marker{display:none}
+details.ud[open]>summary{background:var(--paper);border-radius:14px}
+.unit .sub{font-size:13px;color:var(--soft);font-weight:500;line-height:1.7}
+.ubody{padding:6px 4px 14px}
+.fact{display:grid;grid-template-columns:28px 1fr;gap:6px;font-size:15px;font-weight:500;line-height:1.9;padding:3px 0}
+.fact b{font-weight:800}
+.fact small{display:block;color:var(--soft);font-size:13px;line-height:1.8}
+.fact ul{margin:2px 18px 0 0;padding:0}
+.parts{display:grid;gap:6px;margin:8px 0}
+.parts .pn{font-size:14px;font-weight:700;line-height:1.7}
+.parts .bar{height:12px}
+details.all{margin-top:8px}
+details.all>summary{cursor:pointer;font-size:15px;line-height:1.9;color:var(--c)}
+.tw{overflow-x:auto;margin-top:6px}
+.tw table{border-collapse:collapse;width:100%;font-size:14px;font-weight:500;line-height:1.7}
+.tw th,.tw td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:start;vertical-align:top}
+.tw th{font-weight:800;white-space:nowrap}
+.tw tr.un td{color:var(--soft)}
+.now{font-size:16px;font-weight:500;line-height:1.8;margin:0 2px 12px}
+.day{padding:8px 0;border-top:2px dashed var(--line)}
+.day:first-child{border-top:0}
+.day .dn{font-size:16px;font-weight:800;line-height:1.7}
+.day .dl{font-size:15px;font-weight:500;line-height:1.8;color:var(--soft)}
+.unit .ic{width:46px;height:46px;border-radius:14px;background:var(--paper);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1}
+.unit .nm{font-size:16px;line-height:1.6}
+.unit .sc{font-size:16px;white-space:nowrap;line-height:1.6}
+.unit .bar{height:14px;margin-top:3px}
+.unit .bar::after{content:"";position:absolute;inset-block:0;inset-inline-start:70%;width:3px;background:var(--ink);opacity:.45}
+.unit.done .bar i{background:var(--ok)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:3px solid var(--ink);border-radius:99px;background:#fff;padding:3px 14px;font-size:16px;font-weight:700;min-height:44px;line-height:1.7}
+.chip[aria-pressed=true]{background:var(--sun)}
+.foot{font-size:14px;color:var(--soft);font-weight:500;line-height:1.9;text-align:center;margin-top:18px}
+.foot a{color:inherit}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top"><img src="logo.webp" alt=""><h1>صفحة وليّ الأمر<small><span class="en">English is fun</span> · تابعوا تقدّم طفلكم وضعوا له هدفًا</small></h1></header>
+
+  <div class="card" id="s_off" hidden>
+    <h3>⏳ قريبًا</h3>
+    <p class="hint">صفحة وليّ الأمر قيد التجهيز وستعمل قريبًا بإذن الله.</p>
+    <div class="row" style="margin-top:10px"><a class="btn go" href="./" style="text-decoration:none">العودة إلى التطبيق</a></div>
+  </div>
+
+  <!-- 1 · the family's activation code links this page to the child's app -->
+  <div class="card" id="s_code" hidden>
+    <h3>👋 أهلًا بوليّ الأمر</h3>
+    <p class="hint">اكتبوا رمز التفعيل نفسه الذي فعّلتم به تطبيق طفلكم. الرمز هو ما يربط هذه الصفحة بتطبيقه.</p>
+    <label class="l" for="code">رمز التفعيل</label>
+    <input class="f en" id="code" placeholder="NIZ-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20">
+    <div class="row" style="margin-top:12px"><button class="btn go" id="codeGo">متابعة</button></div>
+    <p class="msg" id="codeMsg" role="status"></p>
+  </div>
+
+  <!-- 2 · the parent's own 4 digits, so the child cannot change the goal -->
+  <div class="card" id="s_pin" hidden>
+    <h3 id="pinH">🔒 الرقم السري</h3>
+    <p class="hint" id="pinT"></p>
+    <div class="pin" id="pinBox"><input inputmode="numeric" autocomplete="off" maxlength="1" aria-label="الرقم الأول"><input inputmode="numeric" autocomplete="off" maxlength="1" aria-label="الرقم الثاني"><input inputmode="numeric" autocomplete="off" maxlength="1" aria-label="الرقم الثالث"><input inputmode="numeric" autocomplete="off" maxlength="1" aria-label="الرقم الرابع"></div>
+    <div class="row" style="justify-content:center"><button class="btn go" id="pinGo">دخول</button><button class="btn lite" id="pinForgot" hidden>نسيتُ الرقم السري</button></div>
+    <p class="msg" id="pinMsg" role="status" style="text-align:center"></p>
+  </div>
+
+  <!-- 3 · the dashboard -->
+  <div id="s_dash" hidden>
+    <div class="card" id="noKids" hidden>
+      <h3>🧒 لم يظهر طفلكم بعد</h3>
+      <p class="hint">افتحوا تطبيق <span class="en">English is fun</span> على جهاز طفلكم وهو متصل بالإنترنت ومفعَّل بالرمز نفسه. يظهر اسمه هنا خلال دقيقة أو دقيقتين، ولا يحتاج الطفل إلى فعل شيء.</p>
+    </div>
+    <div id="hasKids" hidden>
+      <div class="kids" id="kids"></div>
+      <p class="now" id="nowL" hidden></p>
+      <div class="stats">
+        <div class="stat wide"><div class="n" id="stMed">٠</div><div class="t">ميدالية من ٩</div><div class="meds" id="meds"></div></div>
+        <div class="stat"><div class="n" id="stTot">٠</div><div class="t">نجمة من <span id="stMax"></span><br>(سؤال ونشاط)</div></div>
+        <div class="stat"><div class="n" id="stSl">٠</div><div class="t">شريحة شاهدها من <span id="stSlMax"></span></div></div>
+        <div class="stat wide"><div class="t">أيام المذاكرة هذا الأسبوع</div><div class="week" id="week"></div><div class="t" id="stLast" style="margin-top:4px"></div></div>
+      </div>
+
+      <div class="card goal" id="goalCard"></div>
+
+      <div class="card" id="goalForm" hidden>
+        <h3>🎯 هدف جديد</h3>
+        <label class="l" for="gPrize">ما الجائزة؟</label>
+        <input class="f" id="gPrize" maxlength="40" placeholder="مثال: نزهة إلى الحديقة">
+        <div class="chips" id="gSug" style="margin-top:8px"></div>
+        <p class="l" id="gKindL">على ماذا تكون المكافأة؟</p>
+        <div class="chips" id="gKind" role="group" aria-labelledby="gKindL"></div>
+        <p class="l" id="gNeedL">كم ميدالية يجمع ليحصل عليها؟</p>
+        <div class="chips" id="gNeed" role="group" aria-labelledby="gNeedL"></div>
+        <p class="hint" id="gHelp" style="margin-top:8px"></p>
+        <div class="row" style="margin-top:12px"><button class="btn go" id="gSave">حفظ الهدف</button><button class="btn lite" id="gCancel">إلغاء</button></div>
+        <p class="msg" id="gMsg" role="status"></p>
+      </div>
+
+      <div class="card">
+        <h3>📚 تقدّم الوحدات</h3>
+        <p class="hint">اضغطوا أي وحدة لتروا تفاصيلها: الشرائح، الأسئلة، المحاولات، نقاط القوة والضعف. ميدالية الوحدة تُمنح عند ٧٠٪ من نجومها (الخط على الشريط).</p>
+        <div id="units"></div>
+      </div>
+      <div class="card">
+        <h3>🗓️ سجلّ النشاط</h3>
+        <div id="log"></div>
+      </div>
+      <div class="row" style="justify-content:center"><button class="btn lite bad" id="kidDel"></button></div>
+    </div>
+    <p class="msg" id="dashMsg" role="status" style="text-align:center"></p>
+    <div class="row" style="justify-content:center;margin-top:10px"><a class="btn lite" href="./" style="text-decoration:none">فتح تطبيق الطفل</a><button class="btn lite" id="lock">🔒 قفل الصفحة</button></div>
+  </div>
+
+  <p class="foot">ما يُحفظ على الخادم لأجل هذه الصفحة: الاسم الذي كتبه الطفل في التطبيق، نجومه وميدالياته، الشرائح التي فتحها ومحاولاته الخاطئة ووقته في كل وحدة، أيام مذاكرته، والهدف الذي تضعونه. لا يُحفظ رمز التفعيل ولا رقم هاتف ولا موقع ولا ما يكتبه الطفل أو يرسمه.<br>© Hamza — Nizwa Developer · <a href="https://wa.me/96897247727">واتساب 97247727</a></p>
+</main>
+
+<script type="application/json" id="vault">{"salt":"LtjSlvpumNbQo5tibr3rlA==","iter":300000,"share":0.7,"meta":[{"n":1,"title":"School","ar":"المدرسة","icon":"🏫","stars":168,"slides":42},{"n":2,"title":"Home","ar":"البيت","icon":"🏠","stars":189,"slides":49},{"n":3,"title":"All about me","ar":"كل شيء عنّي","icon":"🙋","stars":191,"slides":51},{"n":4,"title":"Move it!","ar":"هيّا نتحرّك","icon":"🤸","stars":199,"slides":50},{"n":5,"title":"Things I know","ar":"أشياء أعرفها","icon":"🔢","stars":207,"slides":54},{"n":6,"title":"Time","ar":"الوقت","icon":"⏰","stars":238,"slides":63},{"n":7,"title":"Seasons","ar":"الفصول","icon":"🍂","stars":238,"slides":64},{"n":8,"title":"Animals","ar":"الحيوانات","icon":"🐄","stars":239,"slides":59},{"n":9,"title":"Let's celebrate","ar":"هيّا نحتفل","icon":"🎉","stars":247,"slides":60}],"info":{"1":{"total":168,"parts":{"a":["🏫","1A · My school","مدرستي"],"b":["👫","1B · My friends","أصدقائي"],"c":["🪑","1C · My classroom","صفّي"]},"s":[{"t":"Unit 1 · School","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"Lulu's school day","y":"story","p":"a","m":1},{"t":"Write the word School","y":"ink","p":"a","m":2},{"t":"Find the upper case letters","y":"caps","p":"a","m":4},{"t":"Action words","y":"cards","p":"a","m":1},{"t":"Listen and pop !","y":"balloons","p":"a","m":8},{"t":"What do I do ?","y":"quiz","p":"a","m":7},{"t":"Hello! I am …","y":"quiz","p":"a","m":4},{"t":"I am … draw yourself!","y":"ink","p":"a","m":1},{"t":"at or in ?","y":"quiz","p":"a","m":6},{"t":"my and with","y":"quiz","p":"a","m":6},{"t":"What or Who ?","y":"quiz","p":"a","m":5},{"t":"The alphabet","y":"abc","p":"a","m":1},{"t":"Pop the upper case letter","y":"balloons","p":"a","m":8},{"t":"The sentence train","y":"train","p":"a","m":5},{"t":"Chant: My school day","y":"chant","p":"a","m":1},{"t":"Spin and act it out !","y":"wheel","p":"a","m":3},{"t":"Letter train: action words","y":"train","p":"a","m":5},{"t":"My friends","y":"story","p":"b","m":1},{"t":"Write: with , and , friend","y":"ink","p":"b","m":3},{"t":"Friend words","y":"cards","p":"b","m":1},{"t":"Listen: friends balloons","y":"balloons","p":"b","m":6},{"t":"He , She or It ?","y":"quiz","p":"b","m":7},{"t":"Where is it?","y":"quiz","p":"b","m":5},{"t":"The magic word and","y":"merge","p":"b","m":5},{"t":"The friends train","y":"train","p":"b","m":5},{"t":"Names need a big letter","y":"quiz","p":"b","m":5},{"t":"Yes or No ?","y":"quiz","p":"b","m":8},{"t":"Welcome to my classroom","y":"room","p":"c","m":8},{"t":"Write: Classroom","y":"ink","p":"c","m":3},{"t":"I spy… find it !","y":"room","p":"c","m":8},{"t":"Letter train: classroom words","y":"train","p":"c","m":5},{"t":"One or many ?","y":"plural","p":"c","m":3},{"t":"One or more than one ?","y":"quiz","p":"c","m":7},{"t":"Here is or Here are ?","y":"quiz","p":"c","m":7},{"t":"Chant: In my classroom","y":"chant","p":"c","m":1},{"t":"Be a good friend","y":"quiz","p":"c","m":6},{"t":"Which sentence is correct ?","y":"quiz","p":"c","m":5},{"t":"Make a poster: My school","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"2":{"total":189,"parts":{"a":["👨‍👩‍👧","2A · My family","عائلتي"],"b":["🏠","2B · My home","بيتي"],"c":["🐢","2C · Pets","الحيوانات الأليفة"]},"s":[{"t":"Unit 2 · Home","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"Lulu's family","y":"story","p":"a","m":1},{"t":"Write: Family","y":"ink","p":"a","m":4},{"t":"Family words","y":"cards","p":"a","m":1},{"t":"Listen and pop : family","y":"balloons","p":"a","m":8},{"t":"Family picnic","y":"room","p":"a","m":10},{"t":"He, she, it + s","y":"quiz","p":"a","m":6},{"t":"my or your ?","y":"quiz","p":"a","m":5},{"t":"Who does it?","y":"quiz","p":"a","m":5},{"t":"Where ? Here !","y":"quiz","p":"a","m":6},{"t":"Chant: Who is it?","y":"chant","p":"a","m":1},{"t":"Draw my family","y":"ink","p":"a","m":1},{"t":"Find the upper case letters","y":"caps","p":"a","m":4},{"t":"The family train","y":"train","p":"a","m":5},{"t":"Lulu's home","y":"story","p":"b","m":1},{"t":"Write: Thank you","y":"ink","p":"b","m":3},{"t":"Rooms in my home","y":"room","p":"b","m":6},{"t":"Home words","y":"cards","p":"b","m":1},{"t":"I spy… which room ?","y":"room","p":"b","m":6},{"t":"Where is the kitten ?","y":"quiz","p":"b","m":6},{"t":"The missing letter","y":"quiz","p":"b","m":6},{"t":"Letter train: home words","y":"train","p":"b","m":5},{"t":"Where is the cat ?","y":"toy","p":"b","m":6},{"t":"on , in , behind …","y":"quiz","p":"b","m":6},{"t":"I am · We are","y":"quiz","p":"b","m":5},{"t":"What do we say ?","y":"quiz","p":"b","m":5},{"t":"Draw my bedroom","y":"ink","p":"b","m":1},{"t":"Chant: In my home","y":"chant","p":"b","m":1},{"t":"Yes or No ?","y":"quiz","p":"b","m":6},{"t":"The home train","y":"train","p":"b","m":5},{"t":"Sami's pets","y":"story","p":"c","m":1},{"t":"Write: Is , pet , turtle","y":"ink","p":"c","m":3},{"t":"Pet words","y":"cards","p":"c","m":1},{"t":"Listen and pop : pets","y":"balloons","p":"c","m":8},{"t":"Spin and move like a pet !","y":"wheel","p":"c","m":3},{"t":"He , She or It ?","y":"quiz","p":"c","m":6},{"t":"Is it…? Yes or No","y":"quiz","p":"c","m":5},{"t":"Who is it?","y":"quiz","p":"c","m":5},{"t":"him , her , them","y":"quiz","p":"c","m":5},{"t":"Join with and","y":"merge","p":"c","m":5},{"t":"Do not forget the full stop","y":"quiz","p":"c","m":5},{"t":"Word search","y":"wsearch","p":"c","m":8},{"t":"The pets train","y":"train","p":"c","m":5},{"t":"Chant: Move like a pet","y":"chant","p":"c","m":1},{"t":"Draw my pet","y":"ink","p":"c","m":1},{"t":"Make a poster: My home","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"3":{"total":191,"parts":{"a":["🎲","3A · Things I like doing","ما أحب أن أفعل"],"b":["🏛️","3B · Places I like","أماكن أحبها"],"c":["🍚","3C · Foods I like","أطعمة أحبها"]},"s":[{"t":"Unit 3 · All about me","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"What Lulu likes doing","y":"story","p":"a","m":1},{"t":"Write: play , like , happy","y":"ink","p":"a","m":3},{"t":"Things I like doing","y":"cards","p":"a","m":1},{"t":"Listen and pop !","y":"balloons","p":"a","m":8},{"t":"Spin and act it out !","y":"wheel","p":"a","m":3},{"t":"Add -ing","y":"quiz","p":"a","m":6},{"t":"like or likes ?","y":"quiz","p":"a","m":5},{"t":"This or These ?","y":"quiz","p":"a","m":6},{"t":"How do I feel ?","y":"quiz","p":"a","m":5},{"t":"Two things with and","y":"merge","p":"a","m":5},{"t":"Words that rhyme","y":"quiz","p":"a","m":5},{"t":"The I like train","y":"train","p":"a","m":5},{"t":"Letter train: -ing words","y":"train","p":"a","m":5},{"t":"Chant: We like it!","y":"chant","p":"a","m":1},{"t":"Draw what I like doing","y":"ink","p":"a","m":1},{"t":"Sami's Saturday","y":"story","p":"b","m":1},{"t":"Write: go , going , park","y":"ink","p":"b","m":3},{"t":"Places and things","y":"cards","p":"b","m":1},{"t":"My town map","y":"room","p":"b","m":6},{"t":"Where do you like going ?","y":"room","p":"b","m":6},{"t":"Where do you see it?","y":"quiz","p":"b","m":5},{"t":"I like going …","y":"quiz","p":"b","m":5},{"t":"I do not like …","y":"quiz","p":"b","m":5},{"t":"Where , Who or What ?","y":"quiz","p":"b","m":5},{"t":"Naming word or action word ?","y":"quiz","p":"b","m":7},{"t":"I help at home","y":"quiz","p":"b","m":4},{"t":"One or more ?","y":"quiz","p":"b","m":6},{"t":"The places train","y":"train","p":"b","m":5},{"t":"Chant: Where do you like going?","y":"chant","p":"b","m":1},{"t":"Draw a place I like","y":"ink","p":"b","m":1},{"t":"Lunch at Hana's café","y":"story","p":"c","m":1},{"t":"Write: too , like , food","y":"ink","p":"c","m":3},{"t":"Food words","y":"cards","p":"c","m":1},{"t":"Listen and pop : food","y":"balloons","p":"c","m":8},{"t":"The missing letter","y":"quiz","p":"c","m":5},{"t":"I , he , she , we , they","y":"quiz","p":"c","m":6},{"t":"Me too !","y":"quiz","p":"c","m":4},{"t":"Do you like…?","y":"quiz","p":"c","m":5},{"t":"don't and doesn't","y":"quiz","p":"c","m":5},{"t":"Yes or No ?","y":"quiz","p":"c","m":6},{"t":"Please and thank you","y":"quiz","p":"c","m":4},{"t":"Order your lunch","y":"toy","p":"c","m":6},{"t":"Word search","y":"wsearch","p":"c","m":8},{"t":"The food train","y":"train","p":"c","m":5},{"t":"Chant: Yummy lunch","y":"chant","p":"c","m":1},{"t":"Draw the food I like","y":"ink","p":"c","m":1},{"t":"Make a poster: All about me","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"4":{"total":199,"parts":{"a":["🧗","4A · How I can move","كيف أتحرّك"],"b":["🐘","4B · Animals move","الحيوانات تتحرّك"],"c":["🪁","4C · It's fun to move","الحركة ممتعة"]},"s":[{"t":"Unit 4 · Move it!","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"Lulu's Sports Day","y":"story","p":"a","m":1},{"t":"Write: Can , can , hop","y":"ink","p":"a","m":3},{"t":"Move words","y":"cards","p":"a","m":1},{"t":"Listen and pop !","y":"balloons","p":"a","m":8},{"t":"Spin and move !","y":"wheel","p":"a","m":3},{"t":"can or can't ?","y":"quiz","p":"a","m":6},{"t":"up , down and by","y":"toy","p":"a","m":3},{"t":"He , She , It , We , They","y":"quiz","p":"a","m":5},{"t":"Add s with he, she, it","y":"quiz","p":"a","m":5},{"t":"Two moves with and","y":"merge","p":"a","m":5},{"t":"The I can train","y":"train","p":"a","m":5},{"t":"Letter train: move words","y":"train","p":"a","m":5},{"t":"Yes or No ?","y":"quiz","p":"a","m":6},{"t":"Chant: I can do it!","y":"chant","p":"a","m":1},{"t":"Draw what I can do","y":"ink","p":"a","m":1},{"t":"At the zoo","y":"story","p":"b","m":1},{"t":"Write: stomp , fly , jump","y":"ink","p":"b","m":3},{"t":"Animal words","y":"cards","p":"b","m":1},{"t":"How do they move ?","y":"room","p":"b","m":12},{"t":"What am I?","y":"room","p":"b","m":12},{"t":"Listen and pop : animals","y":"balloons","p":"b","m":8},{"t":"Move like an animal","y":"quiz","p":"b","m":6},{"t":"It can't …","y":"quiz","p":"b","m":5},{"t":"Can it…?","y":"quiz","p":"b","m":5},{"t":"in or across ?","y":"quiz","p":"b","m":5},{"t":"One child , two children","y":"quiz","p":"b","m":4},{"t":"Animal riddles","y":"quiz","p":"b","m":5},{"t":"Animal word search","y":"wsearch","p":"b","m":8},{"t":"The animal train","y":"train","p":"b","m":5},{"t":"Chant: Move like an animal","y":"chant","p":"b","m":1},{"t":"Draw me moving","y":"ink","p":"b","m":1},{"t":"Show and tell","y":"story","p":"c","m":1},{"t":"Write: have , with , for","y":"ink","p":"c","m":3},{"t":"Things I have","y":"cards","p":"c","m":1},{"t":"Listen and pop : my things","y":"balloons","p":"c","m":8},{"t":"What do you have ?","y":"toy","p":"c","m":6},{"t":"What can I do with it?","y":"quiz","p":"c","m":6},{"t":"have or has ?","y":"quiz","p":"c","m":6},{"t":"with or for ?","y":"quiz","p":"c","m":5},{"t":"Do you have…?","y":"quiz","p":"c","m":5},{"t":"Be a good friend","y":"quiz","p":"c","m":5},{"t":"Match the sentence","y":"quiz","p":"c","m":5},{"t":"The I have train","y":"train","p":"c","m":5},{"t":"Chant: I have, I can","y":"chant","p":"c","m":1},{"t":"Draw what I have","y":"ink","p":"c","m":1},{"t":"Make a poster: I can move!","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"5":{"total":207,"parts":{"a":["🔟","5A · Numbers","الأعداد"],"b":["2️⃣","5B · Numbers to twenty","الأعداد حتى عشرين"],"c":["🎨","5C · Colours","الألوان"]},"s":[{"t":"Unit 5 · Things I know","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"The talent show","y":"story","p":"a","m":1},{"t":"Write: ball , plate , ten","y":"ink","p":"a","m":3},{"t":"Numbers one to ten","y":"cards","p":"a","m":1},{"t":"Count with me","y":"count","p":"a","m":10},{"t":"Listen and pop the number","y":"balloons","p":"a","m":8},{"t":"How many ?","y":"quiz","p":"a","m":6},{"t":"One ball , two balls","y":"quiz","p":"a","m":5},{"t":"Show words","y":"cards","p":"a","m":1},{"t":"Describing words","y":"quiz","p":"a","m":6},{"t":"How many ? How old ?","y":"quiz","p":"a","m":5},{"t":"Names need an upper case letter","y":"caps","p":"a","m":4},{"t":"love or loves ?","y":"quiz","p":"a","m":4},{"t":"Count up and back","y":"quiz","p":"a","m":5},{"t":"Letter train: number words","y":"train","p":"a","m":5},{"t":"The number train","y":"train","p":"a","m":5},{"t":"Chant: Count with me","y":"chant","p":"a","m":1},{"t":"My number poster","y":"ink","p":"a","m":1},{"t":"In the garden","y":"story","p":"b","m":1},{"t":"Write: eleven , twelve , twenty","y":"ink","p":"b","m":3},{"t":"Numbers eleven to twenty","y":"cards","p":"b","m":1},{"t":"Count to twenty","y":"count","p":"b","m":10},{"t":"Listen and pop : 11 to 20","y":"balloons","p":"b","m":8},{"t":"How many can you see ?","y":"quiz","p":"b","m":5},{"t":"The missing number","y":"quiz","p":"b","m":5},{"t":"Letter train: big numbers","y":"train","p":"b","m":5},{"t":"One or more ?","y":"quiz","p":"b","m":6},{"t":"Here and there","y":"toy","p":"b","m":4},{"t":"Here or There ?","y":"quiz","p":"b","m":4},{"t":"for or with ?","y":"quiz","p":"b","m":4},{"t":"big , little , pretty …","y":"quiz","p":"b","m":5},{"t":"They","y":"quiz","p":"b","m":4},{"t":"The counting train","y":"train","p":"b","m":5},{"t":"Chant: Up to twenty","y":"chant","p":"b","m":1},{"t":"My number story","y":"ink","p":"b","m":1},{"t":"Art day","y":"story","p":"c","m":1},{"t":"Write: red , blue , green","y":"ink","p":"c","m":3},{"t":"Colour words","y":"cards","p":"c","m":1},{"t":"Listen and pop the colour","y":"balloons","p":"c","m":8},{"t":"Colour the butterfly","y":"paint","p":"c","m":5},{"t":"What colour is it?","y":"quiz","p":"c","m":7},{"t":"Number and colour","y":"quiz","p":"c","m":5},{"t":"Art words","y":"quiz","p":"c","m":5},{"t":"my , his , her , their","y":"quiz","p":"c","m":4},{"t":"The colour comes before","y":"quiz","p":"c","m":4},{"t":"Two colours with and","y":"merge","p":"c","m":5},{"t":"The colour train","y":"train","p":"c","m":5},{"t":"Colour word search","y":"wsearch","p":"c","m":8},{"t":"Chant: So many colours","y":"chant","p":"c","m":1},{"t":"Draw a colourful butterfly","y":"ink","p":"c","m":1},{"t":"Make a poster: Things I know","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"6":{"total":238,"parts":{"a":["🌅","6A · My day","يومي"],"b":["📅","6B · My week","أسبوعي"],"c":["🕰️","6C · Watching the clock","نراقب الساعة"]},"s":[{"t":"Unit 6 · Time","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"Lulu's day","y":"story","p":"a","m":1},{"t":"Write: morning , lunch , night","y":"ink","p":"a","m":3},{"t":"What I do every day","y":"cards","p":"a","m":1},{"t":"Times and meals","y":"cards","p":"a","m":1},{"t":"The day goes round","y":"toy","p":"a","m":4},{"t":"Listen and pop","y":"balloons","p":"a","m":8},{"t":"When do I do it?","y":"quiz","p":"a","m":6},{"t":"in or at ?","y":"quiz","p":"a","m":6},{"t":"Questions with When","y":"quiz","p":"a","m":5},{"t":"my , his , her , their","y":"quiz","p":"a","m":5},{"t":"I , He , She or They ?","y":"quiz","p":"a","m":4},{"t":"eat or eats ?","y":"quiz","p":"a","m":5},{"t":"What comes next ?","y":"quiz","p":"a","m":5},{"t":"Good morning or Goodnight ?","y":"quiz","p":"a","m":5},{"t":"I is always upper case","y":"caps","p":"a","m":4},{"t":"Letter train: my day","y":"train","p":"a","m":5},{"t":"The my day train","y":"train","p":"a","m":5},{"t":"Spin and act it out !","y":"wheel","p":"a","m":3},{"t":"Chant: All day long","y":"chant","p":"a","m":1},{"t":"Draw my day","y":"ink","p":"a","m":1},{"t":"Sami's busy week","y":"story","p":"b","m":1},{"t":"Write: Monday , Friday , Sunday","y":"ink","p":"b","m":3},{"t":"The days of the week","y":"cards","p":"b","m":1},{"t":"Listen and pop the day","y":"balloons","p":"b","m":7},{"t":"The missing day","y":"quiz","p":"b","m":5},{"t":"What day is it today?","y":"quiz","p":"b","m":6},{"t":"Sami's weekly planner","y":"quiz","p":"b","m":6},{"t":"on Monday","y":"quiz","p":"b","m":6},{"t":"has or have ?","y":"quiz","p":"b","m":5},{"t":"help or helps ?","y":"quiz","p":"b","m":6},{"t":"His or Her ?","y":"quiz","p":"b","m":5},{"t":"Days need an upper case letter","y":"caps","p":"b","m":4},{"t":"Letter train: the days","y":"train","p":"b","m":5},{"t":"The busy week train","y":"train","p":"b","m":5},{"t":"Come to my house !","y":"quiz","p":"b","m":4},{"t":"Days word search","y":"wsearch","p":"b","m":8},{"t":"Chant: Seven days","y":"chant","p":"b","m":1},{"t":"My favourite day","y":"ink","p":"b","m":1},{"t":"The clock game","y":"story","p":"c","m":1},{"t":"Write: clock , time , eight","y":"ink","p":"c","m":3},{"t":"One to four o'clock","y":"cards","p":"c","m":1},{"t":"Five to eight o'clock","y":"cards","p":"c","m":1},{"t":"Nine to twelve o'clock","y":"cards","p":"c","m":1},{"t":"Move the clock","y":"toy","p":"c","m":6},{"t":"Listen and pop the clock","y":"balloons","p":"c","m":8},{"t":"What is the time ?","y":"quiz","p":"c","m":7},{"t":"The number clock","y":"quiz","p":"c","m":6},{"t":"It is time for …","y":"quiz","p":"c","m":6},{"t":"on , in or at ?","y":"quiz","p":"c","m":6},{"t":"our , your , their","y":"quiz","p":"c","m":5},{"t":"True or false ?","y":"quiz","p":"c","m":5},{"t":"After school","y":"quiz","p":"c","m":4},{"t":"The game words","y":"quiz","p":"c","m":4},{"t":"I + verb + at + the time","y":"quiz","p":"c","m":4},{"t":"Letter train: clock words","y":"train","p":"c","m":5},{"t":"The clock train","y":"train","p":"c","m":5},{"t":"Chant: Tick tock","y":"chant","p":"c","m":1},{"t":"Draw my clock","y":"ink","p":"c","m":1},{"t":"Make a poster: My day","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"7":{"total":238,"parts":{"a":["🌷","7A · The seasons","الفصول"],"b":["🧥","7B · Clothes","الملابس"],"c":["🐿️","7C · Animals and the seasons","الحيوانات والفصول"]},"s":[{"t":"Unit 7 · Seasons","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"Lulu's seasons","y":"story","p":"a","m":1},{"t":"Write: summer , winter , spring","y":"ink","p":"a","m":3},{"t":"The four seasons","y":"cards","p":"a","m":1},{"t":"The seasons change","y":"toy","p":"a","m":4},{"t":"Listen and pop","y":"balloons","p":"a","m":8},{"t":"warm , hot , cool or cold ?","y":"quiz","p":"a","m":6},{"t":"Season words","y":"cards","p":"a","m":1},{"t":"Colour adjectives","y":"quiz","p":"a","m":6},{"t":"I like … I do not like …","y":"quiz","p":"a","m":6},{"t":"Add -ing","y":"quiz","p":"a","m":5},{"t":"in or on ?","y":"quiz","p":"a","m":6},{"t":"One lamb , two lambs","y":"plural","p":"a","m":3},{"t":"This or These ?","y":"quiz","p":"a","m":5},{"t":"Read and colour","y":"paint","p":"a","m":5},{"t":"Which sentence is correct ?","y":"quiz","p":"a","m":5},{"t":"Letter train: the seasons","y":"train","p":"a","m":5},{"t":"The seasons train","y":"train","p":"a","m":5},{"t":"Seasons word search","y":"wsearch","p":"a","m":8},{"t":"Chant: Four seasons","y":"chant","p":"a","m":1},{"t":"My favourite season","y":"ink","p":"a","m":1},{"t":"What are you wearing ?","y":"story","p":"b","m":1},{"t":"Write: cool , rainy , thick","y":"ink","p":"b","m":3},{"t":"Summer and autumn clothes","y":"cards","p":"b","m":1},{"t":"Winter and spring clothes","y":"cards","p":"b","m":1},{"t":"The weather and my clothes","y":"toy","p":"b","m":4},{"t":"Listen and pop the clothes","y":"balloons","p":"b","m":8},{"t":"Match the weather to the clothes","y":"quiz","p":"b","m":4},{"t":"Choose the best word","y":"quiz","p":"b","m":5},{"t":"am , is or are ?","y":"quiz","p":"b","m":6},{"t":"What are they doing now?","y":"quiz","p":"b","m":7},{"t":"True or false ?","y":"quiz","p":"b","m":5},{"t":"What season is it?","y":"quiz","p":"b","m":4},{"t":"Join with and","y":"merge","p":"b","m":5},{"t":"My writing plan","y":"quiz","p":"b","m":4},{"t":"Letter train: missing letters","y":"train","p":"b","m":5},{"t":"The clothes train","y":"train","p":"b","m":5},{"t":"Spin and act it out !","y":"wheel","p":"b","m":3},{"t":"Chant: We are moving","y":"chant","p":"b","m":1},{"t":"My favourite clothes","y":"ink","p":"b","m":1},{"t":"Coco the squirrel's seasons","y":"story","p":"c","m":1},{"t":"Write: nuts , seeds , insects","y":"ink","p":"c","m":3},{"t":"What squirrels eat","y":"cards","p":"c","m":1},{"t":"How does Coco feel ?","y":"cards","p":"c","m":1},{"t":"Listen and pop the food","y":"balloons","p":"c","m":8},{"t":"More than one","y":"quiz","p":"c","m":6},{"t":"Which season ?","y":"quiz","p":"c","m":4},{"t":"Right now : verb + -ing","y":"quiz","p":"c","m":4},{"t":"not makes it negative","y":"quiz","p":"c","m":4},{"t":"No, she is …","y":"quiz","p":"c","m":4},{"t":"What are you doing ?","y":"quiz","p":"c","m":4},{"t":"Coco is …","y":"quiz","p":"c","m":6},{"t":"Two foods with and","y":"merge","p":"c","m":4},{"t":"Names need an upper case letter","y":"caps","p":"c","m":4},{"t":"Questions about Coco","y":"quiz","p":"c","m":5},{"t":"Letter train: food words","y":"train","p":"c","m":5},{"t":"The squirrel train","y":"train","p":"c","m":5},{"t":"Food word search","y":"wsearch","p":"c","m":8},{"t":"Chant: Drip, drop","y":"chant","p":"c","m":1},{"t":"Draw the four seasons","y":"ink","p":"c","m":1},{"t":"Make a poster: My seasons","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"8":{"total":239,"parts":{"a":["🐓","8A · Farm animals","حيوانات المزرعة"],"b":["🐢","8B · Wild animals","الحيوانات البرية"],"c":["🐛","8C · Creepy crawlies","الحشرات والزواحف الصغيرة"]},"s":[{"t":"Unit 8 · Animals","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"A busy farm","y":"story","p":"a","m":1},{"t":"Write: farm , sheep , horse","y":"ink","p":"a","m":3},{"t":"Farm animals","y":"cards","p":"a","m":1},{"t":"Listen and pop the animal","y":"balloons","p":"a","m":8},{"t":"Animal sounds","y":"quiz","p":"a","m":6},{"t":"What are the animals doing ?","y":"quiz","p":"a","m":7},{"t":"Add -ing","y":"quiz","p":"a","m":5},{"t":"busy or not busy ?","y":"quiz","p":"a","m":6},{"t":"Where is the cat?","y":"toy","p":"a","m":5},{"t":"in , on , under , next to , near","y":"quiz","p":"a","m":6},{"t":"me , him , her , it , us , them","y":"quiz","p":"a","m":6},{"t":"I am… I am not …","y":"quiz","p":"a","m":4},{"t":"Letter train: farm animals","y":"train","p":"a","m":5},{"t":"The farm train","y":"train","p":"a","m":5},{"t":"Spin and be the animal !","y":"wheel","p":"a","m":3},{"t":"Farm word search","y":"wsearch","p":"a","m":8},{"t":"Chant: Down on the farm","y":"chant","p":"a","m":1},{"t":"My favourite farm animal","y":"ink","p":"a","m":1},{"t":"The jungle race","y":"story","p":"b","m":1},{"t":"Write: clever , fast , slow","y":"ink","p":"b","m":3},{"t":"Wild animals","y":"cards","p":"b","m":1},{"t":"First to tenth","y":"cards","p":"b","m":1},{"t":"Listen and pop the place","y":"balloons","p":"b","m":8},{"t":"Who is where in the race?","y":"quiz","p":"b","m":7},{"t":"Which colour ?","y":"quiz","p":"b","m":6},{"t":"How do they move ?","y":"quiz","p":"b","m":5},{"t":"slow , fast , clever …","y":"quiz","p":"b","m":6},{"t":"through , onto , along , near …","y":"quiz","p":"b","m":7},{"t":"True or false ?","y":"quiz","p":"b","m":6},{"t":"Who am I ?","y":"quiz","p":"b","m":5},{"t":"My animal story plan","y":"quiz","p":"b","m":5},{"t":"Animal names in a story","y":"caps","p":"b","m":4},{"t":"Letter train: race words","y":"train","p":"b","m":5},{"t":"The race train","y":"train","p":"b","m":5},{"t":"Chant: In the jungle","y":"chant","p":"b","m":1},{"t":"My wild animal","y":"ink","p":"b","m":1},{"t":"In Grandma's garden","y":"story","p":"c","m":1},{"t":"Write: worm , cricket , butterfly","y":"ink","p":"c","m":3},{"t":"Creepy crawlies","y":"cards","p":"c","m":1},{"t":"Listen and pop","y":"balloons","p":"c","m":8},{"t":"This or These ?","y":"quiz","p":"c","m":8},{"t":"is , are , this , these","y":"quiz","p":"c","m":5},{"t":"me , you , her , it , them , us","y":"quiz","p":"c","m":6},{"t":"What is it doing ?","y":"quiz","p":"c","m":4},{"t":"It is … -ing","y":"quiz","p":"c","m":4},{"t":"What is it? Where is it?","y":"quiz","p":"c","m":4},{"t":"Farm, wild or creepy crawly ?","y":"quiz","p":"c","m":8},{"t":"Riddles","y":"quiz","p":"c","m":4},{"t":"Tick the correct sentence","y":"quiz","p":"c","m":4},{"t":"Letter train: garden words","y":"train","p":"c","m":5},{"t":"The garden train","y":"train","p":"c","m":5},{"t":"Garden word search","y":"wsearch","p":"c","m":8},{"t":"Chant: Creepy crawly","y":"chant","p":"c","m":1},{"t":"Draw my riddle","y":"ink","p":"c","m":1},{"t":"Make a poster: Animals","y":"poster","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]},"9":{"total":247,"parts":{"a":["🎂","9A · Birthdays","أعياد الميلاد"],"b":["🍽️","9B · Eating out","الأكل في المطعم"],"c":["🧳","9C · Holidays","العطلات"]},"s":[{"t":"Unit 9 · Let's celebrate","y":"title","p":0,"m":0},{"t":"Map","y":"map","p":0,"m":0},{"t":"Hana's birthday party","y":"story","p":"a","m":1},{"t":"Write: game , prize , party","y":"ink","p":"a","m":3},{"t":"Party words","y":"cards","p":"a","m":1},{"t":"How do they feel ?","y":"cards","p":"a","m":1},{"t":"Listen and pop","y":"balloons","p":"a","m":8},{"t":"Count the prizes","y":"count","p":"a","m":10},{"t":"One child , two children","y":"quiz","p":"a","m":7},{"t":"Which game is it?","y":"quiz","p":"a","m":5},{"t":"Match the number with the word","y":"quiz","p":"a","m":8},{"t":"Who is where in the race?","y":"quiz","p":"a","m":6},{"t":"my , your , his , her , our , their","y":"quiz","p":"a","m":6},{"t":"a or the ?","y":"quiz","p":"a","m":6},{"t":"I → me , he → him","y":"quiz","p":"a","m":6},{"t":"happy or sad ?","y":"quiz","p":"a","m":5},{"t":"First to tenth train","y":"train","p":"a","m":3},{"t":"Letter train: party words","y":"train","p":"a","m":5},{"t":"The party train","y":"train","p":"a","m":5},{"t":"Lulu says …","y":"wheel","p":"a","m":3},{"t":"Chant: Party time","y":"chant","p":"a","m":1},{"t":"Draw my party","y":"ink","p":"a","m":1},{"t":"Grandma's surprise","y":"story","p":"b","m":1},{"t":"Write: surprise , dessert , yummy","y":"ink","p":"b","m":3},{"t":"Food on the menu","y":"cards","p":"b","m":1},{"t":"Desserts and drinks","y":"cards","p":"b","m":1},{"t":"Listen and pop the food","y":"balloons","p":"b","m":8},{"t":"Find the adjective","y":"quiz","p":"b","m":5},{"t":"The fried rice is delicious","y":"quiz","p":"b","m":6},{"t":"for or with ?","y":"quiz","p":"b","m":6},{"t":"Read the menu","y":"quiz","p":"b","m":8},{"t":"Please and thank you","y":"quiz","p":"b","m":4},{"t":"Do you like …?","y":"quiz","p":"b","m":6},{"t":"Two foods with and","y":"merge","p":"b","m":4},{"t":"True or false ?","y":"quiz","p":"b","m":5},{"t":"Menu word search","y":"wsearch","p":"b","m":8},{"t":"Letter train: yummy words","y":"train","p":"b","m":5},{"t":"The restaurant train","y":"train","p":"b","m":5},{"t":"Chant: Yummy food","y":"chant","p":"b","m":1},{"t":"Make my menu","y":"poster","p":"b","m":1},{"t":"My favourite food","y":"ink","p":"b","m":1},{"t":"Holiday time!","y":"story","p":"c","m":1},{"t":"Write: holiday , lake , ski","y":"ink","p":"c","m":3},{"t":"Holiday words","y":"cards","p":"c","m":1},{"t":"How do we get there ?","y":"toy","p":"c","m":4},{"t":"Listen and pop","y":"balloons","p":"c","m":8},{"t":"can or can't ?","y":"quiz","p":"c","m":7},{"t":"She goes , they go","y":"quiz","p":"c","m":7},{"t":"at , in or on ?","y":"quiz","p":"c","m":6},{"t":"Finish the holiday story","y":"quiz","p":"c","m":7},{"t":"My holiday plan","y":"quiz","p":"c","m":5},{"t":"go , play or do ?","y":"quiz","p":"c","m":6},{"t":"What do they pack ?","y":"quiz","p":"c","m":5},{"t":"True or false ?","y":"quiz","p":"c","m":5},{"t":"Letter train: holiday words","y":"train","p":"c","m":5},{"t":"The holiday train","y":"train","p":"c","m":5},{"t":"Chant: Holiday fun","y":"chant","p":"c","m":1},{"t":"Draw my holiday","y":"ink","p":"c","m":1},{"t":"How did I do?","y":"check","p":"c","m":0},{"t":"Certificate","y":"final","p":0,"m":0}]}},"fam":{"p":"english-is-fun-cdec8","k":"AIzaSyBXY6KlzyR3rt6ma5WwObkm2FwQlEfWamA"}}</script>
+<script>
+/* RL — small, dependency-free crypto used by the bundle, identical in the browser and in Node.
+   Written in plain JS (not WebCrypto) because the file must also unlock when opened from WhatsApp or a
+   file manager, where the page is not always a "secure context" and crypto.subtle is missing.
+   Primitives are standard: SHA-256, HMAC-SHA256, PBKDF2-HMAC-SHA256 and AES. The cipher is AES-256 in counter
+   mode (AES-256-CTR), authenticated with a separate HMAC-SHA256 tag (encrypt-then-MAC).
+   tools/selftest.mjs checks SHA-256, HMAC, PBKDF2 and AES against Node's own crypto. */
+const RL=(()=>{
+  const K=new Int32Array(64),H0=new Int32Array(8),W=new Int32Array(64);
+  {let n=0;for(let p=2;n<64;p++){let prime=true;for(let d=2;d*d<=p;d++)if(p%d===0){prime=false;break}
+    if(prime){if(n<8)H0[n]=(Math.pow(p,1/2)%1)*4294967296|0;K[n++]=(Math.pow(p,1/3)%1)*4294967296|0}}}
+  function comp(h,b,o){
+    for(let i=0;i<16;i++,o+=4)W[i]=b[o]<<24|b[o+1]<<16|b[o+2]<<8|b[o+3];
+    for(let i=16;i<64;i++){const x=W[i-15],y=W[i-2];
+      W[i]=(W[i-16]+((x>>>7|x<<25)^(x>>>18|x<<14)^(x>>>3))+W[i-7]+((y>>>17|y<<15)^(y>>>19|y<<13)^(y>>>10)))|0}
+    let a=h[0],bb=h[1],c=h[2],d=h[3],e=h[4],f=h[5],g=h[6],hh=h[7];
+    for(let i=0;i<64;i++){
+      const t1=(hh+((e>>>6|e<<26)^(e>>>11|e<<21)^(e>>>25|e<<7))+((e&f)^(~e&g))+K[i]+W[i])|0;
+      const t2=(((a>>>2|a<<30)^(a>>>13|a<<19)^(a>>>22|a<<10))+((a&bb)^(a&c)^(bb&c)))|0;
+      hh=g;g=f;f=e;e=(d+t1)|0;d=c;c=bb;bb=a;a=(t1+t2)|0}
+    h[0]=(h[0]+a)|0;h[1]=(h[1]+bb)|0;h[2]=(h[2]+c)|0;h[3]=(h[3]+d)|0;h[4]=(h[4]+e)|0;h[5]=(h[5]+f)|0;h[6]=(h[6]+g)|0;h[7]=(h[7]+hh)|0}
+  const out=(h,o,at=0)=>{for(let i=0;i<8;i++){const v=h[i];o[at++]=v>>>24;o[at++]=v>>>16&255;o[at++]=v>>>8&255;o[at++]=v&255}return o};
+  /* finish a hash whose state h has already absorbed `pre` bytes */
+  function fin(h,data,pre){const n=data.length,p=new Uint8Array(((n+72)>>6)<<6);p.set(data);p[n]=128;
+    const bits=(pre+n)*8,L=p.length;p[L-8]=0;p[L-5]=Math.floor(bits/4294967296)&255;p[L-4]=bits>>>24;p[L-3]=bits>>>16&255;p[L-2]=bits>>>8&255;p[L-1]=bits&255;
+    for(let o=0;o<L;o+=64)comp(h,p,o);return out(h,new Uint8Array(32))}
+  const sha256=d=>fin(H0.slice(),d,0);
+  function hkey(key){if(key.length>64)key=sha256(key);const a=new Uint8Array(64),b=new Uint8Array(64);
+    for(let i=0;i<64;i++){const k=key[i]||0;a[i]=k^0x36;b[i]=k^0x5c}const I=H0.slice(),O=H0.slice();comp(I,a,0);comp(O,b,0);return{I,O}}
+  const hmac=(ks,msg)=>fin(ks.O.slice(),fin(ks.I.slice(),msg,64),64);
+  /* fast path: HMAC of a message shorter than 56 bytes, written into `o` without allocating */
+  const B1=new Uint8Array(64),B2=new Uint8Array(64),T=new Int32Array(8),D=new Uint8Array(32);
+  B2[32]=128;B2[62]=3;B2[63]=0;                                  /* outer block: 32-byte digest, total 96 bytes = 768 bits */
+  function small(ks,msg,len,o){B1.fill(0);for(let i=0;i<len;i++)B1[i]=msg[i];B1[len]=128;const bits=(64+len)*8;B1[62]=bits>>>8;B1[63]=bits&255;
+    T.set(ks.I);comp(T,B1,0);out(T,D);for(let i=0;i<32;i++)B2[i]=D[i];T.set(ks.O);comp(T,B2,0);return out(T,o)}
+  function pbkdf2(pass,salt,iter,blocks){const ks=hkey(pass),res=new Uint8Array(32*blocks),U=new Uint8Array(32);
+    for(let b=1;b<=blocks;b++){const first=new Uint8Array(salt.length+4);first.set(salt);first[salt.length+3]=b;
+      const u=hmac(ks,first),t=u.slice();U.set(u);
+      for(let j=1;j<iter;j++){small(ks,U,32,U);for(let i=0;i<32;i++)t[i]^=U[i]}
+      res.set(t,(b-1)*32)}
+    return res}
+  /* AES (FIPS-197): S-box and the four round tables are computed, not typed in */
+  const S=new Uint8Array(256),T0=new Int32Array(256),T1=new Int32Array(256),T2=new Int32Array(256),T3=new Int32Array(256);
+  {let p=1,q=1;do{p=(p^(p<<1)^(p&128?0x1b:0))&255;q^=q<<1;q^=q<<2;q^=q<<4;q&=255;if(q&128)q^=9;
+      S[p]=(q^((q<<1|q>>>7)&255)^((q<<2|q>>>6)&255)^((q<<3|q>>>5)&255)^((q<<4|q>>>4)&255)^0x63)&255}while(p!==1);S[0]=0x63;
+    for(let i=0;i<256;i++){const s=S[i],s2=(s<<1^(s&128?0x1b:0))&255,t=s2<<24|s<<16|s<<8|(s2^s);
+      T0[i]=t;T1[i]=t>>>8|t<<24;T2[i]=t>>>16|t<<16;T3[i]=t>>>24|t<<8}}
+  const sub=w=>S[w>>>24]<<24|S[w>>>16&255]<<16|S[w>>>8&255]<<8|S[w&255];
+  /* round keys for a 16-, 24- or 32-byte key (the bundle uses 32 bytes: AES-256, 14 rounds) */
+  function aesKey(key){const nk=key.length>>2,nr=nk+6,w=new Int32Array(4*(nr+1));
+    for(let i=0;i<nk;i++)w[i]=key[4*i]<<24|key[4*i+1]<<16|key[4*i+2]<<8|key[4*i+3];
+    for(let i=nk,rc=1;i<w.length;i++){let t=w[i-1];
+      if(i%nk===0){t=sub(t<<8|t>>>24)^rc<<24;rc=(rc<<1^(rc&128?0x1b:0))&255}else if(nk>6&&i%nk===4)t=sub(t);
+      w[i]=w[i-nk]^t}
+    return{w,nr}}
+  /* encrypt one 16-byte block: b[bo..] -> o[oo..] */
+  function aesBlock(rk,b,bo,o,oo){const w=rk.w,nr=rk.nr;
+    let a=(b[bo]<<24|b[bo+1]<<16|b[bo+2]<<8|b[bo+3])^w[0],c=(b[bo+4]<<24|b[bo+5]<<16|b[bo+6]<<8|b[bo+7])^w[1],
+        d=(b[bo+8]<<24|b[bo+9]<<16|b[bo+10]<<8|b[bo+11])^w[2],e=(b[bo+12]<<24|b[bo+13]<<16|b[bo+14]<<8|b[bo+15])^w[3],k=4;
+    for(let r=1;r<nr;r++,k+=4){
+      const a2=T0[a>>>24]^T1[c>>>16&255]^T2[d>>>8&255]^T3[e&255]^w[k],c2=T0[c>>>24]^T1[d>>>16&255]^T2[e>>>8&255]^T3[a&255]^w[k+1],
+            d2=T0[d>>>24]^T1[e>>>16&255]^T2[a>>>8&255]^T3[c&255]^w[k+2],e2=T0[e>>>24]^T1[a>>>16&255]^T2[c>>>8&255]^T3[d&255]^w[k+3];
+      a=a2;c=c2;d=d2;e=e2}
+    const f=[(S[a>>>24]<<24|S[c>>>16&255]<<16|S[d>>>8&255]<<8|S[e&255])^w[k],(S[c>>>24]<<24|S[d>>>16&255]<<16|S[e>>>8&255]<<8|S[a&255])^w[k+1],
+             (S[d>>>24]<<24|S[e>>>16&255]<<16|S[a>>>8&255]<<8|S[c&255])^w[k+2],(S[e>>>24]<<24|S[a>>>16&255]<<16|S[c>>>8&255]<<8|S[d&255])^w[k+3]];
+    for(let i=0;i<4;i++){const v=f[i];o[oo++]=v>>>24;o[oo++]=v>>>16&255;o[oo++]=v>>>8&255;o[oo++]=v&255}return o}
+  /* AES-256 in counter mode (NIST SP 800-38A): counter block = 12-byte nonce || 32-bit block number from 0.
+     XORs data with the keystream, so the same call encrypts and decrypts. Same output as Node's 'aes-256-ctr'. */
+  function stream(encKey,nonce,data){const rk=aesKey(encKey),m=new Uint8Array(16),blk=new Uint8Array(16),o=new Uint8Array(data.length);m.set(nonce);
+    for(let c=0,p=0;p<data.length;c++){m[12]=c>>>24;m[13]=c>>>16&255;m[14]=c>>>8&255;m[15]=c&255;aesBlock(rk,m,0,blk,0);
+      const n=Math.min(16,data.length-p);for(let i=0;i<n;i++,p++)o[p]=data[p]^blk[i]}
+    return o}
+  const cat=(...a)=>{const o=new Uint8Array(a.reduce((s,x)=>s+x.length,0));let p=0;for(const x of a){o.set(x,p);p+=x.length}return o};
+  const tag=(macKey,nonce,ct)=>hmac(hkey(macKey),cat(nonce,ct)).slice(0,16);
+  const seal=(keys,nonce,plain)=>{const ct=stream(keys.subarray(0,32),nonce,plain);return{ct,tag:tag(keys.subarray(32,64),nonce,ct)}};
+  /* returns the plaintext, or null when the code is wrong or the data was altered */
+  function open(keys,nonce,ct,tg){const t=tag(keys.subarray(32,64),nonce,ct);let d=0;for(let i=0;i<16;i++)d|=t[i]^tg[i];return d?null:stream(keys.subarray(0,32),nonce,ct)}
+  const utf8=s=>new TextEncoder().encode(s),text=b=>new TextDecoder().decode(b);
+  const b64=b=>{let s='';for(let i=0;i<b.length;i+=32768)s+=String.fromCharCode.apply(null,b.subarray(i,i+32768));return btoa(s)};
+  const unb64=s=>{const r=atob(s),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o};
+  /* the code as typed: letters and digits only, upper case, so dashes, spaces and case never matter */
+  const norm=c=>String(c).toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const keysFor=(code,salt,iter)=>pbkdf2(utf8(norm(code)),salt,iter,2);
+  return{sha256,hkey,hmac,pbkdf2,aesKey,aesBlock,stream,seal,open,utf8,text,b64,unb64,norm,keysFor,cat}})();
+
+</script>
+<script>
+/* FSL — the few Firestore calls the parent link needs, over Firestore's plain web (REST) interface.
+   No Firebase library is loaded: the app stays small and keeps opening with no connection.
+   cfg = { p: project id, k: web API key }   (for the local emulator: { p, h: 'http://127.0.0.1:8085' })
+   Nobody signs in. What protects a family is its id: 128 bits derived from the activation code, which the
+   security rules (firebase/firestore.rules) never let anyone list. */
+const FSL=cfg=>{
+  const root=(cfg.h||'https://firestore.googleapis.com')+'/v1/projects/'+cfg.p+'/databases/(default)/documents/';
+  const fields=o=>{const f={};for(const k in o)if(o[k]!==undefined)f[k]=enc(o[k]);return f};
+  const enc=v=>v===null?{nullValue:null}:typeof v==='string'?{stringValue:v}:typeof v==='boolean'?{booleanValue:v}
+    :typeof v==='number'?(Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v})
+    :Array.isArray(v)?{arrayValue:{values:v.map(enc)}}:{mapValue:{fields:fields(v)}};
+  const obj=f=>{const o={};for(const k in f||{})o[k]=dec(f[k]);return o};
+  const dec=v=>'stringValue' in v?v.stringValue:'integerValue' in v?+v.integerValue:'doubleValue' in v?v.doubleValue
+    :'booleanValue' in v?v.booleanValue:'arrayValue' in v?(v.arrayValue.values||[]).map(dec):'mapValue' in v?obj(v.mapValue.fields):null;
+  const url=(p,qs)=>root+p+'?'+[cfg.k?'key='+encodeURIComponent(cfg.k):''].concat(qs||[]).filter(Boolean).join('&');
+  const call=async(m,u,body)=>{
+    const r=await fetch(u,{method:m,cache:'no-store',credentials:'omit',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});
+    if(r.status===404)return null;
+    if(!r.ok){const e=new Error('fs '+r.status);e.status=r.status;throw e}
+    return r.json()};
+  return{
+    /* the document as a plain object, or null when there is none */
+    get:async p=>{const d=await call('GET',url(p));return d?obj(d.fields):null},
+    /* writes only the fields named in mask (a named field that is missing from o is removed); makes the document if needed */
+    set:(p,o,mask)=>call('PATCH',url(p,(mask||Object.keys(o)).map(f=>'updateMask.fieldPaths='+f)),{fields:fields(o)}),
+    list:async p=>{const d=await call('GET',url(p,['pageSize=30']));return((d&&d.documents)||[]).map(x=>Object.assign(obj(x.fields),{id:x.name.split('/').pop()}))},
+    del:p=>call('DELETE',url(p))};
+};
+
+</script>
+<script>
+(()=>{'use strict';
+  const V=JSON.parse(document.getElementById('vault').textContent),$=id=>document.getElementById(id),AR=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+  const META=V.meta,MAX=META.reduce((a,u)=>a+u.stars,0),need=u=>Math.ceil(u.stars*V.share);
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const hex=b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');
+  const show=id=>['s_off','s_code','s_pin','s_dash'].forEach(x=>{$(x).hidden=x!==id});
+  if(!V.fam){show('s_off');return}
+  const api=FSL(V.fam),KEY='rl-parent';
+  /* what this device remembers: the family's id and the key the 4 digits are hashed with. Never the code itself. */
+  let me=null;try{me=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  if(!me||!/^[0-9a-f]{32}$/.test(me.fid||'')||!/^[0-9a-f]{64}$/.test(me.pk||''))me=null;
+  const keep=()=>{try{me?localStorage.setItem(KEY,JSON.stringify(me)):localStorage.removeItem(KEY)}catch(e){}};
+  const pinHash=p=>hex(RL.hmac(RL.hkey(Uint8Array.from(me.pk.match(/../g),x=>parseInt(x,16))),RL.utf8('pin:'+p)));
+  let fam=null,newPin=false,kids=[],sel=null,timer=0,goalNeed=1;
+
+  /* ---- 1 · the code ---- */
+  $('codeGo').onclick=()=>{const code=$('code').value,m=$('codeMsg');
+    if(RL.norm(code).length<6){m.className='msg bad';m.textContent='اكتبوا رمز التفعيل كاملًا.';return}
+    m.className='msg';m.textContent='جارٍ التحقق من الرمز…';$('codeGo').disabled=true;
+    /* deriving the keys is slow on purpose; let the message paint first */
+    setTimeout(async()=>{let ok=false,net=false,forgot=newPin;
+      try{const k=RL.keysFor(code,RL.unb64(V.salt),V.iter),hk=RL.hkey(k.subarray(32,64)),id=hex(RL.hmac(hk,RL.utf8('id'))).slice(0,16);
+        const r=await fetch('lic.json',{cache:'no-store'});if(!r.ok)throw new Error('lic');
+        const e=(await r.json())[id],p=e&&RL.open(k,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));
+        if(p){ok=true;me={fid:hex(RL.hmac(hk,RL.utf8('family'))).slice(0,32),pk:hex(RL.hmac(hk,RL.utf8('parent-pin')))};keep()}
+      }catch(e){net=true}
+      $('codeGo').disabled=false;
+      if(net){m.className='msg bad';m.textContent='تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.';return}
+      if(!ok){m.className='msg bad';m.textContent='الرمز غير صحيح. اكتبوه كما وصلكم، أو تواصلوا معنا.';return}
+      m.textContent='';$('code').value='';openFamily(forgot)},30)};
+  $('code').addEventListener('keydown',e=>{if(e.key==='Enter')$('codeGo').click()});
+
+  /* ---- 2 · the 4 digits ---- */
+  const pins=[...$('pinBox').children];
+  pins.forEach((el,i)=>{el.oninput=()=>{el.value=el.value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'').slice(0,1);if(el.value&&pins[i+1])pins[i+1].focus()};
+    el.onkeydown=e=>{if(e.key==='Backspace'&&!el.value&&pins[i-1])pins[i-1].focus();if(e.key==='Enter')$('pinGo').click()}});
+  const pinMsg=(t,bad)=>{$('pinMsg').className='msg'+(bad?' bad':'');$('pinMsg').textContent=t};
+  /* reset = the code was just typed again after «نسيتُ الرقم السري», so a new number may replace the old one */
+  async function openFamily(reset){show('s_pin');pins.forEach(p=>p.value='');pinMsg('جارٍ الاتصال…');$('pinGo').disabled=true;$('pinForgot').hidden=true;
+    try{fam=await api.get('families/'+me.fid)}catch(e){pinMsg('تعذّر الاتصال بالخادم. تأكدوا من الإنترنت ثم أعيدوا تحميل الصفحة.',true);return}
+    $('pinGo').disabled=false;pinMsg('');newPin=!fam||!fam.pin||!!reset;
+    $('pinH').textContent=newPin?'🔒 اختاروا رقمًا سريًّا':'🔒 الرقم السري';
+    $('pinT').textContent=newPin?'أربعة أرقام تعرفونها أنتم فقط. تُطلب عند فتح هذه الصفحة حتى لا يغيّر الطفل الهدف بنفسه.':'اكتبوا الأرقام الأربعة التي اخترتموها.';
+    $('pinGo').textContent=newPin?'حفظ والدخول':'دخول';$('pinForgot').hidden=newPin;pins[0].focus()}
+  $('pinGo').onclick=async()=>{if(pins.some(p=>!p.value))return pinMsg('اكتبوا الأرقام الأربعة.',true);
+    const h=pinHash(pins.map(p=>p.value).join(''));
+    if(newPin){$('pinGo').disabled=true;pinMsg('جارٍ الحفظ…');
+      try{await api.set('families/'+me.fid,{v:1,pin:{h},t:Date.now()},['v','pin','t'])}
+      catch(e){$('pinGo').disabled=false;return pinMsg('تعذّر الحفظ. تأكدوا من الإنترنت ثم أعيدوا المحاولة.',true)}
+      $('pinGo').disabled=false;newPin=false}
+    else if(h!==fam.pin.h){pins.forEach(p=>p.value='');pins[0].focus();return pinMsg('الرقم السري غير صحيح.',true)}
+    pinMsg('');dash()};
+  $('pinForgot').onclick=()=>{me=null;keep();newPin=true;show('s_code');$('codeMsg').className='msg';
+    $('codeMsg').textContent='اكتبوا رمز التفعيل من جديد، ثم اختاروا رقمًا سريًّا جديدًا.';$('code').focus()};
+
+  /* ---- 3 · the dashboard ---- */
+  const INFO=V.info,SLIDES=META.reduce((a,u)=>a+u.slides,0);
+  /* the activity types of the units, grouped into skills a parent can read */
+  const SKILL={story:'القصة والقراءة',ink:'الكتابة والحروف',caps:'الكتابة والحروف',abc:'الكتابة والحروف',cards:'المفردات',room:'المفردات',toy:'المفردات',count:'المفردات',poster:'المفردات',paint:'المفردات',wheel:'المفردات',
+    balloons:'الاستماع',quiz:'أسئلة الفهم والقواعد',merge:'أسئلة الفهم والقواعد',plural:'أسئلة الفهم والقواعد',train:'ترتيب الجمل والتهجئة',wsearch:'ترتيب الجمل والتهجئة',chant:'الأناشيد'};
+  const kid=()=>kids.find(k=>k.id===sel)||kids[0]||null;
+  const stars=(c,u)=>Math.min((c.best||{})[u.n]||0,u.stars);
+  const medalsOf=c=>(c.medals||[]).filter(n=>n>=1&&n<=9).length;
+  const kname=(c,i)=>c.name?c.name:'طفل '+AR(i+1);
+  const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const act=(c,n)=>(c.act||{})[n]||null;
+  const seenN=(c,n)=>{const a=act(c,n);return a?Math.min((a.seen||[]).length,INFO[n].s.length):0};
+  const sumW=a=>a?Object.values(a.wr||{}).reduce((x,y)=>x+y,0):0;
+  /* every slide of unit n with what this child did on it: opened, stars won (first-try answers), wrong tries */
+  const rows=(c,n)=>{const a=act(c,n);return INFO[n].s.map((s,i)=>({i,t:s.t,y:s.y,p:s.p,m:s.m,seen:!!a&&(a.seen||[]).includes(i),c:Math.min((a&&a.c&&a.c[i])||0,s.m),w:(a&&a.wr&&a.wr[i])||0}))};
+  const fullActs=c=>META.reduce((t,u)=>t+rows(c,u.n).filter(r=>r.m>0&&r.c>=r.m).length,0);
+  const totStars=c=>META.reduce((a,u)=>a+stars(c,u),0),totSeen=c=>META.reduce((a,u)=>a+seenN(c,u.n),0);
+  const value=(c,g)=>g.kind==='stars'?totStars(c):g.kind==='slides'?totSeen(c):g.kind==='acts'?fullActs(c):g.kind==='unit'?seenN(c,g.u):medalsOf(c);
+  const mins=t=>!t?'لا يوجد بعد':t<60?'أقل من دقيقة':AR(Math.round(t/60))+' دقيقة';
+  const ago=ms=>{const m=Math.round((Date.now()-ms)/6e4);return m<1?'الآن':m<60?'قبل '+AR(m)+' دقيقة':m<1440?'قبل '+AR(Math.round(m/60))+' ساعة':'قبل '+AR(Math.round(m/1440))+' يومًا'};
+  function dash(){show('s_dash');load();clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&!$('s_dash').hidden)load()},15000)}
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('s_dash').hidden)load()});
+  async function load(){try{const l=await api.list('families/'+me.fid+'/children');
+      kids=l.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ar')||a.id.localeCompare(b.id));$('dashMsg').textContent=''}
+    catch(e){$('dashMsg').className='msg bad';$('dashMsg').textContent='تعذّر تحديث البيانات. تأكدوا من الاتصال بالإنترنت.'}
+    draw()}
+  function draw(){const c=kid();$('noKids').hidden=!!c;$('hasKids').hidden=!c;if(!c)return;sel=c.id;
+    $('kids').innerHTML=kids.length>1?kids.map((x,i)=>`<button class="kid" aria-pressed="${x.id===sel}" data-id="${x.id}">🧒 ${esc(kname(x,i))}</button>`).join(''):`<span class="kid" aria-pressed="true">🧒 ${esc(kname(c,0))}</span>`;
+    $('kids').querySelectorAll('button').forEach(b=>b.onclick=()=>{sel=b.dataset.id;$('goalForm').hidden=true;delArmed=false;draw()});
+    const med=medalsOf(c),has=n=>(c.medals||[]).includes(n);
+    $('stMed').textContent=AR(med);$('stTot').textContent=AR(totStars(c));$('stMax').textContent=AR(MAX);$('stSl').textContent=AR(totSeen(c));$('stSlMax').textContent=AR(SLIDES);
+    $('meds').innerHTML=META.map(u=>u.n).concat(10).map(n=>`<img src="medals/t${n}.webp" alt="${n===10?'الميدالية الماسية':'ميدالية الوحدة '+AR(n)}${has(n)?' (مكتسبة)':' (لم تُكتسب بعد)'}" class="${has(n)?'on':''}" loading="lazy">`).join('');
+    /* where the child is, or was last */
+    const p=c.pos&&c.pos.u&&INFO[c.pos.u]?c.pos:null;
+    $('nowL').hidden=!p;if(p){const sl=INFO[p.u].s[p.s],live=Date.now()-p.at<150000;
+      $('nowL').innerHTML=`${live?'🟢 <b>يذاكر الآن</b>':'🕒 آخر ظهور '+ago(p.at)}: الوحدة ${AR(p.u)}، الشريحة ${AR((p.s|0)+1)}${sl&&sl.t?' <span class="en">('+esc(sl.t)+')</span>':''}`}
+    /* this week, Sunday to Saturday */
+    const now=new Date(),sun=new Date(now.getFullYear(),now.getMonth(),now.getDate()-now.getDay()),days=c.days||[];
+    $('week').innerHTML=['ح','ن','ث','ر','خ','ج','س'].map((d,i)=>`<i class="${days.includes(ymd(new Date(sun.getFullYear(),sun.getMonth(),sun.getDate()+i)))?'on':''}">${d}</i>`).join('');
+    const lastDay=days[days.length-1],diff=lastDay?Math.round((new Date(ymd(now))-new Date(lastDay))/864e5):-1;
+    $('stLast').textContent='آخر مذاكرة: '+(diff<0?'لا يوجد بعد':diff===0?'اليوم':diff===1?'أمس':diff===2?'قبل يومين':'قبل '+AR(diff)+(diff<11?' أيام':' يومًا'));
+    /* the unit being worked on: where the child was last, else the last one without a medal that has stars */
+    const open=META.filter(u=>!has(u.n)),cur=(p&&META.find(u=>u.n===p.u))||open.filter(u=>stars(c,u)>0).pop()||open[0];
+    const was=new Set([...$('units').querySelectorAll('details[open]')].map(d=>d.id));
+    $('units').innerHTML=META.map(u=>{const b=stars(c,u),done=has(u.n);
+      return `<details class="ud${done?' done':''}" id="du${u.n}"><summary class="unit"><div class="ic">${u.icon}</div><div><div class="nm"><span class="en">Unit ${u.n} · ${esc(u.title)}</span>${cur&&u.n===cur.n?' <span style="color:var(--a)">· يعمل عليها الآن</span>':''}</div><div class="bar"><i style="width:${b/u.stars*100}%"></i></div><div class="sub">🖼️ ${AR(seenN(c,u.n))}/${AR(u.slides)} شريحة · اضغطوا للتفاصيل</div></div><div class="sc">${done?'🏅':''} ${AR(b)}/${AR(u.stars)}</div></summary>${unitBody(c,u,done)}</details>`}).join('');
+    $('units').querySelectorAll('details').forEach(d=>{if(was.has(d.id))d.open=true});
+    drawLog(c);drawGoal(c,cur);
+    $('kidDel').textContent=delArmed?'تأكيد إزالة '+kname(c,kids.indexOf(c))+' من هذه الصفحة':'إزالة هذا الطفل من الصفحة'}
+
+  /* everything about one unit: slides, questions, tries, what is left for the medal, strong and weak skills, every activity */
+  function unitBody(c,u,done){const a=act(c,u.n),R=rows(c,u.n),b=stars(c,u),nd=need(u),sc=R.filter(r=>r.m>0),seen=seenN(c,u.n),w=sumW(a);
+    const tried=sc.filter(r=>r.seen||r.c>0),full=sc.filter(r=>r.c>=r.m),clean=full.filter(r=>!r.w).length,after=full.length-clean,part=tried.length-full.length;
+    const f=(ic,t)=>`<div class="fact"><span>${ic}</span><div>${t}</div></div>`;
+    let h='<div class="ubody">';
+    h+=f('🖼️',`<b>الشرائح:</b> شاهد ${AR(seen)} من ${AR(u.slides)} · بقي ${AR(u.slides-seen)}`);
+    h+=f('❓',`<b>الأسئلة والأنشطة:</b> أنجز ${AR(b)} من ${AR(u.stars)} · بقي ${AR(u.stars-b)}<small>كل سؤال أو مهمة بنجمة، والنجمة تُمنح للإجابة الصحيحة من أول محاولة.</small>`);
+    h+=f('🏅',done?'<b>الميدالية:</b> نالها ✅':`<b>الميدالية:</b> بقي ${AR(Math.max(0,nd-b))} نجمة (تُمنح عند ${AR(nd)} من ${AR(u.stars)})`);
+    if(!a)h+=f('ℹ️','تفاصيل الشرائح والمحاولات والوقت تُسجَّل من أول مرة يفتح فيها الطفل هذه الوحدة بعد ربط صفحتكم. ما أنجزه قبل ذلك يظهر نجومًا فقط.');
+    else{
+      h+=f('🎯',`<b>من كم محاولة؟</b> أتقن ${AR(clean)} نشاطًا من أول محاولة، و${AR(after)} بعد إعادة المحاولة، و${AR(part)} لم يكتمل بعد، و${AR(sc.length-tried.length)} لم يبدأه. <small>من ${AR(sc.length)} نشاطًا فيه أسئلة.</small>`);
+      h+=f('✖️',`<b>المحاولات الخاطئة:</b> ${AR(w)}${full.length?` · بمعدل ${AR((w/Math.max(1,tried.length)).toFixed(1))} لكل نشاط جرّبه`:''}`);
+      h+=f('⏱️',`<b>الوقت في الوحدة:</b> ${mins(a.t|0)}`);
+      /* the three lessons of the unit */
+      const P=INFO[u.n].parts||{};
+      h+='<div class="parts">'+Object.keys(P).map(k=>{const x=sc.filter(r=>r.p===k),g=x.reduce((s,r)=>s+r.c,0),m=x.reduce((s,r)=>s+r.m,0);
+        return `<div><div class="pn"><span class="en">${esc(P[k][1])}</span> · ${esc(P[k][2])} — ${AR(g)}/${AR(m)}</div><div class="bar"><i style="width:${m?g/m*100:0}%"></i></div></div>`}).join('')+'</div>';
+      /* skills: only what the child has tried counts */
+      const G={};tried.forEach(r=>{const k=SKILL[r.y];if(!k)return;const g=G[k]||(G[k]={c:0,m:0,w:0});g.c+=r.c;g.m+=r.m;g.w+=r.w});
+      const L=Object.keys(G).map(k=>({k,r:G[k].c/G[k].m,w:G[k].w,m:G[k].m})),pc=x=>AR(Math.round(x.r*100))+'٪';
+      /* strong: at least 85% right at the first try with few wrong tries; needs practice: under 70%, or (with at least three wrong tries) a wrong try for every second question */
+      const weak=L.filter(x=>x.r<.7||(x.w>=3&&x.w*2>=x.m)).sort((x,y)=>x.r-y.r),strong=L.filter(x=>x.r>=.85&&!weak.includes(x)).sort((x,y)=>y.r-x.r);
+      h+=f('💪','<b>نقاط القوة:</b> '+(strong.length?strong.map(x=>`${x.k} (${pc(x)})`).join(' · '):L.length?'لم تظهر بعد مهارة فوق ٨٥٪':'لا بيانات كافية بعد'));
+      h+=f('🌱','<b>يحتاج تدريبًا:</b> '+(weak.length?weak.map(x=>`${x.k} (${pc(x)}${x.w?'، '+AR(x.w)+' خطأ':''})`).join(' · '):L.length?'لا شيء واضح، ما شاء الله':'لا بيانات كافية بعد'));
+      const again=tried.filter(r=>r.c<r.m||r.w>=2).sort((x,y)=>y.w-x.w||x.c/x.m-y.c/y.m).slice(0,4);
+      if(again.length)h+=f('🔁','<b>أنشطة تستحق الإعادة معه:</b><ul>'+again.map(r=>`<li>الشريحة ${AR(r.i+1)} <span class="en">${esc(r.t)}</span> — ⭐ ${AR(r.c)}/${AR(r.m)}${r.w?' · ✖ '+AR(r.w):''}</li>`).join('')+'</ul>');
+      h+=`<details class="all" id="da${u.n}"><summary>كل شرائح الوحدة (${AR(R.length)})</summary><div class="tw"><table><thead><tr><th>#</th><th>الشريحة</th><th>⭐</th><th>✖</th><th>الحالة</th></tr></thead><tbody>`
+        +R.map(r=>`<tr class="${r.seen?'':'un'}"><td>${AR(r.i+1)}</td><td class="en">${esc(r.t)}</td><td>${r.m?AR(r.c)+'/'+AR(r.m):'—'}</td><td>${r.w?AR(r.w):'—'}</td><td>${!r.seen&&!r.c?'لم يفتحها':!r.m?'شاهدها':r.c>=r.m?(r.w?'أتقنها بعد محاولات':'أتقنها من أول محاولة'):r.c?'جزئي':'لم يُجب بعد'}</td></tr>`).join('')+'</tbody></table></div></details>'}
+    return h+'</div>'}
+
+  /* the last study days, newest first */
+  function drawLog(c){const L=(c.log||[]).slice(-14).reverse(),t=ymd(new Date()),y=ymd(new Date(Date.now()-864e5));
+    $('log').innerHTML=L.length?L.map(r=>{const us=Object.keys(r.u||{}),tt=us.reduce((a,n)=>a+(r.u[n].t||0),0);
+      return `<div class="day"><div class="dn">${r.d===t?'اليوم':r.d===y?'أمس':'<span class="en">'+esc(r.d)+'</span>'} · ${mins(tt)}</div>`
+        +us.map(n=>{const x=r.u[n];return `<div class="dl">الوحدة ${AR(n)}: ${mins(x.t|0)} · ${AR(x.sl|0)} شريحة جديدة · ⭐ ${AR(x.k|0)} · ✖ ${AR(x.w|0)}</div>`}).join('')+'</div>'}).join('')
+      :'<p class="hint">يظهر هنا يومًا بيوم: أي وحدة فتح، كم دقيقة، كم شريحة جديدة، كم نجمة، وكم محاولة خاطئة.</p>'}
+
+  /* ---- the goal: a prize for medals, a finished unit, slides, stars or whole activities ---- */
+  const medWord=n=>n===1?'ميدالية واحدة':n===2?'ميداليتان':AR(n)+' ميداليات';
+  const unitOf=g=>g.kind==='stars'?'نجمة':g.kind==='acts'?'نشاطًا كاملًا':'شريحة';
+  const goalText=g=>g.kind==='unit'?'إنهاء كل شرائح الوحدة '+AR(g.u):g.kind==='slides'?AR(g.need)+' شريحة جديدة':g.kind==='stars'?AR(g.need)+' نجمة جديدة':g.kind==='acts'?AR(g.need)+' نشاطًا كاملًا جديدًا':medWord(g.need);
+  function drawGoal(c,cur){const raw=c.goal&&c.goal.need>0?c.goal:null,g=raw&&Object.assign({kind:'medals',u:0},raw),gc=$('goalCard'),nm=esc(kname(c,kids.indexOf(c)));
+    if(!g){gc.innerHTML=`<h3>🎯 لا يوجد هدف بعد</h3><p class="hint">ضعوا هدفًا صغيرًا قريبًا: جائزة يحبّها ${nm} مقابل ميدالية، أو إنهاء وحدة، أو عدد من الشرائح أو النجوم أو الأنشطة. يظهر الهدف في تطبيقه مباشرة.</p><div class="row" style="margin-top:10px"><button class="btn go" id="gNew">وضع هدف</button></div>`;
+      $('gNew').onclick=()=>openForm();return}
+    const got=Math.max(0,Math.min(g.need,value(c,g)-g.base)),left=g.need-got;
+    let h=`<h3>🎯 الهدف الحالي</h3><div class="prize">${esc(g.prize)}</div><div class="hint">المطلوب: ${goalText(g)}</div>`;
+    if(g.kind==='medals'){h+=`<div class="slots" role="img" aria-label="${got} من ${g.need} ميدالية">`;for(let i=0;i<g.need;i++)h+=`<i class="${i<got?'on':''}">🏅</i>`;h+='</div>'}
+    else h+=`<div class="bar" style="margin:8px 0 4px" role="progressbar" aria-valuemin="0" aria-valuemax="${g.need}" aria-valuenow="${got}"><i style="width:${got/g.need*100}%"></i></div>`;
+    if(left){h+=`<div>أنجز ${AR(got)} من ${AR(g.need)} · بقي ${g.kind==='medals'?medWord(left):AR(left)+' '+unitOf(g)}</div>`;
+      if(g.kind==='medals'&&cur){const b=stars(c,cur),n=need(cur);if(b<n)h+=`<div class="hint">⭐ بقي ${AR(n-b)} نجمة لميدالية الوحدة ${AR(cur.n)}</div>`}
+      h+='<div class="row" style="margin-top:10px"><button class="btn lite" id="gEdit">تعديل الهدف</button><button class="btn lite" id="gDrop">حذف الهدف</button></div>'}
+    else h+=`<div>✅ اكتمل الهدف: ${goalText(g)}. بارك الله في ${nm}!</div><div class="row" style="margin-top:10px"><button class="btn ok" id="gDone">سلّمتُ الجائزة · هدف جديد</button></div>`;
+    gc.innerHTML=h;
+    if(left){$('gEdit').onclick=()=>openForm(g);$('gDrop').onclick=()=>saveGoal(null)}else $('gDone').onclick=async()=>{if(await saveGoal(null))openForm()}}
+
+  const SUG=['نزهة إلى الحديقة 🌳','قصة قبل النوم 📖','اختيار وجبة العشاء 🍕','لعبة يختارها 🎲','زيارة الجدّ والجدّة 💛'];
+  const KINDS=[['medals','🏅 ميداليات'],['unit','📘 إنهاء وحدة'],['slides','🖼️ شرائح'],['stars','⭐ نجوم'],['acts','✅ أنشطة كاملة']];
+  let gKind='medals',gUnit=0;
+  /* the amounts offered for a kind of goal: [need, label, unit] */
+  function amounts(c,g){
+    if(gKind==='medals'){const rest=9-medalsOf(c)+(g&&g.kind==='medals'?Math.max(0,Math.min(g.need,medalsOf(c)-g.base)):0);
+      return[[1,'الميدالية القادمة'],[2,'ميداليتان'],[3,'٣ ميداليات'],[rest,'كل الباقي ('+AR(rest)+') والماسية']].filter((o,i,a)=>o[0]>=1&&o[0]<=rest&&a.findIndex(x=>x[0]===o[0])===i)}
+    if(gKind==='unit')return META.filter(u=>seenN(c,u.n)<u.slides||(g&&g.kind==='unit'&&g.u===u.n)).map(u=>[u.slides,'الوحدة '+AR(u.n)+' ('+AR(u.slides-seenN(c,u.n))+' شريحة باقية)',u.n]);
+    const rest=gKind==='slides'?SLIDES-totSeen(c):gKind==='stars'?MAX-totStars(c):META.reduce((t,u)=>t+INFO[u.n].s.filter(s=>s.m>0).length,0)-fullActs(c);
+    return(gKind==='slides'?[10,20,40]:gKind==='stars'?[25,50,100]:[5,10,20]).filter(n=>n<=rest||(g&&g.kind===gKind&&g.need===n)).map(n=>[n,AR(n)+' '+(gKind==='slides'?'شريحة':gKind==='stars'?'نجمة':'أنشطة')])}
+  function openForm(g){$('goalForm').hidden=false;$('gMsg').textContent='';$('gPrize').value=g?g.prize:'';gKind=g?g.kind:'medals';
+    $('gSug').innerHTML=SUG.map(s=>`<button class="chip" type="button">${s}</button>`).join('');
+    [...$('gSug').children].forEach(b=>b.onclick=()=>{$('gPrize').value=b.textContent});
+    $('gKind').innerHTML=KINDS.map(k=>`<button class="chip" type="button" data-k="${k[0]}" aria-pressed="${k[0]===gKind}">${k[1]}</button>`).join('');
+    [...$('gKind').children].forEach(b=>b.onclick=()=>{gKind=b.dataset.k;[...$('gKind').children].forEach(x=>x.setAttribute('aria-pressed',x===b));fillNeed(null)});
+    fillNeed(g);$('goalForm').scrollIntoView({block:'nearest',behavior:'smooth'});$('gPrize').focus()}
+  function fillNeed(g){const c=kid(),opts=amounts(c,g);
+    $('gNeedL').textContent=gKind==='medals'?'كم ميدالية يجمع ليحصل عليها؟':gKind==='unit'?'أي وحدة ينهي شرائحها كلها؟':gKind==='slides'?'كم شريحة جديدة يشاهد؟':gKind==='stars'?'كم نجمة جديدة يجمع؟':'كم نشاطًا يتقنه كاملًا؟';
+    const pick=g&&g.kind===gKind&&opts.find(o=>gKind==='unit'?o[2]===g.u:o[0]===g.need)||opts[0];
+    goalNeed=pick?pick[0]:0;gUnit=pick&&pick[2]||0;$('gSave').disabled=!pick;
+    $('gNeed').innerHTML=opts.length?opts.map(o=>`<button class="chip" type="button" data-n="${o[0]}" data-u="${o[2]||0}" aria-pressed="${o===pick}">${o[1]}</button>`).join(''):'<span class="hint">لم يبقَ شيء من هذا النوع. ما شاء الله!</span>';
+    [...$('gNeed').querySelectorAll('button')].forEach(b=>b.onclick=()=>{goalNeed=+b.dataset.n;gUnit=+b.dataset.u;[...$('gNeed').children].forEach(x=>x.setAttribute('aria-pressed',x===b));help()});
+    help()}
+  function help(){$('gHelp').textContent=gKind==='medals'?(goalNeed===1?'هدف قريب: ميدالية واحدة تعني ٧٠٪ من نجوم وحدة. الأهداف القريبة تحفّز طفل الصف الأول أكثر.':goalNeed<=3?'هدف متوسط: عدّة وحدات. يحسن أن تكون الجائزة على قدر الجهد.':'هدف بعيد على طفل في الصف الأول. الأهداف القريبة تحفّز أكثر.')
+    :gKind==='unit'?'يتحقق حين يفتح الطفل كل شرائح الوحدة ويبقى في كل شريحة لحظات. ما شاهده من قبل محسوب له.'
+    :gKind==='slides'?'تُحسب الشرائح التي يفتحها لأول مرة بعد وضع الهدف. مناسب لتشجيعه على التقدّم في الوحدة.'
+    :gKind==='stars'?'النجمة تُمنح للإجابة الصحيحة من أول محاولة، فهذا الهدف يشجّع على التركيز لا على السرعة.'
+    :'النشاط الكامل هو شريحة أجاب عن كل أسئلتها من أول محاولة. هدف يشجّع على الإتقان.'}
+  $('gCancel').onclick=()=>{$('goalForm').hidden=true};
+  async function saveGoal(g){const c=kid(),p='families/'+me.fid+'/children/'+c.id,m=g?$('gMsg'):$('dashMsg');
+    try{await api.set(p,g?{goal:g}:{},['goal']);if(g)c.goal=g;else delete c.goal;m.textContent='';draw();return true}
+    catch(e){m.className='msg bad';m.textContent='تعذّر الحفظ. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.';return false}}
+  $('gSave').onclick=async()=>{const prize=$('gPrize').value.trim().slice(0,60);if(!prize){$('gPrize').focus();return}if(!goalNeed)return;
+    const c=kid(),old=c.goal&&c.goal.need>0?Object.assign({kind:'medals',u:0},c.goal):null,same=old&&old.kind===gKind&&old.need===goalNeed&&(old.u|0)===gUnit;
+    /* changing only the prize keeps the goal's starting point; a different goal starts from what the child has today.
+       Finishing a unit has no starting point: slides seen before count. */
+    const g={prize,kind:gKind,need:goalNeed,u:gUnit,base:same?old.base:gKind==='unit'?0:value(c,{kind:gKind,u:gUnit}),set:same?old.set:Date.now()};
+    $('gSave').disabled=true;const ok=await saveGoal(g);$('gSave').disabled=false;
+    if(ok){$('goalForm').hidden=true;$('goalCard').scrollIntoView({block:'nearest',behavior:'smooth'})}};
+  /* removing a child (a second entry made by a reinstalled app, for instance) takes two presses */
+  let delArmed=false;
+  $('kidDel').onclick=async()=>{const c=kid();if(!c)return;if(!delArmed){delArmed=true;draw();return}
+    delArmed=false;try{await api.del('families/'+me.fid+'/children/'+c.id);kids=kids.filter(k=>k!==c);sel=null}catch(e){$('dashMsg').className='msg bad';$('dashMsg').textContent='تعذّرت الإزالة. أعيدوا المحاولة.'}
+    draw()};
+  $('lock').onclick=()=>{clearInterval(timer);kids=[];openFamily()};
+
+  if(me)openFamily();else{show('s_code');$('code').focus()}
+})();
+</script>
+</body>
+</html>

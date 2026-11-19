@@ -236,6 +236,29 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
   #mcel .rise{animation:none}#mcel .rays{display:none}#mcel .tap{animation:none}#mcel .sp{animation:none;opacity:.8;transform:translate(var(--x),var(--y))}
   .ped.on .ph{animation:none}
 }
+/* the child's goal card («هدفي») and the link to the parent's page — src/family.js */
+.goalc{border:4px solid var(--ink);border-radius:22px;padding:12px 16px;margin:12px 0;background:linear-gradient(#fff7db,#ffeeb5);box-shadow:0 6px 0 rgba(35,49,79,.14);text-align:center}
+.goalc .gt{font-size:16px;opacity:.7;line-height:1.6}
+.goalc .gp{font-size:24px;font-weight:800;line-height:1.6;overflow-wrap:anywhere}
+.goalc .gs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0}
+.goalc .gs i{font-style:normal;font-size:28px;line-height:1.3;filter:grayscale(1);opacity:.35}
+.goalc .gs i.on{filter:none;opacity:1}
+.goalc .gl{font-size:18px;line-height:1.7}
+.goalc .gl b{color:var(--a)}
+.goalc .gb{height:16px;border:3px solid var(--ink);border-radius:99px;background:#f1ebdd;overflow:hidden;margin:6px auto 2px;max-width:420px}
+.goalc .gb i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),var(--a));border-radius:99px;transition:width .5s}
+.goalc .gn{font-size:15px;opacity:.8;line-height:1.7}
+.parl{display:block;margin:14px auto 0;max-width:520px;text-align:center;border:3px dashed var(--ink);border-radius:18px;padding:8px 14px;font-size:16px;line-height:1.7;color:var(--ink);text-decoration:none;background:rgba(255,255,255,.6)}
+.parl[hidden]{display:none}
+#gparty{position:fixed;inset:0;z-index:60;background:rgba(35,49,79,.9);display:flex;align-items:center;justify-content:center;padding:20px}
+#gparty .gbox{background:#fff;border:5px solid var(--ink);border-radius:28px;padding:22px 24px;text-align:center;max-width:420px;width:100%}
+#gparty .big{font-size:84px;line-height:1.2;animation:ghop .9s ease-in-out infinite}
+#gparty h3{font-size:30px;font-weight:800;color:var(--a);line-height:1.5}
+#gparty .pz{font-size:24px;font-weight:800;line-height:1.6;overflow-wrap:anywhere}
+#gparty p{font-size:19px;line-height:1.7}
+#gparty button{margin-top:12px;min-height:52px;min-width:140px;border:4px solid var(--ink);border-radius:16px;background:var(--ok);color:#fff;font:inherit;font-weight:800;font-size:20px;cursor:pointer}
+@keyframes ghop{50%{transform:translateY(-14px) rotate(6deg)}}
+@media(prefers-reduced-motion:reduce){#gparty .big{animation:none}.goalc .gb i{transition:none}}
 
 </style>
 </head>
@@ -248,7 +271,9 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
   <div class="lic" id="lic"></div>
   <div class="prog"><span id="progT"></span><div class="bar"><i id="progB" style="width:0"></i></div></div>
   <button class="musb" id="musB" type="button" aria-label="متحف إنجازاتي: My Medal Collection"></button>
+  <div id="goalC" hidden></div>
   <div class="grid" id="grid"></div>
+  <a class="parl" id="parL" hidden target="_blank" rel="noopener">👨‍👩‍👧 صفحة وليّ الأمر: تابعوا تقدّم طفلكم وضعوا له هدفًا</a>
 
   <section class="box" id="inst" style="display:none">
     <h2>📱 ثبّتوا التطبيق على الجهاز</h2>
@@ -297,7 +322,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
 
 <div id="player"><div id="strip"><button id="back">➡ القائمة</button><span id="ptitle" class="en"></span><span class="who" id="pwho"></span></div><iframe id="frame" allowfullscreen title="الوحدة"></iframe></div>
 
-<script type="application/json" id="vault">{"v":2,"web":1,"alg":"AES-256-CTR + HMAC-SHA256, key: PBKDF2-HMAC-SHA256","salt":"LtjSlvpumNbQo5tibr3rlA==","iter":300000,"meta":[{"n":1,"title":"School","ar":"المدرسة","icon":"🏫","slides":42,"stars":168},{"n":2,"title":"Home","ar":"البيت","icon":"🏠","slides":49,"stars":189},{"n":3,"title":"All about me","ar":"كل شيء عنّي","icon":"🙋","slides":51,"stars":191},{"n":4,"title":"Move it!","ar":"هيّا نتحرّك","icon":"🤸","slides":50,"stars":199},{"n":5,"title":"Things I know","ar":"أشياء أعرفها","icon":"🔢","slides":54,"stars":207},{"n":6,"title":"Time","ar":"الوقت","icon":"⏰","slides":63,"stars":238},{"n":7,"title":"Seasons","ar":"الفصول","icon":"🍂","slides":64,"stars":238},{"n":8,"title":"Animals","ar":"الحيوانات","icon":"🐄","slides":59,"stars":239},{"n":9,"title":"Let's celebrate","ar":"هيّا نحتفل","icon":"🎉","slides":60,"stars":247}],"free":"u1.html","units":[{"u":2,"src":"u2.bin","n":"4KO4QHvYpxgZgJtt","t":"PcseiA+TSq0s4C8fr1diLA=="},{"u":3,"src":"u3.bin","n":"8EaGz0zFenuvJwW2","t":"lB0sPnlH6ZVTauiMAQ8W7Q=="},{"u":4,"src":"u4.bin","n":"lfVbTrBJQa2cxhnh","t":"41NyurAtbrq6I8/94qNa+g=="},{"u":5,"src":"u5.bin","n":"x9NP/1wkI5cnsdlc","t":"uiBIYpxMTTmR3pif7x7kow=="},{"u":6,"src":"u6.bin","n":"i/ACTOV8nbcHIUxO","t":"ceMFT9+QYxDjhDlVXfScDg=="},{"u":7,"src":"u7.bin","n":"ZLc4a3/hgKPtsHyx","t":"NzCIAE14JDUPkSvKOuxhxg=="},{"u":8,"src":"u8.bin","n":"1aMAFND/P0neUJko","t":"Tmzzy0J5tDktdLmat7FuFg=="},{"u":9,"src":"u9.bin","n":"V3+sKe+/Hb9g0fMd","t":"zzM/vJjCSWpPFfaueFJu1w=="}],"file":"English-is-fun.html"}</script>
+<script type="application/json" id="vault">{"v":2,"web":1,"alg":"AES-256-CTR + HMAC-SHA256, key: PBKDF2-HMAC-SHA256","salt":"LtjSlvpumNbQo5tibr3rlA==","iter":300000,"meta":[{"n":1,"title":"School","ar":"المدرسة","icon":"🏫","slides":42,"stars":168},{"n":2,"title":"Home","ar":"البيت","icon":"🏠","slides":49,"stars":189},{"n":3,"title":"All about me","ar":"كل شيء عنّي","icon":"🙋","slides":51,"stars":191},{"n":4,"title":"Move it!","ar":"هيّا نتحرّك","icon":"🤸","slides":50,"stars":199},{"n":5,"title":"Things I know","ar":"أشياء أعرفها","icon":"🔢","slides":54,"stars":207},{"n":6,"title":"Time","ar":"الوقت","icon":"⏰","slides":63,"stars":238},{"n":7,"title":"Seasons","ar":"الفصول","icon":"🍂","slides":64,"stars":238},{"n":8,"title":"Animals","ar":"الحيوانات","icon":"🐄","slides":59,"stars":239},{"n":9,"title":"Let's celebrate","ar":"هيّا نحتفل","icon":"🎉","slides":60,"stars":247}],"fam":{"p":"english-is-fun-cdec8","k":"AIzaSyBXY6KlzyR3rt6ma5WwObkm2FwQlEfWamA"},"info":{"1":[0,0,1,2,4,1,8,7,4,1,6,6,5,1,8,5,1,3,5,1,3,1,6,7,5,5,5,5,8,8,3,8,5,3,7,7,1,6,5,1,0,0],"2":[0,0,1,4,1,8,10,6,5,5,6,1,1,4,5,1,3,6,1,6,6,6,5,6,6,5,5,1,1,6,5,1,3,1,8,3,6,5,5,5,5,5,8,5,1,1,1,0,0],"3":[0,0,1,3,1,8,3,6,5,6,5,5,5,5,5,1,1,1,3,1,6,6,5,5,5,5,7,4,6,5,1,1,1,3,1,8,5,6,4,5,5,6,4,6,8,5,1,1,1,0,0],"4":[0,0,1,3,1,8,3,6,3,5,5,5,5,5,6,1,1,1,3,1,12,12,8,6,5,5,5,4,5,8,5,1,1,1,3,1,8,6,6,6,5,5,5,5,5,1,1,1,0,0],"5":[0,0,1,3,1,10,8,6,5,1,6,5,4,4,5,5,5,1,1,1,3,1,10,8,5,5,5,6,4,4,4,5,4,5,1,1,1,3,1,8,5,7,5,5,4,4,5,5,8,1,1,1,0,0],"6":[0,0,1,3,1,1,4,8,6,6,5,5,4,5,5,5,4,5,5,3,1,1,1,3,1,7,5,6,6,6,5,6,5,4,5,5,4,8,1,1,1,3,1,1,1,6,8,7,6,6,6,5,5,4,4,4,5,5,1,1,1,0,0],"7":[0,0,1,3,1,4,8,6,1,6,6,5,6,3,5,5,5,5,5,8,1,1,1,3,1,1,4,8,4,5,6,7,5,4,5,4,5,5,3,1,1,1,3,1,1,8,6,4,4,4,4,4,6,4,4,5,5,5,8,1,1,1,0,0],"8":[0,0,1,3,1,8,6,7,5,6,5,6,6,4,5,5,3,8,1,1,1,3,1,1,8,7,6,5,6,7,6,5,5,4,5,5,1,1,1,3,1,8,8,5,6,4,4,4,8,4,4,5,5,8,1,1,1,0,0],"9":[0,0,1,3,1,1,8,10,7,5,8,6,6,6,6,5,3,5,5,3,1,1,1,3,1,1,8,5,6,6,8,4,6,4,5,8,5,5,1,1,1,1,3,1,4,8,7,7,6,7,5,6,5,5,5,5,1,1,0,0]},"free":"u1.html","units":[{"u":2,"src":"u2.bin","n":"4KO4QHvYpxgZgJtt","t":"PcseiA+TSq0s4C8fr1diLA=="},{"u":3,"src":"u3.bin","n":"8EaGz0zFenuvJwW2","t":"lB0sPnlH6ZVTauiMAQ8W7Q=="},{"u":4,"src":"u4.bin","n":"lfVbTrBJQa2cxhnh","t":"41NyurAtbrq6I8/94qNa+g=="},{"u":5,"src":"u5.bin","n":"x9NP/1wkI5cnsdlc","t":"uiBIYpxMTTmR3pif7x7kow=="},{"u":6,"src":"u6.bin","n":"i/ACTOV8nbcHIUxO","t":"ceMFT9+QYxDjhDlVXfScDg=="},{"u":7,"src":"u7.bin","n":"ZLc4a3/hgKPtsHyx","t":"NzCIAE14JDUPkSvKOuxhxg=="},{"u":8,"src":"u8.bin","n":"1aMAFND/P0neUJko","t":"Tmzzy0J5tDktdLmat7FuFg=="},{"u":9,"src":"u9.bin","n":"V3+sKe+/Hb9g0fMd","t":"zzM/vJjCSWpPFfaueFJu1w=="}],"file":"English-is-fun.html"}</script>
 <script>
 /* RL — small, dependency-free crypto used by the bundle, identical in the browser and in Node.
    Written in plain JS (not WebCrypto) because the file must also unlock when opened from WhatsApp or a
@@ -587,6 +612,142 @@ const MED=(()=>{'use strict';
     b.onclick=museum}
   return{init,track,check,next,museum,view,chip,button,earned,have,need,count,M}})();
 
+/* FSL — the few Firestore calls the parent link needs, over Firestore's plain web (REST) interface.
+   No Firebase library is loaded: the app stays small and keeps opening with no connection.
+   cfg = { p: project id, k: web API key }   (for the local emulator: { p, h: 'http://127.0.0.1:8085' })
+   Nobody signs in. What protects a family is its id: 128 bits derived from the activation code, which the
+   security rules (firebase/firestore.rules) never let anyone list. */
+const FSL=cfg=>{
+  const root=(cfg.h||'https://firestore.googleapis.com')+'/v1/projects/'+cfg.p+'/databases/(default)/documents/';
+  const fields=o=>{const f={};for(const k in o)if(o[k]!==undefined)f[k]=enc(o[k]);return f};
+  const enc=v=>v===null?{nullValue:null}:typeof v==='string'?{stringValue:v}:typeof v==='boolean'?{booleanValue:v}
+    :typeof v==='number'?(Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v})
+    :Array.isArray(v)?{arrayValue:{values:v.map(enc)}}:{mapValue:{fields:fields(v)}};
+  const obj=f=>{const o={};for(const k in f||{})o[k]=dec(f[k]);return o};
+  const dec=v=>'stringValue' in v?v.stringValue:'integerValue' in v?+v.integerValue:'doubleValue' in v?v.doubleValue
+    :'booleanValue' in v?v.booleanValue:'arrayValue' in v?(v.arrayValue.values||[]).map(dec):'mapValue' in v?obj(v.mapValue.fields):null;
+  const url=(p,qs)=>root+p+'?'+[cfg.k?'key='+encodeURIComponent(cfg.k):''].concat(qs||[]).filter(Boolean).join('&');
+  const call=async(m,u,body)=>{
+    const r=await fetch(u,{method:m,cache:'no-store',credentials:'omit',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});
+    if(r.status===404)return null;
+    if(!r.ok){const e=new Error('fs '+r.status);e.status=r.status;throw e}
+    return r.json()};
+  return{
+    /* the document as a plain object, or null when there is none */
+    get:async p=>{const d=await call('GET',url(p));return d?obj(d.fields):null},
+    /* writes only the fields named in mask (a named field that is missing from o is removed); makes the document if needed */
+    set:(p,o,mask)=>call('PATCH',url(p,(mask||Object.keys(o)).map(f=>'updateMask.fieldPaths='+f)),{fields:fields(o)}),
+    list:async p=>{const d=await call('GET',url(p,['pageSize=30']));return((d&&d.documents)||[]).map(x=>Object.assign(obj(x.fields),{id:x.name.split('/').pop()}))},
+    del:p=>call('DELETE',url(p))};
+};
+
+/* FAM — the child's side of the parent link (the parent's side is src/parent.html).
+   - Nothing is sent until a parent has opened the parent page with the family's code: only then does the family's
+     document exist, and only then does this device start sending.
+   - What is sent: the name the child typed in a unit; per unit the stars (the same count the medals use), which
+     slides were opened, the stars won on each slide, the wrong tries on each slide and the time spent; the medals;
+     a short log of the last 30 study days; and where the child was last. The parent asked to see all of this.
+     Never the activation code, a phone number, a place, or what the child typed or drew.
+   - What is read: the goal the parent set (a prize for medals, a finished unit, slides, stars or whole activities).
+     It is shown on the menu as «هدفي».
+   - With no connection the app works as before: changes wait in the saved state (st.fq) and go out later.
+   The units themselves are not changed: watch() looks into the open unit from outside (which slide is on screen,
+   the "wrong" sound, the star counter). A star is given for a right answer at the first try, so stars per slide are
+   first-try answers; the wrong tries are counted separately. */
+const FAM=(()=>{
+  let C=null,api=null,fid=null,busy=false,last=0,AR=x=>x,slot=null;
+  const s=()=>C.st,ID=/^[0-9a-f]{32}$/;
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+  const stars=()=>{const o={};for(const u of C.meta){const h=MED.have(u.n);if(h>0)o[u.n]=h}return o};
+  const medals=()=>C.meta.map(u=>u.n).concat(10).filter(n=>MED.earned(n));
+  /* what happened inside unit n on this device: slides opened, wrong tries per slide, seconds spent */
+  const A=n=>{const a=s().act||(s().act={});return a[n]||(a[n]={seen:[],wr:{},t:0})};
+  const has=n=>s().act&&s().act[n];
+  /* stars won per slide of unit n, from the star keys the medals already keep ("s12" or "s12-3" belong to slide 12) */
+  const cmap=n=>{const o={};for(const k of (s().won&&s().won[n])||[]){const m=/^s(\d+)/.exec(k);if(m)o[m[1]]=(o[m[1]]||0)+1}return o};
+  const acts=()=>{const o={};for(const u of C.meta){const a=has(u.n);if(a)o[u.n]={seen:a.seen.slice(0,80),wr:a.wr,c:cmap(u.n),t:a.t|0}}return o};
+  const dayRow=n=>{const d=today(),L=s().log||(s().log=[]);let r=L[L.length-1];if(!r||r.d!==d){r={d,u:{}};L.push(r);if(L.length>30)L.splice(0,L.length-30)}return r.u[n]||(r.u[n]={t:0,sl:0,k:0,w:0})};
+  const sig=()=>JSON.stringify([stars(),medals(),String(s().name||''),C.meta.map(u=>{const a=has(u.n);return a?[a.seen.length,Object.values(a.wr).reduce((x,y)=>x+y,0),Math.floor(a.t/60)]:0})]);
+
+  function init(c){C=c;if(!c.cfg||typeof FSL!=='function'||!window.fetch)return;api=FSL(c.cfg);
+    if(!/^[0-9a-f]{16}$/.test(s().cid||'')){s().cid=Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>x.toString(16).padStart(2,'0')).join('');C.save()}
+    if(s().code&&ID.test(s().fid||''))fid=s().fid;
+    addEventListener('online',()=>tick());document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
+    setInterval(()=>tick(),60000);setTimeout(()=>tick(),1500)}
+  /* called when the code has unlocked the app: id is the family's id derived from that code */
+  function link(id){if(!api||!ID.test(id||''))return;
+    if(s().fid!==id){s().fid=id;delete s().fon;delete s().goal;delete s().gseen;C.save()}
+    fid=id;tick()}
+  function unlink(){fid=null;if(!C)return;delete s().fid;delete s().fon;delete s().goal;C.save()}
+  /* called every two seconds while unit n is open in window w */
+  function watch(w,n){if(!api||!w)return;try{
+      const a=A(n);
+      /* the hook goes in once the unit's own script has run (until then eval throws and we come back in two seconds) */
+      const x=w.eval('sfx');
+      if(!x.__fam){x.__fam=1;w.__k=0;const no=x.no;
+        x.no=function(){try{const i=w.eval('cur'),b=A(n);b.wr[i]=(b.wr[i]||0)+1;dayRow(n).w++}catch(e){}return no.apply(this,arguments)}}
+      const i=w.eval('cur'),k=w.eval('stars'),r=dayRow(n);
+      if(!a.seen.includes(i)){a.seen.push(i);r.sl++}
+      if(!document.hidden){a.t+=2;r.t+=2}
+      if(k>w.__k){r.k+=k-w.__k;w.__k=k}
+      s().pos={u:n,s:i,at:Date.now()};C.save()
+    }catch(e){}
+    touch()}
+  /* progress changed? note the day and queue a send */
+  function touch(){if(!api)return;const g=sig();if(g===s().fsig)return;
+    if(s().fsig!==undefined){const d=today(),a=s().days||(s().days=[]);if(a[a.length-1]!==d){a.push(d);s().days=a.slice(-60)}}
+    s().fsig=g;s().fq=1;C.save();if(Date.now()-last>45000)tick()}
+  async function tick(){if(!api||!fid||busy||navigator.onLine===false)return;busy=true;last=Date.now();
+    const p='families/'+fid+'/children/'+s().cid;let draw=false;
+    try{
+      if(!s().fon){if(!await api.get('families/'+fid))return;s().fon=1;s().fq=1;C.save();draw=true}
+      if(s().fq){const snap=sig();
+        await api.set(p,{name:String(s().name||'').slice(0,30),best:stars(),medals:medals(),days:(s().days||[]).slice(-60),updated:Date.now(),
+          act:acts(),log:(s().log||[]).slice(-30),pos:s().pos||{}},['name','best','medals','days','updated','act','log','pos']);
+        if(sig()===snap){s().fq=0;C.save()}}
+      const d=await api.get(p),x=d&&d.goal;
+      const g=x&&typeof x.prize==='string'&&x.need>0?{prize:x.prize.slice(0,60),kind:KIND[x.kind]?x.kind:'medals',need:x.need|0,base:x.base|0,u:x.u|0,set:+x.set||0}:null;
+      if(JSON.stringify(g)!==JSON.stringify(s().goal||null)){if(g)s().goal=g;else delete s().goal;C.save();draw=true}
+    }catch(e){}finally{busy=false}
+    if(draw&&!C.playing())C.redraw()}
+
+  /* ---- the goal ---- */
+  /* the kinds of goal and the word that counts them */
+  const KIND={medals:1,unit:1,slides:1,stars:1,acts:1};
+  const seenIn=n=>{const a=has(n);return a?a.seen.length:0};
+  const fullActs=()=>{let t=0;for(const u of C.meta){const c=cmap(u.n);((C.info&&C.info[u.n])||[]).forEach((m,i)=>{if(m>0&&(c[i]||0)>=m)t++})}return t};
+  const value=g=>g.kind==='stars'?C.meta.reduce((a,u)=>a+MED.have(u.n),0):g.kind==='slides'?C.meta.reduce((a,u)=>a+seenIn(u.n),0)
+    :g.kind==='acts'?fullActs():g.kind==='unit'?seenIn(g.u):MED.count();
+  const left=(g,n)=>g.kind==='medals'?(n===1?'ميدالية واحدة':n===2?'ميداليتان':AR(n)+' ميداليات')
+    :AR(n)+(g.kind==='stars'?' نجمة':g.kind==='acts'?' نشاطًا كاملًا':g.kind==='unit'?' شريحة من الوحدة '+AR(g.u):' شريحة');
+  /* the unit whose medal is nearest: open in this copy, not earned yet */
+  function nearest(){let best=null;for(const u of C.meta){if(MED.earned(u.n)||!C.open(u.n))continue;const r=MED.have(u.n)/MED.need(u.n);if(!best||r>best.r)best={u,r}}return best&&best.u}
+  /* «هدفي» on the menu. Hidden altogether until a parent has linked the family. */
+  function card(el,ar){if(ar)AR=ar;if(el)slot=el;el=slot;if(!el||!C)return;touch();
+    if(!api||!fid||!s().fon){el.hidden=true;return}
+    el.hidden=false;el.className='goalc';const g=s().goal;
+    if(!g){el.innerHTML='<div class="gt">🎯 هدفي</div><div class="gl">لا يوجد هدف بعد. هيّا نجمع الميداليات! 🏅</div>';return}
+    const got=Math.max(0,Math.min(g.need,value(g)-g.base)),rest=g.need-got;
+    let h=`<div class="gt">🎯 هدفي</div><div class="gp">${esc(g.prize)}</div>`;
+    if(g.kind==='medals'){h+=`<div class="gs" role="img" aria-label="${got} من ${g.need} ميدالية">`;for(let i=0;i<g.need;i++)h+=`<i class="${i<got?'on':''}">🏅</i>`;h+='</div>'}
+    else h+=`<div class="gb" role="progressbar" aria-valuemin="0" aria-valuemax="${g.need}" aria-valuenow="${got}"><i style="width:${100*got/g.need}%"></i></div>`;
+    if(!rest)h+='<div class="gl">🎉 تحقّق الهدف! هيّا نخبر بابا وماما 😊</div>';
+    else{h+=`<div class="gl">بقي <b>${left(g,rest)}</b></div>`;const u=nearest();
+      if(g.kind==='medals'&&u){const have=MED.have(u.n),need=MED.need(u.n);
+        h+=`<div class="gb"><i style="width:${Math.min(100,100*have/need)}%"></i></div><div class="gn">⭐ بقي ${AR(need-have)} نجمة لميدالية الوحدة ${AR(u.n)}</div>`}}
+    el.innerHTML=h;
+    if(!rest&&s().gseen!==g.set)party(g)}
+  /* once per goal, and never on top of a medal's own celebration */
+  function party(g){if(C.playing())return;if(document.querySelector('.mov,#gparty')){setTimeout(()=>card(),2500);return}
+    s().gseen=g.set;C.save();
+    const o=document.createElement('div');o.id='gparty';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','تحقّق الهدف');
+    o.innerHTML=`<div class="gbox"><div class="big">🎁</div><h3>تحقّق الهدف!</h3><p class="pz">${esc(g.prize)}</p><p>هيّا نخبر بابا وماما 😊</p><button type="button">رائع!</button></div>`;
+    const x=()=>o.remove();o.querySelector('button').onclick=x;o.onclick=e=>{if(e.target===o)x()};
+    document.body.append(o);o.querySelector('button').focus()}
+  return{init,link,unlink,touch,watch,tick,card,on:()=>!!(api&&fid&&s().fon)};
+})();
+
 </script>
 <script>
 (function(){
@@ -603,6 +764,8 @@ const MED=(()=>{'use strict';
      Inside one file the pictures travel in the vault (V.mimg); on the link they are files of their own. */
   let settled=!st.code;   /* a saved code is tried first (unlock), and only then are medals handed out */
   MED.init({st,save,meta:V.meta,ready:()=>settled,open:n=>n===1||!!keys,playing:()=>!!cur,redraw:()=>draw(),src:(n,thumb)=>V.mimg?V.mimg[n]:'medals/'+(thumb?'t':'m')+n+'.webp'});
+  /* the parent link (src/family.js): on the web app only, and only when the build was given a Firebase project */
+  FAM.init({st,save,meta:V.meta,info:V.info,cfg:WEB?V.fam:null,open:n=>n===1||!!keys,playing:()=>!!cur,redraw:()=>draw()});
   const ARD=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
   const sn=()=>lic&&lic.sn||V.sn||'';
 
@@ -614,7 +777,8 @@ const MED=(()=>{'use strict';
       b.onclick=()=>open?play(u):needCode();$('grid').append(b)});
     const tot=V.meta.reduce((a,u)=>a+u.stars,0),got=V.meta.reduce((a,u)=>a+Math.min(st.best[u.n]||0,u.stars),0);
     $('progT').textContent=`⭐ مجموع النجوم: ${ARD(got)} من ${ARD(tot)}`;$('progB').style.width=(100*got/tot)+'%';
-    MED.button($('musB'),ARD);MED.check();
+    MED.button($('musB'),ARD);MED.check();FAM.card($('goalC'),ARD);
+    if(WEB&&V.fam){$('parL').hidden=false;$('parL').href=(HOSTED?'':V.site||'')+'parent.html'}
     const num=sn()?`رقم النسخة <span class="en">${sn()}</span>`:'';
     $('lic').innerHTML=lic?`✅ نسخة مرخّصة لـ <b>${esc(lic.name)}</b> — ${num}. هذه النسخة خاصة بكم وغير مخصّصة لإعادة الإرسال.`:`${num?num+' — ':''}الوحدة الأولى مفتوحة للتجربة، وبقية الوحدات تُفتح برمز التفعيل.`;
     $('act').style.display=keys?'none':'';
@@ -634,7 +798,7 @@ const MED=(()=>{'use strict';
     let L=V.lic;if(HOSTED){const r=await fetch('lic.json',{cache:'no-store'});if(!r.ok)throw new Error('lic');L=await r.json()}
     const e=L[id];if(!e)return null;
     const p=RL.open(k,RL.unb64(e.n),RL.unb64(e.c),RL.unb64(e.t));if(!p)return null;
-    const o=JSON.parse(RL.text(p));return{k:RL.unb64(o.m),lic:o,id}}
+    const o=JSON.parse(RL.text(p));return{k:RL.unb64(o.m),lic:o,id,fam:hex(RL.hmac(RL.hkey(k.subarray(32,64)),RL.utf8('family'))).slice(0,32)}}
   /* activation notice (web app only): once per device, the developer's sheet gets the code's serial and licence number,
      a random number for this device, and what kind of device it is. No name, no phone number. A failure is retried on the
      next start and never touches the app. */
@@ -664,9 +828,9 @@ const MED=(()=>{'use strict';
   function unlock(code,quiet){say('جارٍ فتح الحزمة…');$('go').disabled=true;
     setTimeout(async()=>{let r=null,net=false;try{r=await tryCode(code)}catch(e){net=true}
       $('go').disabled=false;settled=true;
-      if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw();report(r)}
+      if(r){keys=r.k;lic=r.lic;st.code=RL.norm(code);save();say('');draw();report(r);FAM.link(r.fam)}
       else if(net)say('تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.','bad');
-      else if(quiet){delete st.code;save();say('')}
+      else if(quiet){delete st.code;save();say('');FAM.unlink()}
       else say('الرمز غير صحيح. تأكدوا من كتابته كما وصلكم، أو تواصلوا معنا.','bad');
       MED.check()},30)}
   $('go').onclick=()=>{const c=$('code').value;if(RL.norm(c).length<6)return say('اكتبوا رمز التفعيل كاملًا.','bad');unlock(c)};
@@ -694,7 +858,7 @@ const MED=(()=>{'use strict';
   document.addEventListener('fullscreenchange',()=>{try{if(document.fullscreenElement&&screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}catch(e){}setTimeout(lay,250)});
   /* the decks keep their star count in memory only; read it from the frame and remember the best per unit */
   function grab(){if(!cur)return;try{const n=$('frame').contentWindow.eval('typeof stars==="number"?stars:0');if(n>(st.best[cur.n]||0)){st.best[cur.n]=n;save()}}catch(e){}
-    MED.track($('frame').contentWindow,cur.n)}
+    MED.track($('frame').contentWindow,cur.n);FAM.watch($('frame').contentWindow,cur.n)}
   $('back').onclick=()=>{grab();clearInterval(poll);try{$('frame').contentWindow.speechSynthesis.cancel()}catch(e){}
     try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
     $('frame').srcdoc='';const p=$('player');p.classList.remove('on','side');p.style.cssText='';document.documentElement.style.overflow='';cur=null;draw()};
