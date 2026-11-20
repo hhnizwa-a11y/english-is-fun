@@ -5,7 +5,7 @@
  "description": "تطبيق وليّ الأمر: تقدّم الطفل في English is fun وأهدافه",
  "lang": "ar",
  "dir": "rtl",
- "start_url": "parent.html",
+ "start_url": "parent.html?app=1",
  "scope": "./",
  "display": "standalone",
  "orientation": "any",
