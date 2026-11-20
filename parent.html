@@ -79,6 +79,12 @@ details.ud>summary::-webkit-details-marker{display:none}
 details.ud[open]>summary{background:var(--paper);border-radius:14px}
 .unit .sub{font-size:13px;color:var(--soft);font-weight:500;line-height:1.7}
 .ubody{padding:6px 4px 14px}
+.merow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.merow>div{flex:1;min-width:130px}
+.merow b{display:block;font-size:19px;font-weight:800;line-height:1.7;overflow-wrap:anywhere}.merow small{display:block;font-size:13.5px;line-height:1.8;opacity:.75}
+.av{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;border:3px solid var(--ink);background:#fff;font-size:26px;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.kid img{width:30px;height:30px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:6px;border:2px solid var(--ink)}
+#meCard{margin-bottom:14px}
 .fact{display:grid;grid-template-columns:28px 1fr;gap:6px;font-size:15px;font-weight:500;line-height:1.9;padding:3px 0}
 .fact b{font-weight:800}
 .fact small{display:block;color:var(--soft);font-size:13px;line-height:1.8}
@@ -144,6 +150,15 @@ details.all>summary{cursor:pointer;font-size:18px;font-weight:700;line-height:2.
 
   <!-- 3 · the dashboard -->
   <div id="s_dash" hidden>
+      <div class="card" id="meCard">
+        <div class="merow"><span class="av" id="meAv">👤</span><div><b id="meName"></b><small>ملفكم على هذا الجهاز فقط</small></div><button class="btn lite" id="meEdit">تعديل ملفي</button></div>
+        <div id="meForm" hidden>
+          <label class="l" for="meIn">اسمكم</label>
+          <input class="f" id="meIn" maxlength="30" placeholder="مثال: أم ريحان">
+          <div class="row" style="margin-top:12px"><button class="btn lite" id="mePic">📷 اختيار صورة</button><button class="btn lite" id="meNoPic">إزالة الصورة</button><button class="btn go" id="meSave">حفظ</button></div>
+          <p class="hint" style="margin-top:8px">اسمكم وصورتكم يبقيان على هذا الجهاز ولا يُرسلان إلى أي مكان.</p>
+        </div>
+      </div>
     <div class="card" id="noKids" hidden>
       <h3>🧒 لم يظهر طفلكم بعد</h3>
       <p class="hint">افتحوا تطبيق <span class="en">English is fun</span> على جهاز طفلكم وهو متصل بالإنترنت ومفعَّل بالرمز نفسه. يظهر اسمه هنا خلال دقيقة أو دقيقتين، ولا يحتاج الطفل إلى فعل شيء.</p>
@@ -202,7 +217,7 @@ details.all>summary{cursor:pointer;font-size:18px;font-weight:700;line-height:2.
     <p class="hint" id="instTxt">يظهر على الشاشة الرئيسية بأيقونته، ويفتح مباشرة على متابعة طفلكم.</p>
     <div class="row" style="margin-top:10px"><button class="btn go" id="instGo" hidden>📲 تثبيت التطبيق</button></div>
   </div>
-  <p class="foot">ما يُحفظ على الخادم لأجل هذه الصفحة: الاسم الذي كتبه الطفل في التطبيق، نجومه وميدالياته، الشرائح التي فتحها ومحاولاته الخاطئة ووقته في كل وحدة، أيام مذاكرته، والهدف الذي تضعونه. لا يُحفظ رمز التفعيل ولا رقم هاتف ولا موقع ولا ما يكتبه الطفل أو يرسمه.<br>© Hamza — Nizwa Developer · <a href="https://wa.me/96897247727">واتساب 97247727</a></p>
+  <p class="foot">ما يُحفظ على الخادم لأجل هذه الصفحة: الاسم الذي كتبه الطفل في التطبيق، وصورة مصغّرة لملفه إن اختار واحدة (يراها من يحمل رمز التفعيل فقط)، نجومه وميدالياته، الشرائح التي فتحها ومحاولاته الخاطئة ووقته في كل وحدة، أيام مذاكرته، والهدف الذي تضعونه. لا يُحفظ رمز التفعيل ولا رقم هاتف ولا موقع ولا ما يكتبه الطفل أو يرسمه.<br>© Hamza — Nizwa Developer · <a href="https://wa.me/96897247727">واتساب 97247727</a></p>
 </main>
 
 <script>
@@ -337,6 +352,27 @@ const FSL=cfg=>{
     del:p=>call('DELETE',url(p))};
 };
 
+/* A profile picture: chosen from the device, cut to a centred square of 128 px and kept as a small JPEG (a few KB).
+   The same file serves the pupil's app and the parent's page, in EnglishPath and in English is fun. The picture is
+   made on the device; what is kept or sent is only this small square, never the photo that was chosen.
+   ok() is the one test of what counts as a picture: it is used before showing one and matches the server's rule. */
+var EPAV=(function(){
+  var RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/,MAX=14000,S=128;
+  function ok(v){return typeof v==='string'&&v.length>100&&v.length<=MAX&&RE.test(v)}
+  function make(file,cb){var u=URL.createObjectURL(file),im=new Image();
+    function end(v){try{URL.revokeObjectURL(u)}catch(e){}cb(v)}
+    im.onload=function(){try{var c=document.createElement('canvas'),w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h);if(!m)return end(null);
+        c.width=c.height=S;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,S,S);x.drawImage(im,(w-m)/2,(h-m)/2,m,m,0,0,S,S);
+        var q=.82,d=c.toDataURL('image/jpeg',q);while(d.length>MAX&&q>.35){q-=.1;d=c.toDataURL('image/jpeg',q)}
+        end(ok(d)?d:null)}catch(e){end(null)}};
+    im.onerror=function(){end(null)};im.src=u}
+  /* opens the device's own picker; cb gets the small picture, or null when the file is not a picture */
+  function pick(cb){var i=document.getElementById('epAvIn');if(i)i.remove();
+    i=document.createElement('input');i.type='file';i.accept='image/*';i.id='epAvIn';i.hidden=true;
+    i.onchange=function(){var f=i.files&&i.files[0];if(f)make(f,cb)};document.body.appendChild(i);i.click()}
+  return{ok:ok,make:make,pick:pick,MAX:MAX}
+})();
+
 </script>
 <script>
 (()=>{'use strict';
@@ -385,22 +421,27 @@ const FSL=cfg=>{
   pins.forEach((el,i)=>{el.oninput=()=>{el.value=el.value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'').slice(0,1);if(el.value&&pins[i+1])pins[i+1].focus()};
     el.onkeydown=e=>{if(e.key==='Backspace'&&!el.value&&pins[i-1])pins[i-1].focus();if(e.key==='Enter')$('pinGo').click()}});
   const pinMsg=(t,bad)=>{$('pinMsg').className='msg'+(bad?' bad':'');$('pinMsg').textContent=t};
-  /* Two devices per code for this page: each takes one of two seats on the server (families/<id>/dev/p1 and p2 hold
-     the device's random number; the rules let nobody replace a taken seat). True when this device holds one. */
+  /* Five devices per code for this page: each takes one of five seats on the server (families/<id>/dev/p1 … p5 hold
+     the device's random number; the rules let nobody replace a taken seat). True when this device holds one. The seat
+     a device took is remembered here, so the next visit asks the server about that one only; a seat is taken only
+     after all five were looked at, so a device never holds two. */
   async function pseat(fid){let d=localStorage.getItem('rl-parent-dev');
     if(!/^[0-9a-f]{16}$/.test(d||'')){d=hex(crypto.getRandomValues(new Uint8Array(8)));localStorage.setItem('rl-parent-dev',d)}
-    const P=k=>'families/'+fid+'/dev/'+k,now=[await api.get(P('p1')),await api.get(P('p2'))];
-    if(now.some(x=>x&&x.d===d))return true;
-    for(const k of ['p1','p2']){if(now[k==='p1'?0:1])continue;
+    const P=k=>'families/'+fid+'/dev/'+k,KS=['p1','p2','p3','p4','p5'],HK='rl-parent-seat-'+fid;
+    const mine=k=>{try{localStorage.setItem(HK,k)}catch(e){}return true};
+    let h=null;try{h=localStorage.getItem(HK)}catch(e){}
+    const ord=KS.includes(h)?[h].concat(KS.filter(k=>k!==h)):KS,free=[];
+    for(const k of ord){const x=await api.get(P(k));if(x&&x.d===d)return mine(k);if(!x)free.push(k)}
+    for(const k of KS){if(!free.includes(k))continue;
       try{await api.set(P(k),{d,t:Date.now()})}catch(e){if(e.status!==403)throw e}
-      const x=await api.get(P(k));if(x&&x.d===d)return true}
+      const x=await api.get(P(k));if(x&&x.d===d)return mine(k)}
     return false}
   /* reset = the code was just typed again after «نسيتُ الرقم السري», so a new number may replace the old one */
   async function openFamily(reset){show('s_pin');pins.forEach(p=>p.value='');pinMsg('جارٍ الاتصال…');$('pinGo').disabled=true;$('pinForgot').hidden=true;
     let seated=false;
     try{seated=await pseat(me.fid);if(seated)fam=await api.get('families/'+me.fid)}catch(e){pinMsg('تعذّر الاتصال بالخادم. تأكدوا من الإنترنت ثم أعيدوا تحميل الصفحة.',true);return}
     if(!seated){me=null;keep();newPin=false;show('s_code');$('codeMsg').className='msg bad';
-      $('codeMsg').textContent='صفحة وليّ الأمر لهذا الرمز مفتوحة على جهازين بالفعل، وهو العدد المسموح. لاستعمالها على هذا الجهاز تواصلوا معنا على واتساب 97247727.';return}
+      $('codeMsg').textContent='صفحة وليّ الأمر لهذا الرمز مفتوحة على خمسة أجهزة بالفعل، وهو العدد المسموح. لاستعمالها على هذا الجهاز تواصلوا معنا على واتساب 97247727.';return}
     $('pinGo').disabled=false;pinMsg('');newPin=!fam||!fam.pin||!!reset;
     $('pinH').textContent=newPin?'🔒 اختاروا رقمًا سريًّا':'🔒 الرقم السري';
     $('pinT').textContent=newPin?'أربعة أرقام تعرفونها أنتم فقط. تُطلب عند فتح هذه الصفحة حتى لا يغيّر الطفل الهدف بنفسه.':'اكتبوا الأرقام الأربعة التي اخترتموها.';
@@ -436,6 +477,16 @@ const FSL=cfg=>{
   const value=(c,g)=>g.kind==='stars'?totStars(c):g.kind==='slides'?totSeen(c):g.kind==='acts'?fullActs(c):g.kind==='unit'?seenN(c,g.u):medalsOf(c);
   const mins=t=>!t?'لا يوجد بعد':t<60?'أقل من دقيقة':AR(Math.round(t/60))+' دقيقة';
   const ago=ms=>{const m=Math.round((Date.now()-ms)/6e4);return m<1?'الآن':m<60?'قبل '+AR(m)+' دقيقة':m<1440?'قبل '+AR(Math.round(m/60))+' ساعة':'قبل '+AR(Math.round(m/1440))+' يومًا'};
+  /* ---- the parent's own profile: a name and a picture kept on this device only (never sent) ---- */
+  const MEK='rl-parent-me';let meS={};try{meS=JSON.parse(localStorage.getItem(MEK)||'{}')||{}}catch(e){}
+  let mePic='';
+  const face=(av,em)=>EPAV.ok(av)?`<img src="${av}" alt="">`:em;
+  function drawMe(){$('meAv').innerHTML=face(meS.av,'👤');$('meName').textContent=meS.name?'أهلًا، '+meS.name:'أهلًا بوليّ الأمر'}
+  $('meEdit').onclick=()=>{const f=$('meForm');f.hidden=!f.hidden;$('meIn').value=meS.name||'';mePic=EPAV.ok(meS.av)?meS.av:'';drawMe()};
+  $('mePic').onclick=()=>EPAV.pick(d=>{if(d){mePic=d;$('meAv').innerHTML=face(d,'👤')}});
+  $('meNoPic').onclick=()=>{mePic='';$('meAv').textContent='👤'};
+  $('meSave').onclick=()=>{meS={name:$('meIn').value.trim().slice(0,30)};if(mePic)meS.av=mePic;try{localStorage.setItem(MEK,JSON.stringify(meS))}catch(e){}$('meForm').hidden=true;drawMe()};
+  drawMe();
   function dash(){show('s_dash');load();clearInterval(timer);timer=setInterval(()=>{if(!document.hidden&&!$('s_dash').hidden)load()},15000)}
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('s_dash').hidden)load()});
   async function load(){try{let l=[];
@@ -444,7 +495,7 @@ const FSL=cfg=>{
     catch(e){$('dashMsg').className='msg bad';$('dashMsg').textContent='تعذّر تحديث البيانات. تأكدوا من الاتصال بالإنترنت.'}
     draw()}
   function draw(){const c=kid();$('noKids').hidden=!!c;$('hasKids').hidden=!c;if(!c)return;sel=c.key;
-    $('kids').innerHTML=kids.length>1?kids.map((x,i)=>`<button class="kid" aria-pressed="${x.key===sel}" data-id="${x.key}">🧒 ${esc(kname(x,i))}</button>`).join(''):`<span class="kid" aria-pressed="true">🧒 ${esc(kname(c,0))}</span>`;
+    $('kids').innerHTML=kids.length>1?kids.map((x,i)=>`<button class="kid" aria-pressed="${x.key===sel}" data-id="${x.key}">${face(x.av,'🧒 ')}${esc(kname(x,i))}</button>`).join(''):`<span class="kid" aria-pressed="true">${face(c.av,'🧒 ')}${esc(kname(c,0))}</span>`;
     $('kids').querySelectorAll('button').forEach(b=>b.onclick=()=>{sel=b.dataset.id;$('goalForm').hidden=true;delArmed=false;draw()});
     const med=medalsOf(c),has=n=>(c.medals||[]).includes(n);
     $('stMed').textContent=AR(med);$('stTot').textContent=AR(totStars(c));$('stMax').textContent=AR(MAX);$('stSl').textContent=AR(totSeen(c));$('stSlMax').textContent=AR(SLIDES);
@@ -588,7 +639,7 @@ const FSL=cfg=>{
       try{f=await famOf(code);
         if(!f)why='الرمز غير صحيح. اكتبوه كما وصلكم، أو تواصلوا معنا.';
         else if(fams().some(x=>x.fid===f.fid))why='هذا الرمز مضاف إلى الصفحة من قبل.';
-        else if(!await pseat(f.fid))why='صفحة وليّ الأمر لهذا الرمز مفتوحة على جهازين بالفعل، وهو العدد المسموح. تواصلوا معنا على واتساب 97247727.';
+        else if(!await pseat(f.fid))why='صفحة وليّ الأمر لهذا الرمز مفتوحة على خمسة أجهزة بالفعل، وهو العدد المسموح. تواصلوا معنا على واتساب 97247727.';
         else{const d=await api.get('families/'+f.fid);
           if(!d||!d.pin)await api.set('families/'+f.fid,{v:1,pin:{h:pinHashOf(f.pk,pinNow)},t:Date.now()},['v','pin','t'])}
       }catch(e){why='تعذّر التحقق من الرمز. تأكدوا من الاتصال بالإنترنت ثم أعيدوا المحاولة.'}

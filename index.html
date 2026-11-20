@@ -260,6 +260,24 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
 @keyframes ghop{50%{transform:translateY(-14px) rotate(6deg)}}
 @media(prefers-reduced-motion:reduce){#gparty .big{animation:none}.goalc .gb i{transition:none}}
 
+/* the child's profile on the menu, and its dialog */
+.profc{margin-top:12px}
+.profb{display:flex;align-items:center;gap:12px;width:100%;padding:8px 14px;border:4px solid var(--ink);border-radius:20px;background:#fff;font:inherit;color:var(--ink);text-align:start;cursor:pointer;box-shadow:0 6px 0 rgba(35,49,79,.14)}
+.pav{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;border:3px solid var(--ink);background:#fff4d6;font-size:30px;line-height:1.4;overflow:hidden}
+.pav img{width:100%;height:100%;object-fit:cover}
+.pnm{flex:1;min-width:0}.pnm b{display:block;font-size:20px;font-weight:800;line-height:1.7;overflow-wrap:anywhere}.pnm small{display:block;font-size:14px;font-weight:600;line-height:1.7;opacity:.75}
+.pgo{font-size:22px}
+.profd{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,28,48,.6)}
+.profd>div{width:100%;max-width:380px;max-height:100%;overflow:auto;padding:18px;border:4px solid var(--ink);border-radius:24px;background:#fffdf6;color:var(--ink);text-align:center}
+.profd .pav{width:124px;height:124px;font-size:62px;margin:0 auto 10px}
+.profd h3{font-size:22px;font-weight:800;line-height:1.7;margin:0 0 8px}
+.profd label{display:block;font-size:16px;font-weight:800;line-height:1.8}
+.profd input{width:100%;min-height:54px;border:4px solid var(--ink);border-radius:16px;padding:6px 14px;font:inherit;font-size:20px;font-weight:800;line-height:1.7;text-align:center;background:#fff;color:var(--ink)}
+.profd .prow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.profd button{min-height:48px;padding:4px 16px;border:3px solid var(--ink);border-radius:14px;background:#fff;font:inherit;font-weight:800;font-size:17px;line-height:1.7;cursor:pointer;color:var(--ink)}
+.profd button.go{background:#ff7a3d;color:#fff}
+.profd p{font-size:14.5px;font-weight:600;line-height:1.8;margin:10px 0 0;opacity:.8}
+
 </style>
 </head>
 <body>
@@ -270,6 +288,7 @@ footer{margin-top:26px;text-align:center;font-size:14px;color:#6b7791;line-heigh
   </header>
   <div class="lic" id="lic"></div>
   <div class="prog"><span id="progT"></span><div class="bar"><i id="progB" style="width:0"></i></div></div>
+  <div id="profC" hidden></div>
   <button class="musb" id="musB" type="button" aria-label="متحف إنجازاتي: My Medal Collection"></button>
   <div id="goalC" hidden></div>
   <div class="grid" id="grid"></div>
@@ -641,6 +660,27 @@ const FSL=cfg=>{
     del:p=>call('DELETE',url(p))};
 };
 
+/* A profile picture: chosen from the device, cut to a centred square of 128 px and kept as a small JPEG (a few KB).
+   The same file serves the pupil's app and the parent's page, in EnglishPath and in English is fun. The picture is
+   made on the device; what is kept or sent is only this small square, never the photo that was chosen.
+   ok() is the one test of what counts as a picture: it is used before showing one and matches the server's rule. */
+var EPAV=(function(){
+  var RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/,MAX=14000,S=128;
+  function ok(v){return typeof v==='string'&&v.length>100&&v.length<=MAX&&RE.test(v)}
+  function make(file,cb){var u=URL.createObjectURL(file),im=new Image();
+    function end(v){try{URL.revokeObjectURL(u)}catch(e){}cb(v)}
+    im.onload=function(){try{var c=document.createElement('canvas'),w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h);if(!m)return end(null);
+        c.width=c.height=S;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,S,S);x.drawImage(im,(w-m)/2,(h-m)/2,m,m,0,0,S,S);
+        var q=.82,d=c.toDataURL('image/jpeg',q);while(d.length>MAX&&q>.35){q-=.1;d=c.toDataURL('image/jpeg',q)}
+        end(ok(d)?d:null)}catch(e){end(null)}};
+    im.onerror=function(){end(null)};im.src=u}
+  /* opens the device's own picker; cb gets the small picture, or null when the file is not a picture */
+  function pick(cb){var i=document.getElementById('epAvIn');if(i)i.remove();
+    i=document.createElement('input');i.type='file';i.accept='image/*';i.id='epAvIn';i.hidden=true;
+    i.onchange=function(){var f=i.files&&i.files[0];if(f)make(f,cb)};document.body.appendChild(i);i.click()}
+  return{ok:ok,make:make,pick:pick,MAX:MAX}
+})();
+
 /* FAM — the child's side of the parent link (the parent's side is src/parent.html).
    - Nothing is sent until a parent has opened the parent page with the family's code: only then does the family's
      document exist, and only then does this device start sending.
@@ -671,7 +711,7 @@ const FAM=(()=>{
   const acts=()=>{const o={};for(const u of C.meta){const a=has(u.n),c=cmap(u.n);
     if(a)o[u.n]={seen:a.seen.slice(0,80),wr:a.wr,c,t:a.t|0};else if(Object.keys(c).length)o[u.n]={seen:[],wr:{},c,t:0}}return o};
   const dayRow=n=>{const d=today(),L=s().log||(s().log=[]);let r=L[L.length-1];if(!r||r.d!==d){r={d,u:{}};L.push(r);if(L.length>30)L.splice(0,L.length-30)}return r.u[n]||(r.u[n]={t:0,sl:0,k:0,w:0})};
-  const sig=()=>JSON.stringify([stars(),medals(),String(s().name||''),C.meta.map(u=>{const a=has(u.n);return a?[a.seen.length,Object.values(a.wr).reduce((x,y)=>x+y,0),Math.floor(a.t/60)]:0})]);
+  const sig=()=>JSON.stringify([stars(),medals(),String(s().pname||s().name||''),String(s().av||'').length,String(s().av||'').slice(-24),C.meta.map(u=>{const a=has(u.n);return a?[a.seen.length,Object.values(a.wr).reduce((x,y)=>x+y,0),Math.floor(a.t/60)]:0})]);
 
   function init(c){C=c;if(!c.cfg||typeof FSL!=='function'||!window.fetch)return;api=FSL(c.cfg);
     if(!/^[0-9a-f]{16}$/.test(s().cid||'')){s().cid=Array.from(crypto.getRandomValues(new Uint8Array(8)),x=>x.toString(16).padStart(2,'0')).join('');C.save()}
@@ -712,8 +752,9 @@ const FAM=(()=>{
     try{
       if(!s().fon){if(!await api.get('families/'+fid))return;s().fon=1;s().fq=1;C.save();draw=true}
       if(s().fq){const snap=sig();
-        await api.set(p,{name:String(s().name||'').slice(0,30),best:stars(),medals:medals(),days:(s().days||[]).slice(-60),updated:Date.now(),
-          act:acts(),log:(s().log||[]).slice(-30),pos:s().pos||{}},['name','best','medals','days','updated','act','log','pos']);
+        const rec={name:pname(),best:stars(),medals:medals(),days:(s().days||[]).slice(-60),updated:Date.now(),act:acts(),log:(s().log||[]).slice(-30),pos:s().pos||{}};
+        if(pav())rec.av=pav();   /* in the mask either way: with no picture the field is removed on the server */
+        await api.set(p,rec,['name','best','medals','days','updated','act','log','pos','av']);
         if(sig()===snap){s().fq=0;C.save()}}
       const d=await api.get(p),x=d&&d.goal;
       const g=x&&typeof x.prize==='string'&&x.need>0?{prize:x.prize.slice(0,60),kind:KIND[x.kind]?x.kind:'medals',need:x.need|0,base:x.base|0,u:x.u|0,set:+x.set||0}:null;
@@ -730,6 +771,32 @@ const FAM=(()=>{
     :g.kind==='acts'?fullActs():g.kind==='unit'?seenIn(g.u):MED.count();
   const left=(g,n)=>g.kind==='medals'?(n===1?'ميدالية واحدة':n===2?'ميداليتان':AR(n)+' ميداليات')
     :AR(n)+(g.kind==='stars'?' نجمة':g.kind==='acts'?' نشاطًا كاملًا':g.kind==='unit'?' شريحة من الوحدة '+AR(g.u):' شريحة');
+  /* ---- the child's profile: a name to show and a picture of the child's choosing. They stay on this device until a
+     parent links the family; then the parent sees them (the picture as a small square). The name typed inside a
+     unit stays what it was: this one is only the name shown on the menu and to the parent. ---- */
+  const pname=()=>String(s().pname||s().name||'').slice(0,30),pav=()=>typeof EPAV==='object'&&EPAV.ok(s().av)?s().av:'';
+  const pface=(av,big)=>av?`<img src="${av}" alt="">`:'🧒';
+  let pslot=null;
+  function profile(el){if(el)pslot=el;el=pslot;if(!el||!C||typeof EPAV!=='object')return;
+    el.className='profc';el.hidden=false;
+    el.innerHTML=`<button type="button" class="profb" id="profB"><span class="pav">${pface(pav())}</span><span class="pnm"><b>${esc(pname()||'ملفي الشخصي')}</b><small>ملفي: اسمي وصورتي</small></span><span class="pgo" aria-hidden="true">✏️</span></button>`;
+    el.querySelector('#profB').onclick=openProfile}
+  function openProfile(){const old=document.getElementById('profD');if(old)old.remove();let av=pav();
+    const d=document.createElement('div');d.className='profd';d.id='profD';d.setAttribute('role','dialog');d.setAttribute('aria-label','ملفي الشخصي');
+    d.innerHTML=`<div><h3>🧒 ملفي الشخصي</h3><span class="pav" id="profAvBig">${pface(av)}</span>
+      <label for="profName">اسمي</label><input id="profName" maxlength="30" autocomplete="off" value="${esc(pname())}">
+      <div class="prow"><button type="button" id="profPick">📷 اختيار صورة</button><button type="button" id="profDel"${av?'':' hidden'}>إزالة الصورة</button></div>
+      <div class="prow"><button type="button" class="go" id="profSave">حفظ</button><button type="button" id="profX">إغلاق</button></div>
+      <p>اسمك وصورتك يراهما والداك فقط.</p></div>`;
+    const q=id=>d.querySelector('#'+id),show=()=>{q('profAvBig').innerHTML=pface(av);q('profDel').hidden=!av};
+    q('profPick').onclick=()=>EPAV.pick(x=>{if(x){av=x;show()}});
+    q('profDel').onclick=()=>{av='';show()};
+    q('profX').onclick=()=>d.remove();d.onclick=e=>{if(e.target===d)d.remove()};
+    q('profSave').onclick=()=>{const n=q('profName').value.trim().slice(0,30);
+      if(n&&n!==String(s().name||''))s().pname=n;else delete s().pname;
+      if(av)s().av=av;else delete s().av;
+      s().fq=1;C.save();d.remove();profile();tick()};
+    document.body.appendChild(d);q('profName').focus()}
   /* the unit whose medal is nearest: open in this copy, not earned yet */
   function nearest(){let best=null;for(const u of C.meta){if(MED.earned(u.n)||!C.open(u.n))continue;const r=MED.have(u.n)/MED.need(u.n);if(!best||r>best.r)best={u,r}}return best&&best.u}
   /* «هدفي» on the menu. Hidden altogether until a parent has linked the family. */
@@ -754,7 +821,7 @@ const FAM=(()=>{
     o.innerHTML=`<div class="gbox"><div class="big">🎁</div><h3>تحقّق الهدف!</h3><p class="pz">${esc(g.prize)}</p><p>هيّا نخبر بابا وماما 😊</p><button type="button">رائع!</button></div>`;
     const x=()=>o.remove();o.querySelector('button').onclick=x;o.onclick=e=>{if(e.target===o)x()};
     document.body.append(o);o.querySelector('button').focus()}
-  return{init,link,unlink,touch,watch,tick,card,on:()=>!!(api&&fid&&s().fon)};
+  return{init,link,unlink,touch,watch,tick,card,profile,on:()=>!!(api&&fid&&s().fon)};
 })();
 
 </script>
@@ -786,7 +853,7 @@ const FAM=(()=>{
       b.onclick=()=>open?play(u):needCode();$('grid').append(b)});
     const tot=V.meta.reduce((a,u)=>a+u.stars,0),got=V.meta.reduce((a,u)=>a+Math.min(st.best[u.n]||0,u.stars),0);
     $('progT').textContent=`⭐ مجموع النجوم: ${ARD(got)} من ${ARD(tot)}`;$('progB').style.width=(100*got/tot)+'%';
-    MED.button($('musB'),ARD);MED.check();FAM.card($('goalC'),ARD);
+    MED.button($('musB'),ARD);MED.check();FAM.card($('goalC'),ARD);if(WEB)FAM.profile($('profC'));
     if(WEB&&V.fam){$('parL').hidden=false;$('parL').href=(HOSTED?'':V.site||'')+'parent.html'}
     const num=sn()?`رقم النسخة <span class="en">${sn()}</span>`:'';
     $('lic').innerHTML=lic?`✅ نسخة مرخّصة لـ <b>${esc(lic.name)}</b> — ${num}. هذه النسخة خاصة بكم وغير مخصّصة لإعادة الإرسال.`:`${num?num+' — ':''}الوحدة الأولى مفتوحة للتجربة، وبقية الوحدات تُفتح برمز التفعيل.`;
