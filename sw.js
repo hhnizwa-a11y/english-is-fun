@@ -1,6 +1,6 @@
 /* Service worker of the web app: keeps every file on the device so the app opens with no connection.
    The cache name changes whenever any file changes (tools/web.mjs writes the version), which replaces the old copy. */
-const C = 'rl-d7a047fc05', FONTS = 'rlfonts';
+const C = 'rl-a2a0c1f473', FONTS = 'rlfonts', VOICE = 'eif-voice-1';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'logo.webp', 'u1.html', 'u2.bin', 'u3.bin', 'u4.bin', 'u5.bin', 'u6.bin', 'u7.bin', 'u8.bin', 'u9.bin', 'English-is-fun.html', 'parent.html',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
   'parent.webmanifest', 'icons/parent-192.png', 'icons/parent-512.png', 'icons/parent-maskable-512.png', 'icons/parent-apple.png',
@@ -17,6 +17,16 @@ self.addEventListener('fetch', e => {
     if (f === 'lic.json' || f === 'English-is-fun.html') {
       e.respondWith(fetch(r).then(x => { if (x.ok) { const y = x.clone(); caches.open(C).then(c => c.put(f, y)); } return x; })
         .catch(() => caches.match(f).then(x => x || Response.error())));
+      return;
+    }
+    /* a unit's recorded voice (v3-ab12cd34.json): not part of the install, kept after the first time it is fetched, in a
+       cache of its own so an update of the app does not make every phone download the voices again. A pack's name carries
+       the hash of its content: when a unit's pack changes, the older one for that unit is dropped. */
+    const vm = f.match(/^v(\d)-[0-9a-f]{8}\.json$/);
+    if (vm) {
+      e.respondWith(caches.open(VOICE).then(c => c.match(r).then(x => x || fetch(r).then(y => {
+        if (y.ok) { c.put(r, y.clone()); c.keys().then(ks => ks.forEach(k => { const g = new URL(k.url).pathname.split('/').pop(); if (g !== f && g.startsWith('v' + vm[1] + '-')) c.delete(k); })); }
+        return y; }))));
       return;
     }
     e.respondWith(caches.match(r, { ignoreSearch: true }).then(x => x || fetch(r)));

@@ -375,7 +375,7 @@ const sfx={ok(){tone(660,.1);tone(880,.1,'sine',.14,.1);tone(1320,.22,'sine',.14
 function pickVoice(){try{const v=speechSynthesis.getVoices();VOICE=v.find(x=>/en[-_]US/i.test(x.lang)&&/female|zira|aria|jenny|samantha|google/i.test(x.name))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
 const plain=t=>t.replace(/<[^>]+>/g,' ').replace(/[^\x20-\x7E]/g,' ').replace(/\s+/g,' ').trim();
-const FIX=[[/\bread(s?)\b/gi,'reed$1']];/* force present-tense pronunciation */
+const FIX=[[/\bread(s?)\b/gi,'reed$1'],[/\bbaa\b/gi,'bah'],[/\bsatay\b/gi,'sahtay']];/* read: force present-tense pronunciation; baa: the voices spell it out letter by letter */
 /* letter names spelled out, so the voice never reads "c." or "v." as an abbreviation */
 /* a and r are sent as the bare capital letter: the spelled-out forms "ay" and "ar" were read wrongly */
 const LN={a:'A',b:'bee',c:'see',d:'dee',e:'ee',f:'eff',g:'jee',h:'aitch',i:'eye',j:'jay',k:'kay',l:'el',m:'em',n:'en',o:'oh',p:'pee',q:'cue',r:'R',s:'ess',t:'tee',u:'you',v:'vee',w:'double you',x:'ex',y:'why',z:'zed'};
@@ -386,8 +386,14 @@ const LA={a:'data:audio/mpeg;base64,SUQzBAAAAAAAIlRTU0UAAAAOAAADTGF2ZjYzLjEuMTAy
 
 /* A single letter plays its recorded clip (same on every device); the device voice is only a fallback. */
 let CLIP=null;
-function playClip(src){return new Promise(res=>{let d=false;const fin=()=>{if(!d){d=true;res()}};try{if(CLIP)CLIP.pause();try{speechSynthesis.cancel()}catch(x){}const a=new Audio(src);CLIP=a;a.onended=fin;a.onerror=fin;const p=a.play();if(p&&p.catch)p.catch(fin);setTimeout(fin,2500)}catch(e){fin()}})}
-function speak(t,rate=.8){t=plain(t);if(/^[A-Za-z]$/.test(t)){const k=t.toLowerCase();if(MUTE)return wait(300);if(typeof LA!=='undefined'&&LA[k])return playClip(LA[k]);t=LN[k]}FIX.forEach(([a,b])=>t=t.replace(a,b));return new Promise(res=>{let d=false;const fin=()=>{if(!d){d=true;res()}};const est=t.split(' ').length*430+400;
+/* The recorded voice. The app that shows this unit may hand it a pack of clips (window.VA: {key: mp3 in base64}); a
+   phrase found there is played instead of the device voice. The key is the phrase in lower case, letters and digits
+   only, so a chant line that arrives without its spaces still finds its clip. With no pack (the unit opened on its
+   own, or the pack not downloaded yet) everything is spoken by the device as before. */
+const VK=t=>t.toLowerCase().replace(/[^a-z0-9]/g,'');
+function clipFor(t){const P=window.VA;if(!P)return null;let c=P[VK(t)];if(!c&&NAME)c=P[VK(t.replace(', '+NAME,''))];return c?'data:audio/mpeg;base64,'+c:null}
+function playClip(src,max){return new Promise(res=>{let d=false;const fin=()=>{if(!d){d=true;res()}};try{if(CLIP)CLIP.pause();try{speechSynthesis.cancel()}catch(x){}const a=new Audio(src);CLIP=a;a.onended=fin;a.onerror=fin;const p=a.play();if(p&&p.catch)p.catch(fin);setTimeout(fin,max||2500)}catch(e){fin()}})}
+function speak(t,rate=.8){t=plain(t);{const vc=clipFor(t);if(vc){if(MUTE)return wait(300);return playClip(vc,15000)}}if(/^[A-Za-z]$/.test(t)){const k=t.toLowerCase();if(MUTE)return wait(300);if(typeof LA!=='undefined'&&LA[k])return playClip(LA[k]);t=LN[k]}FIX.forEach(([a,b])=>t=t.replace(a,b));return new Promise(res=>{let d=false;const fin=()=>{if(!d){d=true;res()}};const est=t.split(' ').length*430+400;
   try{if(MUTE||!('speechSynthesis'in window))return setTimeout(fin,est);speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=rate;if(VOICE)u.voice=VOICE;u.onend=fin;u.onerror=fin;speechSynthesis.speak(u);setTimeout(fin,est*1.6+1200)}catch(e){setTimeout(fin,est)}})}
 const say=t=>{speak(t)};
 let stars=0;const won=new Set();
