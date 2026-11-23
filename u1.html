@@ -392,6 +392,9 @@ let CLIP=null;
    own, or the pack not downloaded yet) everything is spoken by the device as before. */
 const VK=t=>t.toLowerCase().replace(/[^a-z0-9]/g,'');
 function clipFor(t){const P=window.VA;if(!P)return null;let c=P[VK(t)];if(!c&&NAME)c=P[VK(t.replace(', '+NAME,''))];return c?'data:audio/mpeg;base64,'+c:null}
+/* a letter's sound (s = sss, not its name 'ess'), for the alphabet slide: the pack may carry it under '~' + the letter;
+   without it the letter's recorded name is said, as before */
+function sound(l){const P=window.VA,c=P&&P['~'+l];if(!c)return speak(l);if(MUTE)return wait(300);return playClip('data:audio/mpeg;base64,'+c,6000)}
 function playClip(src,max){return new Promise(res=>{let d=false;const fin=()=>{if(!d){d=true;res()}};try{if(CLIP)CLIP.pause();try{speechSynthesis.cancel()}catch(x){}const a=new Audio(src);CLIP=a;a.onended=fin;a.onerror=fin;const p=a.play();if(p&&p.catch)p.catch(fin);setTimeout(fin,max||2500)}catch(e){fin()}})}
 function speak(t,rate=.8){t=plain(t);{const vc=clipFor(t);if(vc){if(MUTE)return wait(300);return playClip(vc,15000)}}if(/^[A-Za-z]$/.test(t)){const k=t.toLowerCase();if(MUTE)return wait(300);if(typeof LA!=='undefined'&&LA[k])return playClip(LA[k]);t=LN[k]}FIX.forEach(([a,b])=>t=t.replace(a,b));return new Promise(res=>{let d=false;const fin=()=>{if(!d){d=true;res()}};const est=t.split(' ').length*430+400;
   try{if(MUTE||!('speechSynthesis'in window))return setTimeout(fin,est);speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=rate;if(VOICE)u.voice=VOICE;u.onend=fin;u.onerror=fin;speechSynthesis.speak(u);setTimeout(fin,est*1.6+1200)}catch(e){setTimeout(fin,est)}})}
@@ -477,7 +480,7 @@ const S=[
    mk(row(E('👩‍🏫','wave',130))+`${gap} do you say hello to?<br>My teacher.`,'Who',['What'],'Who do you say hello to? My teacher.'),
    mk(row(E('🙂','bob',130))+`${gap} is your name?`,'What',['Who'],'What is your name?'),
    mk(row(E('🧒','bob',130))+`${gap} is he?<br>He is Sami.`,'Who',['What'],'Who is he? He is Sami.')]},
- {part:'a',type:'abc',title:'The <em>alphabet</em>',ar:'اضغطي على كل حرف: يتحوّل إلى حرف كبير وتسمعين اسمه وكلمة تبدأ به',amb:'abcxyz'.split('')},
+ {part:'a',type:'abc',title:'The <em>alphabet</em>',ar:'اضغطي على كل حرف: يتحوّل إلى حرف كبير وتسمعين صوته وكلمة تبدأ به',amb:'abcxyz'.split('')},
  {part:'a',type:'balloons',title:'Pop the <em>upper case</em> letter',ar:'فرقعي بالون الحرف الكبير المطابق',amb:'ABCDEFG'.split(''),
   tip:'<b>a b c</b> lower case<br><b>A B C</b> upper case',qs:()=>shuffle('abdeghmnqrty'.split('')).slice(0,8).map(capQ)},
  {part:'a',type:'train',title:'The sentence <em>train</em>',ar:'رتّبي العربات: الحرف الكبير أولًا والنقطة في آخر عربة',amb:['☁️','💨'],
@@ -642,7 +645,7 @@ chant(s,body){const box=el('div','chant');body.append(box);
   s.reset=()=>{playing=false;pb.textContent='▶ Play';$$('.now',cl).forEach(x=>x.classList.remove('now'))};s.max=1},
 abc(s,body){const box=el('div','quiz');body.append(box);const bar=el('div','abcbar','Tap a letter! 👆'),g=el('div','abc');const seen=new Set();
   'abcdefghijklmnopqrstuvwxyz'.split('').forEach((l,k)=>{const b=el('button','lt',l);b.style.animationDelay=k*.09+'s';
-    b.onclick=()=>{const up=b.classList.toggle('up');b.innerHTML=(up?l.toUpperCase():l)+`<small>${LW[l][1]}</small>`;sfx.tap();{const my=TOK;speak(l).then(()=>my===TOK&&speak(LW[l][0]))};
+    b.onclick=()=>{const up=b.classList.toggle('up');b.innerHTML=(up?l.toUpperCase():l)+`<small>${LW[l][1]}</small>`;sfx.tap();{const my=TOK;sound(l).then(()=>my===TOK&&speak(LW[l][0]))};
       bar.innerHTML=`<span style="color:var(--c)">${l}</span> <span style="color:var(--b)">${l.toUpperCase()}</span> — ${LW[l][1]} ${LW[l][0]} &nbsp; <small style="color:var(--soft)">${seen.add(l).size} / 26</small>`;
       if(seen.size===26){star(s.id);sfx.win();pip('yay');$('#next').classList.add('hint')}};g.append(b)});
   box.append(bar,g);s.max=1},
